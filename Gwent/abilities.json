@@ -1,0 +1,58 @@
+{
+  "agile": {
+    "name": "agile",
+    "description": "Can be placed in either the Close Combat or the Ranged Combat row. Cannot be moved once placed. "
+  },
+  "hero": {
+    "name": "hero",
+    "description": "Not affected by any Special Cards or abilities. "
+  },
+  "medic": {
+    "name": "medic",
+    "description": "Choose one card from your discard pile and play it instantly (no Heroes or Special Cards). "
+  },
+  "morale_boost": {
+    "name": "Morale",
+    "description": "Adds +1 to all units in the row (excluding itself). "
+  },
+  "commander_horn": {
+    "name": "Commander's Horn",
+    "description": "Doubles the strength of all unit cards in that row. Limited to 1 per row. "
+  },
+  "scorch": {
+    "name": "Scorch",
+    "description": "Discard after playing. Kills the strongest card(s) on the battlefield. "
+  },
+  "decoy": {
+    "name": "Decoy",
+    "description": "Swap with a card on the battlefield to return it to your hand. "
+  },
+  "muster": {
+    "name": "muster",
+    "description": "Find any cards with the same name in your deck and play them instantly. "
+  },
+  "spy": {
+    "name": "spy",
+    "description": "Place on your opponent's battlefield (counts towards your opponent's total) and draw 2 cards from your deck. "
+  },
+  "tight_bond": {
+    "name": "Tight Bond",
+    "description": "Place next to a card with the same name to double the strength of both cards. "
+  },
+  "weather_clear": {
+    "name": "Clear Weather",
+    "description": "Removes all Weather Cards (Biting Frost, Impenetrable Fog and Torrential Rain) effects. "
+  },
+  "weather_frost": {
+    "name": "Biting Frost",
+    "description": "Sets the strength of all Close Combat cards to 1 for both players. "
+  },
+  "weather_fog": {
+    "name": "Impenetrable Fog",
+    "description": "Sets the strength of all Ranged Combat cards to 1 for both players. "
+  },
+  "weather_rain": {
+    "name": "Torrential Rain",
+    "description": "Sets the strength of all Siege Combat cards to 1 for both players. "
+  }
+}

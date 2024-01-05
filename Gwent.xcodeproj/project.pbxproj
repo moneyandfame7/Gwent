@@ -1,0 +1,643 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		160346792B371B3500FFDB13 /* DeckOfCardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 160346782B371B3500FFDB13 /* DeckOfCardsView.swift */; };
+		1603467B2B371F8900FFDB13 /* CardPlaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1603467A2B371F8900FFDB13 /* CardPlaceView.swift */; };
+		1603467D2B371FF500FFDB13 /* CardsContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1603467C2B371FF500FFDB13 /* CardsContainerView.swift */; };
+		160346812B3727D500FFDB13 /* WeathersContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 160346802B3727D500FFDB13 /* WeathersContainerView.swift */; };
+		160346852B37304D00FFDB13 /* Round.swift in Sources */ = {isa = PBXBuildFile; fileRef = 160346842B37304D00FFDB13 /* Round.swift */; };
+		161FFE3F2B449EAA00389523 /* WeatherAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 161FFE3E2B449EAA00389523 /* WeatherAnimationView.swift */; };
+		162947E82B476CEC00195796 /* CardAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 162947E72B476CEC00195796 /* CardAnimationView.swift */; };
+		162E0F422B3DCA6E005039BC /* PlayerClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 162E0F412B3DCA6E005039BC /* PlayerClass.swift */; };
+		162F3E1C2B470DDF00D19AFE /* HornOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 162F3E1B2B470DDF00D19AFE /* HornOverlayView.swift */; };
+		162F3E202B4714EC00D19AFE /* NotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 162F3E1F2B4714EC00D19AFE /* NotificationView.swift */; };
+		162F3E222B47360A00D19AFE /* CoinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 162F3E212B47360A00D19AFE /* CoinView.swift */; };
+		1645C53E2B349CF500E12323 /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1645C53D2B349CF500E12323 /* Card.swift */; };
+		1645C5422B34A02900E12323 /* ClearWeatherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1645C5412B34A02900E12323 /* ClearWeatherView.swift */; };
+		1645C5442B34A03A00E12323 /* FrostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1645C5432B34A03A00E12323 /* FrostView.swift */; };
+		1645C5462B34A04100E12323 /* FogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1645C5452B34A04100E12323 /* FogView.swift */; };
+		1645C5482B34A04C00E12323 /* RainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1645C5472B34A04C00E12323 /* RainView.swift */; };
+		1645C54C2B34A44A00E12323 /* SoundManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1645C54B2B34A44A00E12323 /* SoundManager.swift */; };
+		1645C54E2B34AFA300E12323 /* rain.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 1645C54D2B34AFA300E12323 /* rain.mp4 */; };
+		1678FC782B3EE85A006617CA /* UIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1678FC772B3EE85A006617CA /* UIManager.swift */; };
+		1678FC7A2B3EE9F8006617CA /* GwentModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1678FC792B3EE9F8006617CA /* GwentModel.swift */; };
+		1678FC7C2B3EFDB8006617CA /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1678FC7B2B3EFDB8006617CA /* AppState.swift */; };
+		1678FC7E2B3F0F7A006617CA /* BrandButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1678FC7D2B3F0F7A006617CA /* BrandButton.swift */; };
+		1678FC802B3F1666006617CA /* PlayerStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1678FC7F2B3F1666006617CA /* PlayerStatsView.swift */; };
+		1678FC822B3F19D8006617CA /* BoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1678FC812B3F19D8006617CA /* BoardView.swift */; };
+		1678FC842B3F1C66006617CA /* HandView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1678FC832B3F1C66006617CA /* HandView.swift */; };
+		1687EBDB2B3C6BD10087555D /* IconButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1687EBDA2B3C6BD10087555D /* IconButton.swift */; };
+		169A2CE82B35A5C400FB1583 /* PTSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 169A2CE32B35A5C400FB1583 /* PTSans-Regular.ttf */; };
+		169A2CE92B35A5C400FB1583 /* PTSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 169A2CE42B35A5C400FB1583 /* PTSans-Bold.ttf */; };
+		169A2CEB2B35B45900FB1583 /* TotalScoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 169A2CEA2B35B45900FB1583 /* TotalScoreView.swift */; };
+		169A2CED2B35BFEA00FB1583 /* CardDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 169A2CEC2B35BFEA00FB1583 /* CardDetailsView.swift */; };
+		169A2CF12B35C75B00FB1583 /* abilities.json in Resources */ = {isa = PBXBuildFile; fileRef = 169A2CF02B35C75B00FB1583 /* abilities.json */; };
+		169A2CF32B35C79000FB1583 /* Ability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 169A2CF22B35C79000FB1583 /* Ability.swift */; };
+		169A2CF52B35D98C00FB1583 /* SelectedCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 169A2CF42B35D98C00FB1583 /* SelectedCard.swift */; };
+		169A2CF72B35E4CC00FB1583 /* CombatRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 169A2CF62B35E4CC00FB1583 /* CombatRow.swift */; };
+		169A2CF92B35E61900FB1583 /* CombatRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 169A2CF82B35E61900FB1583 /* CombatRowView.swift */; };
+		169A2CFB2B35FBCC00FB1583 /* StackOfCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = 169A2CFA2B35FBCC00FB1583 /* StackOfCards.swift */; };
+		16B6EE702B335E8400FD2CB2 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16B6EE6F2B335E8400FD2CB2 /* Application.swift */; };
+		16B6EE722B335E8400FD2CB2 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16B6EE712B335E8400FD2CB2 /* ContentView.swift */; };
+		16B6EE742B335E8500FD2CB2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 16B6EE732B335E8500FD2CB2 /* Assets.xcassets */; };
+		16B6EE772B335E8500FD2CB2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 16B6EE762B335E8500FD2CB2 /* Preview Assets.xcassets */; };
+		16B6EE7F2B336D9C00FD2CB2 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16B6EE7E2B336D9C00FD2CB2 /* CardView.swift */; };
+		16B6EE822B337B8700FD2CB2 /* Gwent.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 16B6EE812B337B8700FD2CB2 /* Gwent.ttf */; };
+		16BB29912B34C860007431B7 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16BB29902B34C860007431B7 /* Player.swift */; };
+		16BB29942B34D25E007431B7 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16BB29932B34D25E007431B7 /* Array.swift */; };
+		16BB29962B34DBD4007431B7 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16BB29952B34DBD4007431B7 /* DataManager.swift */; };
+		16BB29982B34DC4F007431B7 /* cards.json in Resources */ = {isa = PBXBuildFile; fileRef = 16BB29972B34DC4F007431B7 /* cards.json */; };
+		16BB299A2B34E338007431B7 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 16BB29992B34E338007431B7 /* Launch Screen.storyboard */; };
+		16D127152B44698300810833 /* HStackOfCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D127142B44698300810833 /* HStackOfCards.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		160346782B371B3500FFDB13 /* DeckOfCardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeckOfCardsView.swift; sourceTree = "<group>"; };
+		1603467A2B371F8900FFDB13 /* CardPlaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardPlaceView.swift; sourceTree = "<group>"; };
+		1603467C2B371FF500FFDB13 /* CardsContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsContainerView.swift; sourceTree = "<group>"; };
+		160346802B3727D500FFDB13 /* WeathersContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeathersContainerView.swift; sourceTree = "<group>"; };
+		160346842B37304D00FFDB13 /* Round.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Round.swift; sourceTree = "<group>"; };
+		161FFE3E2B449EAA00389523 /* WeatherAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherAnimationView.swift; sourceTree = "<group>"; };
+		162947E72B476CEC00195796 /* CardAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardAnimationView.swift; sourceTree = "<group>"; };
+		162E0F412B3DCA6E005039BC /* PlayerClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerClass.swift; sourceTree = "<group>"; };
+		162F3E1B2B470DDF00D19AFE /* HornOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HornOverlayView.swift; sourceTree = "<group>"; };
+		162F3E1F2B4714EC00D19AFE /* NotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationView.swift; sourceTree = "<group>"; };
+		162F3E212B47360A00D19AFE /* CoinView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinView.swift; sourceTree = "<group>"; };
+		1645C53D2B349CF500E12323 /* Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
+		1645C5412B34A02900E12323 /* ClearWeatherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClearWeatherView.swift; sourceTree = "<group>"; };
+		1645C5432B34A03A00E12323 /* FrostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrostView.swift; sourceTree = "<group>"; };
+		1645C5452B34A04100E12323 /* FogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FogView.swift; sourceTree = "<group>"; };
+		1645C5472B34A04C00E12323 /* RainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RainView.swift; sourceTree = "<group>"; };
+		1645C54B2B34A44A00E12323 /* SoundManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundManager.swift; sourceTree = "<group>"; };
+		1645C54D2B34AFA300E12323 /* rain.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = rain.mp4; sourceTree = "<group>"; };
+		1678FC772B3EE85A006617CA /* UIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIManager.swift; sourceTree = "<group>"; };
+		1678FC792B3EE9F8006617CA /* GwentModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GwentModel.swift; sourceTree = "<group>"; };
+		1678FC7B2B3EFDB8006617CA /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		1678FC7D2B3F0F7A006617CA /* BrandButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandButton.swift; sourceTree = "<group>"; };
+		1678FC7F2B3F1666006617CA /* PlayerStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerStatsView.swift; sourceTree = "<group>"; };
+		1678FC812B3F19D8006617CA /* BoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardView.swift; sourceTree = "<group>"; };
+		1678FC832B3F1C66006617CA /* HandView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandView.swift; sourceTree = "<group>"; };
+		1687EBDA2B3C6BD10087555D /* IconButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconButton.swift; sourceTree = "<group>"; };
+		169A2CE32B35A5C400FB1583 /* PTSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PTSans-Regular.ttf"; sourceTree = "<group>"; };
+		169A2CE42B35A5C400FB1583 /* PTSans-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PTSans-Bold.ttf"; sourceTree = "<group>"; };
+		169A2CEA2B35B45900FB1583 /* TotalScoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalScoreView.swift; sourceTree = "<group>"; };
+		169A2CEC2B35BFEA00FB1583 /* CardDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDetailsView.swift; sourceTree = "<group>"; };
+		169A2CF02B35C75B00FB1583 /* abilities.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = abilities.json; sourceTree = "<group>"; };
+		169A2CF22B35C79000FB1583 /* Ability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ability.swift; sourceTree = "<group>"; };
+		169A2CF42B35D98C00FB1583 /* SelectedCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedCard.swift; sourceTree = "<group>"; };
+		169A2CF62B35E4CC00FB1583 /* CombatRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CombatRow.swift; sourceTree = "<group>"; };
+		169A2CF82B35E61900FB1583 /* CombatRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CombatRowView.swift; sourceTree = "<group>"; };
+		169A2CFA2B35FBCC00FB1583 /* StackOfCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackOfCards.swift; sourceTree = "<group>"; };
+		16B6EE6C2B335E8400FD2CB2 /* Gwent.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Gwent.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		16B6EE6F2B335E8400FD2CB2 /* Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
+		16B6EE712B335E8400FD2CB2 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		16B6EE732B335E8500FD2CB2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		16B6EE762B335E8500FD2CB2 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		16B6EE7E2B336D9C00FD2CB2 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
+		16B6EE812B337B8700FD2CB2 /* Gwent.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Gwent.ttf; sourceTree = "<group>"; };
+		16B6EE832B337BCB00FD2CB2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		16BB29902B34C860007431B7 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
+		16BB29932B34D25E007431B7 /* Array.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
+		16BB29952B34DBD4007431B7 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
+		16BB29972B34DC4F007431B7 /* cards.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = cards.json; sourceTree = "<group>"; };
+		16BB29992B34E338007431B7 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		16D127142B44698300810833 /* HStackOfCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HStackOfCards.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		16B6EE692B335E8400FD2CB2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		160346862B37333C00FFDB13 /* Board */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Board;
+			sourceTree = "<group>";
+		};
+		161FFE3D2B449E9D00389523 /* Test */ = {
+			isa = PBXGroup;
+			children = (
+				161FFE3E2B449EAA00389523 /* WeatherAnimationView.swift */,
+			);
+			path = Test;
+			sourceTree = "<group>";
+		};
+		162F3E1D2B4714D200D19AFE /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				162F3E1E2B4714DB00D19AFE /* VIews */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		162F3E1E2B4714DB00D19AFE /* VIews */ = {
+			isa = PBXGroup;
+			children = (
+				162F3E1F2B4714EC00D19AFE /* NotificationView.swift */,
+				162F3E212B47360A00D19AFE /* CoinView.swift */,
+			);
+			path = VIews;
+			sourceTree = "<group>";
+		};
+		1645C53F2B349FDE00E12323 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				1645C53D2B349CF500E12323 /* Card.swift */,
+				16BB29902B34C860007431B7 /* Player.swift */,
+				169A2CF22B35C79000FB1583 /* Ability.swift */,
+				169A2CF42B35D98C00FB1583 /* SelectedCard.swift */,
+				169A2CF62B35E4CC00FB1583 /* CombatRow.swift */,
+				160346842B37304D00FFDB13 /* Round.swift */,
+				162E0F412B3DCA6E005039BC /* PlayerClass.swift */,
+				16D127142B44698300810833 /* HStackOfCards.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		1645C5402B34A01E00E12323 /* Weathers */ = {
+			isa = PBXGroup;
+			children = (
+				1645C5412B34A02900E12323 /* ClearWeatherView.swift */,
+				1645C5432B34A03A00E12323 /* FrostView.swift */,
+				1645C5452B34A04100E12323 /* FogView.swift */,
+				1645C5472B34A04C00E12323 /* RainView.swift */,
+				162F3E1B2B470DDF00D19AFE /* HornOverlayView.swift */,
+			);
+			path = Weathers;
+			sourceTree = "<group>";
+		};
+		1645C5492B34A40D00E12323 /* Other */ = {
+			isa = PBXGroup;
+			children = (
+				16BB29922B34D254007431B7 /* Extensions */,
+				1645C54A2B34A43700E12323 /* Managers */,
+				16B6EE802B337B6A00FD2CB2 /* Fonts */,
+				16BB29992B34E338007431B7 /* Launch Screen.storyboard */,
+			);
+			path = Other;
+			sourceTree = "<group>";
+		};
+		1645C54A2B34A43700E12323 /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				1645C54B2B34A44A00E12323 /* SoundManager.swift */,
+				16BB29952B34DBD4007431B7 /* DataManager.swift */,
+			);
+			path = Managers;
+			sourceTree = "<group>";
+		};
+		1678FC742B3EE830006617CA /* State */ = {
+			isa = PBXGroup;
+			children = (
+				1678FC772B3EE85A006617CA /* UIManager.swift */,
+				1678FC792B3EE9F8006617CA /* GwentModel.swift */,
+				1678FC7B2B3EFDB8006617CA /* AppState.swift */,
+			);
+			path = State;
+			sourceTree = "<group>";
+		};
+		1687EBD92B3C6BC20087555D /* Buttons */ = {
+			isa = PBXGroup;
+			children = (
+				1687EBDA2B3C6BD10087555D /* IconButton.swift */,
+				1678FC7D2B3F0F7A006617CA /* BrandButton.swift */,
+			);
+			path = Buttons;
+			sourceTree = "<group>";
+		};
+		169A2CDF2B35A5C400FB1583 /* PT_Sans */ = {
+			isa = PBXGroup;
+			children = (
+				169A2CE32B35A5C400FB1583 /* PTSans-Regular.ttf */,
+				169A2CE42B35A5C400FB1583 /* PTSans-Bold.ttf */,
+			);
+			path = PT_Sans;
+			sourceTree = "<group>";
+		};
+		16B6EE632B335E8400FD2CB2 = {
+			isa = PBXGroup;
+			children = (
+				16B6EE6E2B335E8400FD2CB2 /* Gwent */,
+				16B6EE6D2B335E8400FD2CB2 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		16B6EE6D2B335E8400FD2CB2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				16B6EE6C2B335E8400FD2CB2 /* Gwent.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		16B6EE6E2B335E8400FD2CB2 /* Gwent */ = {
+			isa = PBXGroup;
+			children = (
+				162F3E1D2B4714D200D19AFE /* Common */,
+				169A2CF02B35C75B00FB1583 /* abilities.json */,
+				1645C54D2B34AFA300E12323 /* rain.mp4 */,
+				16BB29972B34DC4F007431B7 /* cards.json */,
+				16B6EE6F2B335E8400FD2CB2 /* Application.swift */,
+				16B6EE712B335E8400FD2CB2 /* ContentView.swift */,
+				1678FC742B3EE830006617CA /* State */,
+				1645C53F2B349FDE00E12323 /* Model */,
+				16B6EE7D2B336D9200FD2CB2 /* View */,
+				1645C5492B34A40D00E12323 /* Other */,
+				16B6EE732B335E8500FD2CB2 /* Assets.xcassets */,
+				16B6EE832B337BCB00FD2CB2 /* Info.plist */,
+				16B6EE752B335E8500FD2CB2 /* Preview Content */,
+			);
+			path = Gwent;
+			sourceTree = "<group>";
+		};
+		16B6EE752B335E8500FD2CB2 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				16B6EE762B335E8500FD2CB2 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		16B6EE7D2B336D9200FD2CB2 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				161FFE3D2B449E9D00389523 /* Test */,
+				1687EBD92B3C6BC20087555D /* Buttons */,
+				160346862B37333C00FFDB13 /* Board */,
+				1645C5402B34A01E00E12323 /* Weathers */,
+				16B6EE7E2B336D9C00FD2CB2 /* CardView.swift */,
+				169A2CEA2B35B45900FB1583 /* TotalScoreView.swift */,
+				169A2CEC2B35BFEA00FB1583 /* CardDetailsView.swift */,
+				169A2CF82B35E61900FB1583 /* CombatRowView.swift */,
+				169A2CFA2B35FBCC00FB1583 /* StackOfCards.swift */,
+				160346782B371B3500FFDB13 /* DeckOfCardsView.swift */,
+				1603467A2B371F8900FFDB13 /* CardPlaceView.swift */,
+				1603467C2B371FF500FFDB13 /* CardsContainerView.swift */,
+				160346802B3727D500FFDB13 /* WeathersContainerView.swift */,
+				1678FC7F2B3F1666006617CA /* PlayerStatsView.swift */,
+				1678FC812B3F19D8006617CA /* BoardView.swift */,
+				1678FC832B3F1C66006617CA /* HandView.swift */,
+				162947E72B476CEC00195796 /* CardAnimationView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		16B6EE802B337B6A00FD2CB2 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				169A2CDF2B35A5C400FB1583 /* PT_Sans */,
+				16B6EE812B337B8700FD2CB2 /* Gwent.ttf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
+		16BB29922B34D254007431B7 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				16BB29932B34D25E007431B7 /* Array.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		16B6EE6B2B335E8400FD2CB2 /* Gwent */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 16B6EE7A2B335E8500FD2CB2 /* Build configuration list for PBXNativeTarget "Gwent" */;
+			buildPhases = (
+				16B6EE682B335E8400FD2CB2 /* Sources */,
+				16B6EE692B335E8400FD2CB2 /* Frameworks */,
+				16B6EE6A2B335E8400FD2CB2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Gwent;
+			productName = Gwent;
+			productReference = 16B6EE6C2B335E8400FD2CB2 /* Gwent.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		16B6EE642B335E8400FD2CB2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					16B6EE6B2B335E8400FD2CB2 = {
+						CreatedOnToolsVersion = 15.0.1;
+					};
+				};
+			};
+			buildConfigurationList = 16B6EE672B335E8400FD2CB2 /* Build configuration list for PBXProject "Gwent" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 16B6EE632B335E8400FD2CB2;
+			productRefGroup = 16B6EE6D2B335E8400FD2CB2 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				16B6EE6B2B335E8400FD2CB2 /* Gwent */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		16B6EE6A2B335E8400FD2CB2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				16BB299A2B34E338007431B7 /* Launch Screen.storyboard in Resources */,
+				16B6EE772B335E8500FD2CB2 /* Preview Assets.xcassets in Resources */,
+				169A2CF12B35C75B00FB1583 /* abilities.json in Resources */,
+				1645C54E2B34AFA300E12323 /* rain.mp4 in Resources */,
+				16B6EE742B335E8500FD2CB2 /* Assets.xcassets in Resources */,
+				169A2CE92B35A5C400FB1583 /* PTSans-Bold.ttf in Resources */,
+				169A2CE82B35A5C400FB1583 /* PTSans-Regular.ttf in Resources */,
+				16BB29982B34DC4F007431B7 /* cards.json in Resources */,
+				16B6EE822B337B8700FD2CB2 /* Gwent.ttf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		16B6EE682B335E8400FD2CB2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				16BB29912B34C860007431B7 /* Player.swift in Sources */,
+				1678FC782B3EE85A006617CA /* UIManager.swift in Sources */,
+				1645C53E2B349CF500E12323 /* Card.swift in Sources */,
+				1603467D2B371FF500FFDB13 /* CardsContainerView.swift in Sources */,
+				16B6EE722B335E8400FD2CB2 /* ContentView.swift in Sources */,
+				16D127152B44698300810833 /* HStackOfCards.swift in Sources */,
+				169A2CF92B35E61900FB1583 /* CombatRowView.swift in Sources */,
+				169A2CF72B35E4CC00FB1583 /* CombatRow.swift in Sources */,
+				161FFE3F2B449EAA00389523 /* WeatherAnimationView.swift in Sources */,
+				169A2CEB2B35B45900FB1583 /* TotalScoreView.swift in Sources */,
+				16B6EE7F2B336D9C00FD2CB2 /* CardView.swift in Sources */,
+				1645C5422B34A02900E12323 /* ClearWeatherView.swift in Sources */,
+				16B6EE702B335E8400FD2CB2 /* Application.swift in Sources */,
+				162F3E222B47360A00D19AFE /* CoinView.swift in Sources */,
+				1603467B2B371F8900FFDB13 /* CardPlaceView.swift in Sources */,
+				1687EBDB2B3C6BD10087555D /* IconButton.swift in Sources */,
+				169A2CED2B35BFEA00FB1583 /* CardDetailsView.swift in Sources */,
+				160346812B3727D500FFDB13 /* WeathersContainerView.swift in Sources */,
+				1678FC7A2B3EE9F8006617CA /* GwentModel.swift in Sources */,
+				1678FC7E2B3F0F7A006617CA /* BrandButton.swift in Sources */,
+				1645C5462B34A04100E12323 /* FogView.swift in Sources */,
+				1678FC842B3F1C66006617CA /* HandView.swift in Sources */,
+				1645C5482B34A04C00E12323 /* RainView.swift in Sources */,
+				169A2CF32B35C79000FB1583 /* Ability.swift in Sources */,
+				1645C5442B34A03A00E12323 /* FrostView.swift in Sources */,
+				160346792B371B3500FFDB13 /* DeckOfCardsView.swift in Sources */,
+				169A2CFB2B35FBCC00FB1583 /* StackOfCards.swift in Sources */,
+				162E0F422B3DCA6E005039BC /* PlayerClass.swift in Sources */,
+				16BB29942B34D25E007431B7 /* Array.swift in Sources */,
+				162F3E1C2B470DDF00D19AFE /* HornOverlayView.swift in Sources */,
+				162947E82B476CEC00195796 /* CardAnimationView.swift in Sources */,
+				169A2CF52B35D98C00FB1583 /* SelectedCard.swift in Sources */,
+				16BB29962B34DBD4007431B7 /* DataManager.swift in Sources */,
+				1678FC7C2B3EFDB8006617CA /* AppState.swift in Sources */,
+				160346852B37304D00FFDB13 /* Round.swift in Sources */,
+				1678FC822B3F19D8006617CA /* BoardView.swift in Sources */,
+				1645C54C2B34A44A00E12323 /* SoundManager.swift in Sources */,
+				162F3E202B4714EC00D19AFE /* NotificationView.swift in Sources */,
+				1678FC802B3F1666006617CA /* PlayerStatsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		16B6EE782B335E8500FD2CB2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		16B6EE792B335E8500FD2CB2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		16B6EE7B2B335E8500FD2CB2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Gwent/Preview Content\"";
+				DEVELOPMENT_TEAM = Y7LXXV3QH5;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Gwent/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen.storyboard";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.moneyandfame.Gwent;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		16B6EE7C2B335E8500FD2CB2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Gwent/Preview Content\"";
+				DEVELOPMENT_TEAM = Y7LXXV3QH5;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Gwent/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen.storyboard";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.moneyandfame.Gwent;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		16B6EE672B335E8400FD2CB2 /* Build configuration list for PBXProject "Gwent" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				16B6EE782B335E8500FD2CB2 /* Debug */,
+				16B6EE792B335E8500FD2CB2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		16B6EE7A2B335E8500FD2CB2 /* Build configuration list for PBXNativeTarget "Gwent" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				16B6EE7B2B335E8500FD2CB2 /* Debug */,
+				16B6EE7C2B335E8500FD2CB2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 16B6EE642B335E8400FD2CB2 /* Project object */;
+}
