@@ -1,5 +1,5 @@
 //
-//  GwentApp.swift
+//  Application.swift
 //  Gwent
 //
 //  Created by Davyd Darusenkov on 20.12.2023.
