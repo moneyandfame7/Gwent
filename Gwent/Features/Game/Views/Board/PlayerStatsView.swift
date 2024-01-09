@@ -43,7 +43,11 @@ struct PlayerStatsView: View {
                 }
 //                        Spacer()
                 if !player.isBot {
-                    BrandButton("Pass", disabled: vm.ui.isDisabled)
+                    BrandButton("Pass", disabled: vm.ui.isDisabled) {
+                        Task {
+                            await vm.passRound()
+                        }
+                    }
                 }
 //                        .disabled(true)
             }

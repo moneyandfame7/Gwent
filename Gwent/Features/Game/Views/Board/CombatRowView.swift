@@ -140,7 +140,7 @@ struct RowView: View {
             Task {
                 await vm.playCard(
                     vm.ui.selectedCard!,
-                    row: row.type
+                    rowType: row.type
                 )
             }
         }
@@ -194,7 +194,7 @@ struct RowView: View {
 
                 await vm.playCard(
                     vm.ui.selectedCard!,
-                    row: row.type
+                    rowType: row.type
                 )
             }
         }

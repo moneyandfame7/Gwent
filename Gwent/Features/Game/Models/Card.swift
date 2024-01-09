@@ -176,6 +176,11 @@ extension Card {
 }
 
 extension Card {
+    /// enum CardSoundAsset
+    /// weather(Card.Weather)
+    /// unit(Card.Row)
+    /// hero
+    /// ability(Card.Ability)
     static func getSoundAsset(weather: Card.Weather) -> SoundManager.SoundName {
         switch weather {
         case .bitingFrost:

@@ -23,7 +23,7 @@
 		1645C5462B34A04100E12323 /* FogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1645C5452B34A04100E12323 /* FogView.swift */; };
 		1645C5482B34A04C00E12323 /* RainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1645C5472B34A04C00E12323 /* RainView.swift */; };
 		1645C54C2B34A44A00E12323 /* SoundManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1645C54B2B34A44A00E12323 /* SoundManager.swift */; };
-		1678FC782B3EE85A006617CA /* UIViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1678FC772B3EE85A006617CA /* UIViewModel.swift */; };
+		1678FC782B3EE85A006617CA /* GameUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1678FC772B3EE85A006617CA /* GameUI.swift */; };
 		1678FC7A2B3EE9F8006617CA /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1678FC792B3EE9F8006617CA /* GameViewModel.swift */; };
 		1678FC7C2B3EFDB8006617CA /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1678FC7B2B3EFDB8006617CA /* AppState.swift */; };
 		1678FC7E2B3F0F7A006617CA /* BrandButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1678FC7D2B3F0F7A006617CA /* BrandButton.swift */; };
@@ -43,7 +43,7 @@
 		169D49552B499CF100BCDE6B /* GameRootScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 169D49542B499CF100BCDE6B /* GameRootScreen.swift */; };
 		169D49582B499CFD00BCDE6B /* GameScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 169D49572B499CFD00BCDE6B /* GameScreen.swift */; };
 		169D495A2B499D0A00BCDE6B /* GameSettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 169D49592B499D0A00BCDE6B /* GameSettingsScreen.swift */; };
-		169D495C2B499D1D00BCDE6B /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 169D495B2B499D1D00BCDE6B /* SettingsViewModel.swift */; };
+		169D495C2B499D1D00BCDE6B /* GameSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 169D495B2B499D1D00BCDE6B /* GameSettings.swift */; };
 		169D495E2B499F3500BCDE6B /* GameEndScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 169D495D2B499F3500BCDE6B /* GameEndScreen.swift */; };
 		16B6EE702B335E8400FD2CB2 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16B6EE6F2B335E8400FD2CB2 /* Application.swift */; };
 		16B6EE722B335E8400FD2CB2 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16B6EE712B335E8400FD2CB2 /* ContentView.swift */; };
@@ -58,6 +58,9 @@
 		16D127152B44698300810833 /* HStackOfCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D127142B44698300810833 /* HStackOfCards.swift */; };
 		16F3375B2B4A811E00230FC3 /* CardItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16F3375A2B4A811E00230FC3 /* CardItemView.swift */; };
 		16F3375D2B4A86B100230FC3 /* CarouselView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16F3375C2B4A86B100230FC3 /* CarouselView.swift */; };
+		16F98EF82B4C3010004A8413 /* GameFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16F98EF72B4C3010004A8413 /* GameFlow.swift */; };
+		16F98EFA2B4C3022004A8413 /* CardActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16F98EF92B4C3022004A8413 /* CardActions.swift */; };
+		16F98EFC2B4C3A93004A8413 /* GameAI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16F98EFB2B4C3A93004A8413 /* GameAI.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -77,7 +80,7 @@
 		1645C5452B34A04100E12323 /* FogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FogView.swift; sourceTree = "<group>"; };
 		1645C5472B34A04C00E12323 /* RainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RainView.swift; sourceTree = "<group>"; };
 		1645C54B2B34A44A00E12323 /* SoundManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundManager.swift; sourceTree = "<group>"; };
-		1678FC772B3EE85A006617CA /* UIViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewModel.swift; sourceTree = "<group>"; };
+		1678FC772B3EE85A006617CA /* GameUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameUI.swift; sourceTree = "<group>"; };
 		1678FC792B3EE9F8006617CA /* GameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModel.swift; sourceTree = "<group>"; };
 		1678FC7B2B3EFDB8006617CA /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		1678FC7D2B3F0F7A006617CA /* BrandButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandButton.swift; sourceTree = "<group>"; };
@@ -97,7 +100,7 @@
 		169D49542B499CF100BCDE6B /* GameRootScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameRootScreen.swift; sourceTree = "<group>"; };
 		169D49572B499CFD00BCDE6B /* GameScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScreen.swift; sourceTree = "<group>"; };
 		169D49592B499D0A00BCDE6B /* GameSettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSettingsScreen.swift; sourceTree = "<group>"; };
-		169D495B2B499D1D00BCDE6B /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
+		169D495B2B499D1D00BCDE6B /* GameSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSettings.swift; sourceTree = "<group>"; };
 		169D495D2B499F3500BCDE6B /* GameEndScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameEndScreen.swift; sourceTree = "<group>"; };
 		16B6EE6C2B335E8400FD2CB2 /* Gwent.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Gwent.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		16B6EE6F2B335E8400FD2CB2 /* Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
@@ -114,6 +117,9 @@
 		16D127142B44698300810833 /* HStackOfCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HStackOfCards.swift; sourceTree = "<group>"; };
 		16F3375A2B4A811E00230FC3 /* CardItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardItemView.swift; sourceTree = "<group>"; };
 		16F3375C2B4A86B100230FC3 /* CarouselView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarouselView.swift; sourceTree = "<group>"; };
+		16F98EF72B4C3010004A8413 /* GameFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameFlow.swift; sourceTree = "<group>"; };
+		16F98EF92B4C3022004A8413 /* CardActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardActions.swift; sourceTree = "<group>"; };
+		16F98EFB2B4C3A93004A8413 /* GameAI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameAI.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -188,6 +194,7 @@
 		169D493A2B49933400BCDE6B /* Game */ = {
 			isa = PBXGroup;
 			children = (
+				16F98EF62B4C2FEB004A8413 /* Services */,
 				169D49532B499CDC00BCDE6B /* Screens */,
 				169D493B2B49933900BCDE6B /* Models */,
 				169D493C2B49933E00BCDE6B /* Views */,
@@ -205,7 +212,6 @@
 				1645C53D2B349CF500E12323 /* Card.swift */,
 				169A2CF62B35E4CC00FB1583 /* Row.swift */,
 				169D49432B49964700BCDE6B /* Notification.swift */,
-				160E7B252B4AB8EE008F3A21 /* Carousel.swift */,
 				160E7B282B4AD245008F3A21 /* CardContainer.swift */,
 			);
 			path = Models;
@@ -225,9 +231,7 @@
 		169D493D2B49934300BCDE6B /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
-				1678FC772B3EE85A006617CA /* UIViewModel.swift */,
 				1678FC792B3EE9F8006617CA /* GameViewModel.swift */,
-				169D495B2B499D1D00BCDE6B /* SettingsViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -322,6 +326,7 @@
 		169D49502B499A7A00BCDE6B /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				160E7B252B4AB8EE008F3A21 /* Carousel.swift */,
 				169D49512B499A9100BCDE6B /* AppScreen.swift */,
 			);
 			path = Models;
@@ -392,6 +397,18 @@
 				16BB29932B34D25E007431B7 /* Array.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		16F98EF62B4C2FEB004A8413 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				169D495B2B499D1D00BCDE6B /* GameSettings.swift */,
+				1678FC772B3EE85A006617CA /* GameUI.swift */,
+				16F98EF72B4C3010004A8413 /* GameFlow.swift */,
+				16F98EF92B4C3022004A8413 /* CardActions.swift */,
+				16F98EFB2B4C3A93004A8413 /* GameAI.swift */,
+			);
+			path = Services;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -470,7 +487,7 @@
 			files = (
 				160E7B292B4AD245008F3A21 /* CardContainer.swift in Sources */,
 				169D494D2B499A2E00BCDE6B /* DeckScreen.swift in Sources */,
-				1678FC782B3EE85A006617CA /* UIViewModel.swift in Sources */,
+				1678FC782B3EE85A006617CA /* GameUI.swift in Sources */,
 				1645C53E2B349CF500E12323 /* Card.swift in Sources */,
 				169D49552B499CF100BCDE6B /* GameRootScreen.swift in Sources */,
 				1603467D2B371FF500FFDB13 /* CardsContainerView.swift in Sources */,
@@ -487,7 +504,7 @@
 				1645C5422B34A02900E12323 /* ClearWeatherView.swift in Sources */,
 				16B6EE702B335E8400FD2CB2 /* Application.swift in Sources */,
 				169D495E2B499F3500BCDE6B /* GameEndScreen.swift in Sources */,
-				169D495C2B499D1D00BCDE6B /* SettingsViewModel.swift in Sources */,
+				169D495C2B499D1D00BCDE6B /* GameSettings.swift in Sources */,
 				162F3E222B47360A00D19AFE /* CoinView.swift in Sources */,
 				1687EBDB2B3C6BD10087555D /* IconButton.swift in Sources */,
 				169A2CED2B35BFEA00FB1583 /* CardDetailsView.swift in Sources */,
@@ -495,6 +512,7 @@
 				1678FC7E2B3F0F7A006617CA /* BrandButton.swift in Sources */,
 				1645C5462B34A04100E12323 /* FogView.swift in Sources */,
 				1645C5482B34A04C00E12323 /* RainView.swift in Sources */,
+				16F98EFC2B4C3A93004A8413 /* GameAI.swift in Sources */,
 				169A2CF32B35C79000FB1583 /* Ability.swift in Sources */,
 				1645C5442B34A03A00E12323 /* FrostView.swift in Sources */,
 				169D49582B499CFD00BCDE6B /* GameScreen.swift in Sources */,
@@ -505,8 +523,10 @@
 				16BB29942B34D25E007431B7 /* Array.swift in Sources */,
 				162F3E1C2B470DDF00D19AFE /* HornOverlayView.swift in Sources */,
 				162947E82B476CEC00195796 /* CardAnimationView.swift in Sources */,
+				16F98EF82B4C3010004A8413 /* GameFlow.swift in Sources */,
 				16BB29962B34DBD4007431B7 /* DataManager.swift in Sources */,
 				1678FC7C2B3EFDB8006617CA /* AppState.swift in Sources */,
+				16F98EFA2B4C3022004A8413 /* CardActions.swift in Sources */,
 				160346852B37304D00FFDB13 /* Round.swift in Sources */,
 				1645C54C2B34A44A00E12323 /* SoundManager.swift in Sources */,
 				162F3E202B4714EC00D19AFE /* NotificationView.swift in Sources */,

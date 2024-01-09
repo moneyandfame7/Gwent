@@ -12,15 +12,14 @@ struct ContentView: View {
 
     var body: some View {
         VStack {
-            GameRootScreen(deck: .sample1)
-//            switch appState.screen {
-//            case .deck:
-//                DeckScreen()
-//            case let .game(deck):
-//                /// зробити два ЛВЛа ( картошка, і AI ), передавати сюди
-//                GameRootScreen(deck: deck)
-//                    .transition(.move(edge: .bottom))
-//            }
+            switch appState.screen {
+            case .deck:
+                DeckScreen()
+            case let .game(deck):
+                // game(deck, difficulty)
+                GameRootScreen(deck: deck)
+                    .transition(.move(edge: .bottom))
+            }
         }
     }
 }

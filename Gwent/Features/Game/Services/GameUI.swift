@@ -1,5 +1,5 @@
 //
-//  UIViewModel.swift
+//  GameUI.swift
 //  Gwent
 //
 //  Created by Davyd Darusenkov on 29.12.2023.
@@ -15,8 +15,7 @@ struct Namespaces {
 }
 
 @Observable
-final class UIViewModel {
-    static let preview = UIViewModel()
+final class GameUI {
     let namespaces = Namespaces()
 
     var notification: Notification?
@@ -40,7 +39,6 @@ final class UIViewModel {
         return card.id == selectedCard?.id
     }
 
-//    @MainActor
     func showNotification(_ notification: Notification) async -> Void {
         withAnimation {
             self.notification = notification

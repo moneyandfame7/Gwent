@@ -1,5 +1,5 @@
 //
-//  SettingsViewModel.swift
+//  GameSettings.swift
 //  Gwent
 //
 //  Created by Davyd Darusenkov on 06.01.2024.
@@ -9,7 +9,7 @@ import Observation
 import SwiftUI
 
 @Observable
-class SettingsViewModel {
+class GameSettings {
     private(set) var isPresented = false
     private(set) var isSoundMuted = false
     private(set) var isMusicMuted = false
@@ -21,6 +21,6 @@ class SettingsViewModel {
     }
 }
 
-extension SettingsViewModel {
-    static let preview = SettingsViewModel()
+extension GameSettings {
+    static let preview = GameSettings()
 }

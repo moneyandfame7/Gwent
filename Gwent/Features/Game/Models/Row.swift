@@ -62,6 +62,9 @@ struct Row {
 
     func calculateCardPower(_ card: Card) -> Int {
         var total: Int = card.power ?? 0
+        if card.type == .hero {
+            return total
+        }
 
         if hasWeather {
             total = 1
@@ -86,24 +89,7 @@ struct Row {
 
     private mutating func calculateCardsPower() {
         for i in cards.indices {
-            if cards[i].type != .hero {
-                var total: Int = cards[i].power ?? 0
-
-                if hasWeather {
-                    total = 1
-                }
-
-                let bond = cards.filter { $0.name == cards[i].name }
-
-                if bond.count > 1 {
-                    total *= bond.count
-                }
-
-                // -1 --> тому що абілка додає до всіх карток ОКРІМ себе
-                total += max(0, moraleBoost + (cards[i].ability == .moraleBoost ? -1 : 0))
-
-                cards[i].editedPower = total
-            }
+            cards[i].editedPower = calculateCardPower(cards[i])
         }
     }
 }

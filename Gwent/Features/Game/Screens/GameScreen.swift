@@ -157,6 +157,11 @@ struct GameScreen: View {
                 ClearWeatherView()
             }
             Button("CLICK_ME") {
+//                vm.en
+                Task {
+                    await vm.endGame()
+                }
+
 //                for i in 6 ... 7 {
 //                    Task {
                 ////                        withAnimation(.smooth(duration: 0.3))

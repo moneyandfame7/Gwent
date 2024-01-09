@@ -65,7 +65,7 @@
     "type": "unit",
     "ability": "muster",
     "leader_ability": null,
-    "combat_row": "close",
+    "combat_row": "siege",
     "faction": "monsters",
     "weather": null
   },

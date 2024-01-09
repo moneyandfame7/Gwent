@@ -149,6 +149,10 @@ struct DeckScreen: View {
 //            statsView
         }
         .overlay {
+            Button("Go to play mock") {
+                appState.navigate(to: .game(Deck.sample1))
+            }
+            .buttonStyle(.borderedProminent)
 //            if isLeaderCarouselPresented {
 //                CarouselView(title: "Choose a leader", isPresented: $isLeaderCarouselPresented)
 //            }

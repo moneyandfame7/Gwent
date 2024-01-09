@@ -69,13 +69,15 @@ class Player {
 
         case let .row(rowType):
             guard let rowIndex = rows.firstIndex(where: { $0.type == rowType }) else {
+                print("Row index hui pizda")
                 fatalError()
             }
             guard let index = rows[rowIndex].cards.firstIndex(where: { $0.id == card.id }) else {
+                print("Card container hui pizda")
                 fatalError()
             }
 
-            return rows[rowIndex].cards.append(card)
+                return rows[rowIndex].addCard(card)
 
         default:
             fatalError("Unsupported container in Player")
@@ -133,7 +135,7 @@ class Player {
             return
         }
 
-        print("Pick from deck")
+//        print("Pick from deck")
         deck.cards.remove(at: index)
         if randomHandPosition {
             let position = hand.randomIndex()
@@ -144,14 +146,11 @@ class Player {
     }
 
     func moveCard(_ card: Card, rowType: Card.Row?, from container: CardContainer = .hand) {
-        let destination: Card.Row? = rowType ?? card.combatRow == .agile ? .close : card.combatRow
-        print("DESTINATION : \(destination)")
+        let destination: Card.Row? = rowType ?? (card.combatRow == .agile ? .close : card.combatRow)
 
         guard let rowIndex = rows.firstIndex(where: { $0.type == destination }) else {
-            print("Combat row \(destination) not FOUND")
             return
         }
-        let randomPositionAtRow = rows[rowIndex].cards.randomIndex()
 
         withAnimation(.smooth(duration: 0.3)) {
             removeFromContainer(card: card, container)
