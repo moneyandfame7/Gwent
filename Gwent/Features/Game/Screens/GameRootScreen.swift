@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct GameRootScreen: View {
+    @Environment(AppState.self) private var appState
     let deck: Deck
 
     @State private var vm: GameViewModel
@@ -32,9 +33,17 @@ struct GameRootScreen: View {
                     .transition(.move(edge: .bottom))
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .environment(vm)
+        .overlay {
+            Button("GO deck") {
+                appState.navigate(to: .deck)
+            }
+            .buttonStyle(.borderedProminent)
+        }
     }
 }
+
 #Preview {
     GameRootScreen(deck: Deck.sample1)
 

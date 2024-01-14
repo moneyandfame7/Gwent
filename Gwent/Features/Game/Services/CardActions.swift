@@ -22,7 +22,7 @@ final class CardActions {
     // TODO: CardContainer -> Card.Container ???
     @MainActor
     func play(_ card: Card, rowType: Card.Row? = nil, from container: CardContainer) async {
-        // ability - if game.currentPlayer.isAI - game.ai.ability(...)
+        // ability - if game.currentPlayer.isAI - game.ai.ability(...) - обирати там де найбільша сила рядку
         let destination = rowType ?? (card.combatRow == .agile ? .close : card.combatRow)
 
         guard let currentPlayer = game.currentPlayer else {
@@ -34,11 +34,14 @@ final class CardActions {
         if card.weather != nil {
             await playWeather(card, from: container)
 
+        } else if card.type == .special && card.ability == .scorch {
+            await playScorch(card)
+
         } else if card.ability != nil, let destination {
             return await playWithAbility(card, rowType: destination, from: container)
 
         } else if let destination {
-            currentPlayer.moveCard(card, rowType: destination, from: container)
+            await currentPlayer.moveCard(card, from: container, to: .row(destination))
         }
 
         try? await Task.sleep(for: .seconds(1))
@@ -51,18 +54,24 @@ final class CardActions {
         }
 
         if card.ability == .commanderHorn && card.type == .special {
-            Task(priority: .background) { // TODO: remove to CardView
-                SoundManager.shared.playSound2(sound: .horn)
-            }
-
             currentPlayer.applyHorn(card, row: rowType)
+
+            try? await Task.sleep(for: .seconds(0.3))
+            await SoundManager.shared.playSound(sound: .horn)
+
         } else if card.ability == .spy {
             await applySpy(card, rowType: rowType, from: container)
 
         } else {
-            currentPlayer.moveCard(card, rowType: rowType, from: container)
+            await currentPlayer.moveCard(card, from: container, to: .row(rowType))
+
             if card.ability == .tightBond {
+                await SoundManager.shared.playSound(sound: .tightBond)
+
                 currentPlayer.applyTightBond(card, rowType: rowType)
+
+            } else if card.ability == .muster {
+                await currentPlayer.applyMuster(card, rowType: rowType)
 
             } else if card.ability == .moraleBoost {
                 currentPlayer.applyMoraleBoost(card, rowType: rowType)
@@ -80,6 +89,90 @@ final class CardActions {
 // MARK: Abilities
 
 private extension CardActions {
+    @MainActor
+    func playScorch(_ card: Card, rowType: Card.Row? = nil) async {
+        guard let currentPlayer = game.currentPlayer else {
+            return
+        }
+        guard let opponent = game.opponent else {
+            return
+        }
+
+        let maxPower = (currentPlayer.rows + opponent.rows)
+            .flatMap { $0.cards.compactMap { $0.editedPower ?? $0.power } }
+            .max()
+
+        guard let maxPower, maxPower > 0 else {
+            return
+        }
+
+        withAnimation(.smooth(duration: 0.7)) {
+            currentPlayer.removeFromContainer(card: card, .hand)
+            currentPlayer.addToContainer(card: card, .discard)
+        }
+
+        print("Max: \(maxPower)")
+
+        /// Find targets
+        var opponentScorch: [Card.Row: [Card]] = [:]
+        for row in opponent.rows {
+            let shouldScorch = row.cards.filter { $0.type != .hero && $0.availablePower == maxPower }
+            if shouldScorch.isEmpty {
+                continue
+            }
+            opponentScorch[row.type] = shouldScorch
+        }
+        var currentPlayerScorch: [Card.Row: [Card]] = [:]
+        for row in currentPlayer.rows {
+            let shouldScorch = row.cards.filter { $0.type != .hero && $0.availablePower == maxPower }
+            if shouldScorch.isEmpty {
+                continue
+            }
+            currentPlayerScorch[row.type] = shouldScorch
+        }
+
+        /// Animate scorch for target cards
+        await withTaskGroup(of: Void.self) { group in
+            group.addTask {
+                await SoundManager.shared.playSound(sound: .scorch)
+            }
+
+            for (row, cards) in opponentScorch {
+                for card in cards {
+                    group.addTask {
+                        await opponent.animateInContainer(card: card, as: .scorch, .row(row))
+                    }
+                }
+            }
+
+            for (row, cards) in currentPlayerScorch {
+                for card in cards {
+                    group.addTask {
+                        await currentPlayer.animateInContainer(card: card, as: .scorch, .row(row))
+                    }
+                }
+            }
+        }
+
+        /// Delete target cards
+        for (row, cards) in opponentScorch {
+            for card in cards {
+                withAnimation(.smooth(duration: 0.3)) {
+                    opponent.removeFromContainer(card: card, .row(row))
+                    opponent.addToContainer(card: card, .discard)
+                }
+            }
+        }
+        for (row, cards) in currentPlayerScorch {
+            for card in cards {
+                withAnimation(.smooth(duration: 0.3)) {
+                    currentPlayer.removeFromContainer(card: card, .row(row))
+                    currentPlayer.addToContainer(card: card, .discard)
+                }
+            }
+        }
+    }
+
     func applySpy(_ card: Card, rowType: Card.Row, from container: CardContainer) async {
         guard let currentPlayer = game.currentPlayer, let opponent = game.opponent else {
             return
@@ -96,7 +189,14 @@ private extension CardActions {
             opponent.rows[rowIndex].addCard(card)
         }
 
-        try? await Task.sleep(for: .seconds(0.5))
+        await withTaskGroup(of: Void.self) { group in
+            group.addTask {
+                await SoundManager.shared.playSound(sound: .spy)
+            }
+            group.addTask {
+                await opponent.animateInContainer(card: card, .row(rowType))
+            }
+        }
 
         for _ in 0 ..< 2 {
             try? await Task.sleep(for: .seconds(0.1))
@@ -106,8 +206,6 @@ private extension CardActions {
         }
     }
 
-    func applyScorch(_ card: Card, rowType: Card.Row) async {}
-
     func applyMedic(_ card: Card) async {
         guard let currentPlayer = game.currentPlayer else {
             return
@@ -115,7 +213,7 @@ private extension CardActions {
         let units = currentPlayer.discard.filter { $0.type != .special && $0.type != .hero }
 
         if units.count <= 0 {
-            return
+            return await game.endTurn()
         }
 
         if currentPlayer.isBot {
@@ -144,36 +242,38 @@ private extension CardActions {
         guard let currentPlayer = game.currentPlayer else {
             return
         }
+        /// Move card to top of the discard.
         currentPlayer.removeFromContainer(card: resurrectionCard, .discard)
         currentPlayer.addToContainer(card: resurrectionCard, .discard)
 
         let topDiscardIndex = currentPlayer.discard.endIndex - 1
 
-        currentPlayer.discard[topDiscardIndex].animateAs = .medic
+        await withTaskGroup(of: Void.self) { group in
+            group.addTask {
+                await SoundManager.shared.playSound(sound: .medic)
+            }
 
-        try? await Task.sleep(for: .seconds(2))
+            group.addTask {
+                currentPlayer.discard[topDiscardIndex].animateAs = .medic
 
-        currentPlayer.discard[topDiscardIndex].animateAs = nil
+                try? await Task.sleep(for: .seconds(2))
 
-        try? await Task.sleep(for: .seconds(0.2))
+                currentPlayer.discard[topDiscardIndex].animateAs = nil
+
+                try? await Task.sleep(for: .seconds(0.2))
+            }
+        }
 
         /// тут взагалі можливо треба давати можливість юзеру обирати рядок, але це пізніше можливо..
         /// ( якщо так, то треба selectedCard перероблювати і то піздець )
         await play(resurrectionCard, from: .discard)
     }
-
-    /// Це можна перенести до самого Player класу, бо не потрібно нічого від Game знати
-    func applyMuster(_ card: Card, rowType: Card.Row) async {}
 }
 
 // MARK: Weathers
 
 private extension CardActions {
     func playWeather(_ card: Card, from container: CardContainer) async {
-        guard let currentPlayer = game.currentPlayer else {
-            return
-        }
-
         // MARK: - Clear Weather
 
         if card.weather == .clearWeather {
@@ -221,8 +321,8 @@ private extension CardActions {
 
         let soundName = Card.getSoundAsset(weather: weather)
 
-        Task(priority: .background) {
-            SoundManager.shared.playSound(sound: soundName)
+        Task {
+            await SoundManager.shared.playSound(sound: soundName)
         }
         var copy = card
         copy.holderIsBot = currentPlayer.isBot
@@ -239,6 +339,77 @@ private extension CardActions {
         // TODO: in GameViewModel add these function?
         let holder = removed.holderIsBot! ? game.bot : game.player
 
-        holder.moveToDiscard(removed)
+        holder.addToContainer(card: removed, .discard)
     }
+}
+
+// MARK: Leader abilities
+
+private extension CardActions {
+    func playLeader(_ card: Card) async {
+        switch card.leaderAbility {
+        case .look3Cards:
+            await applyLook3Cards(card)
+        case .pickTorrentialRain:
+            await applyPickTorrentialRain(card)
+        case .drawFromDiscardPile:
+            await applyDrawFromOpponentDiscard(card)
+        case .cancelLeaderAbility:
+            await applyDisableLeaderAbility(card)
+
+        /// Handle on startGame
+        case .doubleSpyPower:
+            await applyDoubleSpyPower(card)
+        case .restoreFromDiscardPile:
+            await applyDrawFromDiscard(card)
+        case .doubleCloseCombatPower:
+            await applyDoubleClosePower(card)
+        case .discardAndDrawCards:
+            await applyDiscardAndDraw(card)
+
+        case .pickWeatherAndPlay:
+            await applyPickWeatherAndPlay(card)
+        case .pickFogAndPlay:
+            await applyPickFogAndPlay(card)
+        case .clearWeather:
+            await applyClearWeather(card)
+        case .doubleSiegePower:
+            await applyDoubleSiegePower(card)
+        case .destroyStrongestSiege:
+            await applyDestroyStrongestSiege(card)
+        /// Handle on startGame
+        case .drawExtraCard:
+            await applyDrawExtraCard(card)
+        case .pickFrostAndPlay:
+            await applyPickFrostAndPlay(card)
+        case .destroyStrongestClose:
+            await applyDestroyStrongestClose(card)
+        case .doubleRangedPower:
+            await applyDoubleRangedPower(card)
+
+        default:
+            return
+        }
+    }
+
+    func applyLook3Cards(_ card: Card) async {}
+    func applyPickTorrentialRain(_ card: Card) async {}
+    func applyDrawFromOpponentDiscard(_ card: Card) async {}
+    func applyDisableLeaderAbility(_ card: Card) async {}
+
+    func applyDoubleSpyPower(_ card: Card) async {}
+    func applyDrawFromDiscard(_ card: Card) async {}
+    func applyDoubleClosePower(_ card: Card) async {}
+    func applyDiscardAndDraw(_ card: Card) async {}
+
+    func applyPickWeatherAndPlay(_ card: Card) async {}
+    func applyPickFogAndPlay(_ card: Card) async {}
+    func applyClearWeather(_ card: Card) async {}
+    func applyDoubleSiegePower(_ card: Card) async {}
+    func applyDestroyStrongestSiege(_ card: Card) async {}
+
+    func applyDrawExtraCard(_ card: Card) async {}
+    func applyPickFrostAndPlay(_ card: Card) async {}
+    func applyDestroyStrongestClose(_ card: Card) async {}
+    func applyDoubleRangedPower(_ card: Card) async {}
 }

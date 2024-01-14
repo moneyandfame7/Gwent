@@ -12,6 +12,7 @@ struct DeckScreen: View {
     @State private var vm = DeckViewModel()
     @State private var isLeaderCarouselPresented = false
 
+    @State private var isAlertVisible = false
     private var filteredCards: [Card] {
         Card.all2.filter { $0.faction.rawValue == vm.activeTab.rawValue && $0.type != .leader }
     }
@@ -149,15 +150,26 @@ struct DeckScreen: View {
 //            statsView
         }
         .overlay {
-            Button("Go to play mock") {
-                appState.navigate(to: .game(Deck.sample1))
-            }
-            .buttonStyle(.borderedProminent)
-//            if isLeaderCarouselPresented {
-//                CarouselView(title: "Choose a leader", isPresented: $isLeaderCarouselPresented)
-//            }
-        }
+            VStack {
+                Button("Go to play mock") {
+                    appState.navigate(to: .game(Deck.sample1))
+                }
+                .buttonStyle(.borderedProminent)
 
+                Button("Toggle alert") {
+                    withAnimation {
+                        isAlertVisible.toggle()
+                    }
+                }
+            }
+        }
+        .overlay {
+            if isAlertVisible {
+                CarouselView(
+                    carousel: .constant(Carousel.preview)
+                )
+            }
+        }
         .sheet(isPresented: $vm.isDeckPresented) {
             VStack {
                 HStack {

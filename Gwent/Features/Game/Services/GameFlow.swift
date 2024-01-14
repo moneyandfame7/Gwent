@@ -20,23 +20,34 @@ final class GameFlow {
         print("‼️ GameFlow - Deinit -")
     }
 
-    func startGame() async {
-        await flipCoin()
+    func startGame() {
+        defineFirstPlayer { player, notification in
+            self.game.firstPlayer = player
+            self.game.currentPlayer = player
 
-        for _ in 0 ..< 10 {
-            try? await Task.sleep(for: .seconds(0.1))
-            withAnimation(.smooth(duration: 0.3)) {
-                game.player.drawCard()
-                game.bot.drawCard()
+            Task { @MainActor in
+                try? await Task.sleep(for: .seconds(0.5))
+
+                await self.game.ui.showNotification(notification)
+
+                for _ in 0 ..< 10 {
+                    try? await Task.sleep(for: .seconds(0.1))
+                    withAnimation(.smooth(duration: 0.3)) {
+                        self.game.player.drawCard()
+                        self.game.bot.drawCard()
+                    }
+                }
+
+                try? await Task.sleep(for: .seconds(0.4))
+
+                await self.startRound()
             }
         }
-
-        await startRound()
     }
 
     func restartGame() {}
 
-    func endGame() async {
+    func endGame() {
         withAnimation {
             game.isGameOver = true
         }
@@ -51,6 +62,26 @@ final class GameFlow {
 
         /// Ось це ЛОГІЧНО неправильно, але вирішити не можу поки що.
         game.currentPlayer = (game.roundCount % 2 == 0) ? game.firstPlayer : game.opponent
+
+        // MARK: #FactionAbility - Northern Realms
+
+        if let prevRound = game.roundHistory.last, let prevRoundWinner = prevRound.winner {
+            if prevRoundWinner.deck.faction == .northern {
+                prevRoundWinner.drawCard()
+                await game.ui.showNotification(.northern)
+            }
+        }
+
+        // MARK: #FactionAbility - Monsters
+
+        if game.player.deck.faction == .monsters && game.player.rows.contains(where: { $0.cards.count > 0 }) {
+            print("Monsters Ability Triggered PLAYER")
+            await game.ui.showNotification(.monsters)
+        }
+        if game.bot.deck.faction == .monsters && game.bot.rows.contains(where: { $0.cards.count > 0 }) {
+            print("Monsters Ability Trigered BOT")
+            await game.ui.showNotification(.monsters)
+        }
 
         if !game.player.canPlay {
             game.player.passRound()
@@ -76,6 +107,9 @@ final class GameFlow {
     private func endRound() async {
         await declareResult()
 
+        try? await Task.sleep(for: .seconds(0.5))
+
+        // TODO: переробити, тут треба віддавати в відбій до певного юзера картки
         game.weathers.removeAll()
 
         if game.player.health == 0 || game.bot.health == 0 {
@@ -91,6 +125,13 @@ final class GameFlow {
         await endTurn()
     }
 
+    private func clearBoard() {
+        /// Clear weathers
+        /// If monsters - random card
+        /// Clear rows
+        ///
+    }
+
     private func startTurn() async {
         guard let opponent = game.opponent else {
             return
@@ -99,15 +140,19 @@ final class GameFlow {
         if !opponent.isPassed {
             game.currentPlayer = opponent
 
-            try? await Task.sleep(for: .seconds(0.5)) // ?????
+//            try? await Task.sleep(for: .seconds(0.5)) // ?????
 
             await game.ui.showNotification(game.currentPlayer!.isBot ? .turnOp : .turnMe)
         }
 
-        if let currentPlayer = game.currentPlayer, currentPlayer.isBot {
-            /// game.ai.startTurn()
+        guard let currentPlayer = game.currentPlayer else {
+            return
+        }
+
+        if currentPlayer.isBot {
             await game.aiStrategy.startTurn()
-//            await startBotTurn()
+        } else {
+            game.ui.isDisabled = false
         }
     }
 
@@ -132,6 +177,7 @@ final class GameFlow {
 }
 
 // MARK: Helpers
+
 private extension GameFlow {
     func flipCoin() async {
         game.firstPlayer = Int.random(in: 0 ... 1) == 0 ? game.player : game.bot
@@ -140,17 +186,91 @@ private extension GameFlow {
     }
 
     func declareResult() async {
+        // MARK: #FactionAbility - Nilfgaardian Empire
+
+        let isMeNilf = game.player.deck.faction == .nilfgaard
+        let isBotNilf = game.bot.deck.faction == .nilfgaard
+
+        var isBotWin = false
+        var isMeWin = false
+
         if game.leadingPlayer == nil {
-            await game.ui.showNotification(.roundDraw)
+            if isMeNilf && isBotNilf {
+                await game.ui.showNotification(.roundDraw)
+            } else if isMeNilf {
+                await game.ui.showNotification(.nilfgaard)
+                await game.ui.showNotification(.roundWin)
+                isMeWin = true
+            } else {
+                await game.ui.showNotification(.nilfgaard)
+                await game.ui.showNotification(.roundLose)
+                isBotWin = true
+            }
+
         } else if game.leadingPlayer!.isBot {
             await game.ui.showNotification(.roundLose)
+            isBotWin = true
         } else {
             await game.ui.showNotification(.roundWin)
+            isMeWin = true
         }
 
-        game.player.endRound(isWin: game.leadingPlayer != nil && !game.leadingPlayer!.isBot)
-        game.bot.endRound(isWin: game.leadingPlayer != nil && game.leadingPlayer!.isBot)
+        game.roundHistory.append(
+            Round(
+                winner: isMeWin ? game.player : isBotWin ? game.bot : nil,
+                scoreMe: game.player.totalScore,
+                scoreAI: game.bot.totalScore
+            )
+        )
+
+        game.player.endRound(isWin: isMeWin)
+        game.bot.endRound(isWin: isBotWin)
     }
 
     func reset() {}
+
+    func initGame() {
+        if game.player.leader.leaderAbility == .cancelLeaderAbility {
+            game.bot.isLeaderAvailable = false
+        }
+        if game.bot.leader.leaderAbility == .cancelLeaderAbility {
+            game.player.isLeaderAvailable = false
+        }
+
+        func initLeader(player: Player) {
+            if player.leader.leaderAbility == .doubleSpyPower {
+                game.isDoubleSpyPower = true
+            }
+        }
+    }
+
+    // MARK: #FactionAbility - Scoiatael
+
+    func defineFirstPlayer(completion: @escaping (Player, Notification) -> Void) {
+        let isBotScoiatael = game.bot.deck.faction == .scoiatael
+        let isPlayerScoiatael = game.player.deck.faction == .scoiatael
+
+        let firstPlayer = Int.random(in: 0 ... 1) == 0 ? game.bot : game.player
+
+        if isBotScoiatael && isPlayerScoiatael || (!isBotScoiatael && !isPlayerScoiatael) {
+            completion(firstPlayer, firstPlayer.isBot ? .coinOp : .coinMe)
+
+        } else if isBotScoiatael {
+            completion(firstPlayer, firstPlayer.isBot ? .scoiatael : .coinMe)
+
+        } else if isPlayerScoiatael {
+            game.ui.showAlert(
+                AlertItem(
+                    title: "Would you like to go first",
+                    description: "The Scoia'tael faction perk allows you to decide who will get to go first",
+                    cancelButton: ("Let Opponent Start", {
+                        completion(self.game.bot, .coinOp)
+                    }),
+                    confirmButton: ("Go First", {
+                        completion(self.game.player, .coinMe)
+                    })
+                )
+            )
+        }
+    }
 }

@@ -27,16 +27,26 @@ struct CustomShape: Shape {
 
 struct Rect {
     var height: CGFloat
+
     var width: CGFloat {
         height / aspectRatio
+    }
+
+    var compactHeight: CGFloat {
+        height - (height / partOfDescriptionSize)
     }
 
     var radius: CGFloat
 
     // хз неправильно напевно але впадлу перероблювати
     private let aspectRatio: CGFloat = 1.94666666667
+    /// Яку частину картки займає тільки опис ( нижня частина картки )
+    private let partOfDescriptionSize = 3.875
+
     private let partOfPower = 3.3
+
     let powerOffset: CGFloat
+
     let powerHeight: CGFloat
 
     init(size: Size) {
@@ -85,9 +95,8 @@ struct CardView: View {
     var isCompact: Bool
     var rect: Rect
     var isPlayable: Bool
-    // TODO: animations if abilityActivated
+
     /// Яку частину картки займає тільки опис ( нижня частина картки )
-    private let partOfDescriptionSize = 3.875
 
     init(card: Card, isCompact: Bool = true, isPlayable: Bool = false, size: Rect.Size = .extraSmall) {
         self.card = card
@@ -103,7 +112,6 @@ struct CardView: View {
         self.isPlayable = isPlayable
     }
 
-    @State private var animation = true
     var body: some View {
 //        HStack {
 //            GeometryReader { geometry in
@@ -118,47 +126,38 @@ struct CardView: View {
                         CardPowerOverlay(power: power, editedPower: editedPower, rect: rect)
                     }
                 }
-
-//                .clipShape(CustomShape(height: isCompact ? height : 0))
+//                .clipShape(CustomShape(height: isCompact ? rect.height : 0))
         }
+
         .frame(
-            height: isCompact ? rect.height - (rect.height / partOfDescriptionSize) : rect.height,
+            height: isCompact ? rect.compactHeight : rect.height,
             alignment: .top
         )
         .clipShape(.rect(cornerRadius: rect.radius))
         .overlay {
-            if (isPlayable && card.ability != .tightBond) || card.shouldAnimate || card.animateAs != nil {
+            if card.shouldAnimate || card.animateAs != nil {
                 CardAnimationView(card: card)
+                    .clipShape(.rect(cornerRadius: rect.radius))
             }
-        }
-        .onChange(of: card.animateAs) {
-            print("CHANGED #\(card.id)", card.animateAs)
         }
         .task {
             guard isPlayable else {
                 return
             }
 
-            Task(priority: .background) {
-                if card.type == .hero {
-                    SoundManager.shared.playSound2(sound: .hero)
-                } else if card.combatRow == .close {
-                    SoundManager.shared.playSound2(sound: .close)
-                } else if card.combatRow == .ranged {
-                    SoundManager.shared.playSound2(sound: .ranged)
-                } else if card.combatRow == .siege {
-                    SoundManager.shared.playSound2(sound: .siege)
-                }
-            }
-            try? await Task.sleep(for: .seconds(1.2))
-
-            withAnimation(.smooth(duration: 1.5)) {
-                animation = false
-            }
+//            if card.type == .hero {
+//                await SoundManager.shared.playSound(sound: .hero)
+//
+//            } else if card.combatRow == .close {
+//                await SoundManager.shared.playSound(sound: .close)
+//
+//            } else if card.combatRow == .ranged {
+//                await SoundManager.shared.playSound(sound: .ranged)
+//
+//            } else if card.combatRow == .siege {
+//                await SoundManager.shared.playSound(sound: .siege)
+//            }
         }
-//        .shadow(radius: 3, y: 5)
-//        .scaleEffect(isCompact ? 0.8 : 1)
-//        }
     }
 }
 
@@ -223,7 +222,7 @@ private struct CardPowerOverlay: View {
 
 #Preview {
     VStack {
-        CardView(card: .all2[47], isCompact: true, size: .extraSmall)
+        CardView(card: .all2[47], isCompact: true, size: .large)
 //            .scaleEffect(5)
     }
     .frame(maxWidth: .infinity, maxHeight: 500)

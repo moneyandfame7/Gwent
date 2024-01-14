@@ -91,6 +91,7 @@ struct PlayerStatsView: View {
 #Preview {
     VStack {
         PlayerStatsView(player: GameViewModel.preview.bot)
+            
         Spacer()
         PlayerStatsView(player: GameViewModel.preview.player)
     }

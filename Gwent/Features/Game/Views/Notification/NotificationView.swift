@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 // TODO: краще переробити на dictionary
 
 struct NotificationView: View {
@@ -20,6 +19,7 @@ struct NotificationView: View {
     private var isCoin: Bool {
         variant == .coinMe || variant == .coinOp
     }
+
     var body: some View {
         HStack {
             Spacer().frame(width: 150)
@@ -43,9 +43,11 @@ struct NotificationView: View {
                     .frame(height: 140)
             }
         }
-        .task(priority: .background) {
+        .task {
             if let sound = asset.sound {
-                SoundManager.shared.playSound2(sound: sound)
+                await SoundManager.shared.playSound(sound: sound)
+
+                print("AFTER SOUND")
             }
         }
     }
@@ -54,10 +56,5 @@ struct NotificationView: View {
 #Preview {
     VStack {
         NotificationView(variant: .coinMe)
-//        NotificationView(variant: .roundWin)
-//        NotificationView(variant: .roundLose)
-//        NotificationView(variant: .roundStarted)
-//        NotificationView(variant: .turnMe)
-//        NotificationView(variant: .turnOp)
     }
 }

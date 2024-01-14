@@ -9,13 +9,7 @@ import SwiftUI
 
 struct FogView: View {
     var body: some View {
-        ZStack {
-            Image(.Weathers.overlayFog).resizable()
-
-        }
-        .onAppear {
-            SoundManager.shared.playSound(sound: .fog)
-        }
+        Image(.Weathers.overlayFog).resizable()
     }
 }
 

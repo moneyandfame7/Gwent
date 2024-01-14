@@ -9,18 +9,7 @@ import SwiftUI
 
 struct FrostView: View {
     var body: some View {
-        ZStack {
-            Image(.Weathers.overlayFrost).resizable()
-//            Image(.Weathers.frost2).resizable().opacity(0.5)
-//                .zIndex(1)
-//
-//            Image(.Weathers.frost1)
-//                .resizable()
-//                .opacity(0.6)
-        }
-        .onAppear {
-//            SoundManager.shared.playSound(sound: .frost)
-        }
+        Image(.Weathers.overlayFrost).resizable()
     }
 }
 

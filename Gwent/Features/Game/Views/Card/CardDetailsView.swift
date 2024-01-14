@@ -10,10 +10,15 @@ import SwiftUI
 /// якщо це картка лідера, то не буде isReadyForUse, треба натиснути на саму картку і вона заюзається, потім повернеться
 /// на місце.
 struct CardDetailsView: View {
-//    @State private var isReadyForUse = false
+    @Environment(GameViewModel.self) private var vm
+
     @Binding var selectedCard: Card?
 
     @State private var isReadyToUse = false
+
+    private var shouldPlayInstantly: Bool {
+        selectedCard?.type == .leader || selectedCard?.ability == .scorch
+    }
 
     var body: some View {
         VStack(spacing: 25) {
@@ -24,9 +29,14 @@ struct CardDetailsView: View {
             )
             .overlay(alignment: .topTrailing) {
                 HStack {
-                    if selectedCard?.type == .leader {
-                        IconButton(systemName: "gamecontroller.fill") {}
-                            .scaleEffect(isReadyToUse ? 0 : 1)
+                    if shouldPlayInstantly {
+                        IconButton(systemName: "gamecontroller.fill") {
+                            print("Should Play")
+                            Task {
+                                await vm.playCard(selectedCard!)
+                            }
+                        }
+                        .scaleEffect(isReadyToUse ? 0 : 1)
                     }
 
                     IconButton(systemName: "xmark") {
@@ -38,8 +48,10 @@ struct CardDetailsView: View {
             }
 
             .onTapGesture {
-                if selectedCard?.type == .leader {
-                    print("should play instantly")
+                if shouldPlayInstantly {
+                    Task {
+                        await vm.playCard(selectedCard!)
+                    }
                 } else {
                     withAnimation(.smooth(duration: 0.3)) {
                         isReadyToUse.toggle()
@@ -82,6 +94,7 @@ struct CardDetailsView: View {
 
 #Preview {
     CardDetailsView(
-        selectedCard: .constant(.all2[3])
+        selectedCard: .constant(.all2[152])
     )
+    .environment(GameViewModel.preview)
 }

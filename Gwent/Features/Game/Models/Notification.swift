@@ -23,7 +23,7 @@ enum Notification: String {
 struct NotificationAssets {
     let image: ImageResource
     let title: String
-    var sound: SoundManager.SoundName2?
+    var sound: SoundManager.SoundName?
 }
 extension NotificationAssets {
     static let all: [Notification: NotificationAssets] = [
@@ -60,8 +60,8 @@ extension NotificationAssets {
             title: "Opponent used the Scoia'tael faction perk to go first."
         ),
         .nilfgaard: NotificationAssets(
-            image: .Images.Notifications.scoiatael,
-            title: "Nilfgaard faction ability triggered - win draw round"
+            image: .Images.Notifications.nilfgaard,
+            title: "Nilfgaard faction ability triggered - Nilfgaard wins the tie."
         ),
         .roundDraw: NotificationAssets(
             image: .Images.Notifications.roundDraw,

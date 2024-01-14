@@ -40,10 +40,9 @@ struct RowView: View {
         }
 
         let sameRow = selectedCard.combatRow == row.type
+        let isSpy = selectedCard.ability == .spy
 
         if !isMe {
-            let isSpy = selectedCard.ability == .spy
-
             return isSpy && sameRow
         }
 
@@ -51,7 +50,7 @@ struct RowView: View {
             .type == .close || row.type == .ranged)
 
         let isDecoy = selectedCard.ability == .decoy && row.cards.count > 0
-        return isDecoy || sameRow || isAgileRow
+        return !isSpy && (isDecoy || sameRow || isAgileRow)
     }
 
     /// Is special row selectable
@@ -82,7 +81,7 @@ struct RowView: View {
                 .frame(width: 25, height: 25)
         )
         .frame(width: 25, height: 25)
-        .position(x: 80, y: 37.5)
+//        .position(x: 80, y: 37.5)
     }
 
     var highlightView: some View {
@@ -104,7 +103,7 @@ struct RowView: View {
         if isSelectable {
             highlightView
         }
-        if let horn = row.horn {
+        if row.horn != nil {
             HornOverlayView()
                 .offset(y: 3)
         }
@@ -124,6 +123,9 @@ struct RowView: View {
                         in: vm.ui.namespace(isMe: isMe)
                     )
             }
+            totalScoreView
+                .zIndex(1)
+                .offset(x: 42)
         }
         .frame(width: 80)
         .frame(maxHeight: .infinity)
@@ -149,6 +151,7 @@ struct RowView: View {
     var body: some View {
         HStack(spacing: 0) {
             hornView
+                .zIndex(1)
             ZStack {
                 if let imageName {
                     Image(imageName)
@@ -163,19 +166,14 @@ struct RowView: View {
                     CardView(card: card, isPlayable: true, size: .extraSmall)
                         .matchedGeometryEffect(id: card.id, in: vm.ui.namespace(isMe: isMe))
                 }
-//                StackOfCards(
-//                    cards: combatRow.cards,
-//                    size: .extraSmall,
-//                    isMe: isMe
-//
-//                )
             }
         }
         .background(Image(.Assets.texture).resizable())
         .border(.gray, width: 1)
-        .overlay {
-            totalScoreView
-        }
+//        .overlay(alignment: .leading) {
+//            totalScoreView
+//                .offset(x: 70)
+//        }
         .overlay {
             overlayView
         }

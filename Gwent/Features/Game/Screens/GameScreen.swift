@@ -12,9 +12,13 @@ struct GameScreen: View {
     private var handView: some View {
         HStackOfCards(vm.player.hand, id: \.id) { card in
             CardView(card: card, isCompact: true, size: .extraSmall)
+
+                // MARK: таким чином картка анімується при переміщенні, але при роздачі з колоди в руку - ні
+
                 .matchedGeometryEffect(id:
                     card.id,
-                    in: vm.ui.namespaces.playerCards)
+                    in: card.ability == .spy ? vm.ui.namespaces.botCards : vm.ui.namespaces
+                        .playerCards)
                 .offset(y: vm.ui.isCardSelected(card) ? -25 : 0)
                 .onTapGesture {
                     if vm.ui.isDisabled {
@@ -52,7 +56,7 @@ struct GameScreen: View {
                             )
                     }
                 }
-                .offset(y: -25)
+                .offset(y: -30)
             }
 
             // MARK: - board start-
@@ -65,6 +69,11 @@ struct GameScreen: View {
             .frame(maxHeight: .infinity)
             /// Additional row
             HStack {
+                TotalScoreView(
+                    player: vm.bot,
+                    leadingPlayer: vm.leadingPlayer,
+                    currentPlayer: vm.currentPlayer
+                )
                 let isSelectable = vm.ui.selectedCard?.weather != nil
                 ZStack {
                     Image(systemName: "cloud.sun.rain.circle.fill")
@@ -94,24 +103,29 @@ struct GameScreen: View {
                         await vm.playCard(vm.ui.selectedCard!)
                     }
                 }
-            }
-            .zIndex(1)
-            .frame(maxWidth: .infinity, maxHeight: 75)
-            .background(Image(.Assets.texture).resizable())
-            .overlay(alignment: .leading) {
-                TotalScoreView(
-                    player: vm.bot,
-                    leadingPlayer: vm.leadingPlayer,
-                    currentPlayer: vm.currentPlayer
-                )
-            }
-            .overlay(alignment: .trailing) {
                 TotalScoreView(
                     player: vm.player,
                     leadingPlayer: vm.leadingPlayer,
                     currentPlayer: vm.currentPlayer
                 )
             }
+            .zIndex(1)
+            .frame(maxWidth: .infinity, maxHeight: 75)
+            .background(Image(.Assets.texture).resizable())
+//            .overlay(alignment: .leading) {
+//                TotalScoreView(
+//                    player: vm.bot,
+//                    leadingPlayer: vm.leadingPlayer,
+//                    currentPlayer: vm.currentPlayer
+//                )
+//            }
+//            .overlay(alignment: .trailing) {
+//                TotalScoreView(
+//                    player: vm.player,
+//                    leadingPlayer: vm.leadingPlayer,
+//                    currentPlayer: vm.currentPlayer
+//                )
+//            }
 
             VStack(spacing: 0) {
                 ForEach(vm.player.rows, id: \.type) { row in
@@ -135,7 +149,9 @@ struct GameScreen: View {
         }
         .ignoresSafeArea()
         .task {
-            await vm.startGame()
+            try? await Task.sleep(for: .seconds(2))
+
+            vm.startGame()
         }
         .overlay {
             if let notification = vm.ui.notification {
@@ -156,25 +172,11 @@ struct GameScreen: View {
             if hasClearWeather {
                 ClearWeatherView()
             }
-            Button("CLICK_ME") {
-//                vm.en
-                Task {
-                    await vm.endGame()
-                }
-
-//                for i in 6 ... 7 {
-//                    Task {
-                ////                        withAnimation(.smooth(duration: 0.3))
-//                        vm.player.hand[i].animateAs = .scorch
-//                        try? await Task.sleep(for: .seconds(2))
-                ////
-                ////                        withAnimation(.smooth(duration: 0.3)) {
-//                        vm.player.hand[i].animateAs = nil
-                ////                        }
-//                    }
-//                }
+        }
+        .overlay {
+            if vm.ui.alert != nil {
+                AlertView(alert: $vm.ui.alert)
             }
-            .buttonStyle(.borderedProminent)
         }
     }
 }

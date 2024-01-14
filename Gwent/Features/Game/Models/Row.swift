@@ -72,7 +72,7 @@ struct Row {
 
         let bond = cards.filter { $0.name == card.name }
 
-        if bond.count > 1 {
+        if card.ability == .tightBond && bond.count > 1 {
             total *= bond.count
         }
 

@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 struct Card: Identifiable, Hashable {
     let id: Int
     let name: String
@@ -27,6 +26,14 @@ struct Card: Identifiable, Hashable {
     var shouldAnimate = false
 
     var animateAs: Card.Animation?
+
+    var availablePower: Int? {
+        return editedPower ?? power
+    }
+
+    var availableRow: Card.Row? {
+        combatRow == .agile ? .close : combatRow
+    }
 
     // animation/animateAs: "Scorch" || "Medic" ??? + подумати про tightBond ( можна просто юзати shouldAnimate для тригера анімації )
 }
@@ -71,13 +78,10 @@ extension Card {
     static func weathers() -> [Self] {
         return Card.all2.filter { $0.weather != nil }
     }
-    
+
     mutating func changePower(_ value: Int) {
         editedPower = value
     }
-    
-
-
 }
 
 extension Card {
@@ -136,28 +140,27 @@ extension Card {
     }
 
     enum Faction: String, CaseIterable, Codable {
-        case northern, nilfgaard , monsters, scoiatael, neutral
-        
+        case northern, nilfgaard, monsters, scoiatael, neutral
+
         var formatted: String {
             switch self {
-                case .nilfgaard:
-                    "Nilfgaard"
-                case .northern:
-                    "Northern Realms"
-                case .monsters:
-                    "Monsters"
-                case .scoiatael:
-                    "Scoiatael"
-                case .neutral:
-                    "Neutral"
+            case .nilfgaard:
+                "Nilfgaard"
+            case .northern:
+                "Northern Realms"
+            case .monsters:
+                "Monsters"
+            case .scoiatael:
+                "Scoiatael"
+            case .neutral:
+                "Neutral"
             }
         }
-        
+
 //        var shieldImage: String {
 //            switch
 //        }
     }
-   
 
     enum Weather: String, CaseIterable, Codable {
         case bitingFrost = "biting_frost"
@@ -188,7 +191,7 @@ extension Card {
         case .impenetrableFog:
             return .fog
         case .torrentialRain:
-            return .rain1
+            return .rain
         case .clearWeather:
             return .clearWeather
         }

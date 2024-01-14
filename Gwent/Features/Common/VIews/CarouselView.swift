@@ -45,7 +45,7 @@ struct CarouselView: View {
                             .resizable()
                             .scaledToFit()
                             .frame(height: 450)
-                            .clipShape(RoundedRectangle(cornerRadius: 25.0))
+                            .clipShape(RoundedRectangle(cornerRadius: 22.0))
                             .overlay {
                                 RoundedRectangle(cornerRadius: 25)
                                     .stroke(.brandYellow.gradient, lineWidth: isActive ? 4 : 0)
@@ -71,20 +71,22 @@ struct CarouselView: View {
             }
             .scrollPosition(id: $currentScrollID)
             .scrollTargetBehavior(.viewAligned)
-            .safeAreaPadding(.horizontal, 65)
-            .frame(height: 460)
+//            .safeAreaPadding(.horizontal, 65)
+            .frame(height: 490)
 
             if let ability = currentCard.ability, let abilityInfo = Ability.all[ability.rawValue] {
                 VStack {
                     HStack {
                         Text(abilityInfo.name.capitalized)
-                            .font(.title2)
-                            .fontWeight(.heavy)
+//                            .font(.title2)
+//                            .fontWeight(.heavy)
+                            .font(.custom("Gwent", size: 30))
                     }
                     //                        Spacer()
                     Text(abilityInfo.description)
                         .multilineTextAlignment(.center)
                         .padding(.vertical)
+                        .font(.custom("PTSans-Regular", size: 16))
                 }
                 .overlay(alignment: .topLeading) {
                     Image("Abilities/\(ability.rawValue)")
@@ -92,7 +94,8 @@ struct CarouselView: View {
                         .scaledToFit()
                         .frame(width: 30, height: 30)
                 }
-                .padding(8)
+                .padding(.top)
+                .padding(.horizontal)
                 .frame(minHeight: 100)
                 .frame(maxWidth: .infinity)
                 .background(.black.opacity(0.8))
@@ -100,11 +103,15 @@ struct CarouselView: View {
             }
             Spacer()
         }
+        .onChange(of: currentScrollID) {
+            Task(priority: .background) {
+                await SoundManager.shared.playSound(sound: .drawCard)
+            }
+        }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-        .background(Color.gray.opacity(0.4).onTapGesture {
-            print("CLick background")
-        })
+        .background(.ultraThinMaterial)
+
         .ignoresSafeArea()
     }
 }

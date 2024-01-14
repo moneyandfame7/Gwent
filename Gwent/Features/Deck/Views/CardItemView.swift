@@ -8,7 +8,6 @@
 import SwiftUI
 
 /// Card item using in the grid in Deck customization.
-///
 struct CardItemView: View {
     let card: Card
     let action: () -> Void

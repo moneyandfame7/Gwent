@@ -19,18 +19,20 @@ final class GameViewModel {
 
     /// Game Services
     var ui = GameUI()
-    
+
     let settings = GameSettings()
 
     private var flow: GameFlow!
-    
+
     private var cardActions: CardActions!
-    
+
     private(set) var aiStrategy: GameAI!
+
+    let eventManager = GameEventManager()
 
     /// Players, based on game progress.
     var firstPlayer: Player?
-    
+
     var currentPlayer: Player? {
         didSet {
             if let currentPlayer {
@@ -71,10 +73,14 @@ final class GameViewModel {
     }
 
     var isGameOver = false
-    
+
+    /// Observation ignore ????
+    var isDoubleSpyPower = false
+
     var roundCount = 0
-    
-    var roundHistory: [Any] = []
+
+    /// Observation ignore ????
+    var roundHistory: [Round] = []
 
     init(deck: Deck) {
         player = Player(deck: deck)
@@ -84,6 +90,10 @@ final class GameViewModel {
         flow = GameFlow(game: self)
         aiStrategy = GameAI(game: self)
 
+        /// Init players:
+        ///         1: Init leaders abilities
+        ///         2. Init faction abilities
+
         print("✅ GameViewModel - Init -")
     }
 
@@ -91,16 +101,21 @@ final class GameViewModel {
         print("‼️ GameViewModel - Deinit -")
     }
 
-    func startGame() async {
-        await flow.startGame()
+    func startGame() {
+        eventManager.attach(for: .turnStart) {
+            print("Game handler trigger")
+            try? await Task.sleep(for: .seconds(2))
+            return nil
+        }
+        flow.startGame()
     }
 
     func restartGame() {
         flow.restartGame()
     }
 
-    func endGame() async {
-        await flow.endGame()
+    func endGame() {
+        flow.endGame()
     }
 
     func playCard(_ card: Card, rowType: Card.Row? = nil, from container: CardContainer = .hand) async {
@@ -113,5 +128,9 @@ final class GameViewModel {
 
     func passRound() async {
         await flow.passRound()
+    }
+
+    func getOpponent(for player: Player) -> Player {
+        return player.isBot ? self.player : bot
     }
 }

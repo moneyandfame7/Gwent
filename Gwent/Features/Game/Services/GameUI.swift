@@ -18,9 +18,26 @@ struct Namespaces {
 final class GameUI {
     let namespaces = Namespaces()
 
-    var notification: Notification?
+    var notification: Notification? {
+        didSet {
+            isDisabled = notification != nil
+        }
+    }
 
-    var carousel: Carousel?
+    var carousel: Carousel? {
+        didSet {
+            isDisabled = notification != nil
+        }
+    }
+
+    var alert: AlertItem? {
+        didSet {
+            isAlertPresented = alert != nil
+            isDisabled = alert != nil
+        }
+    }
+
+    var isAlertPresented: Bool = false
 
     var selectedCard: Card?
     var selectedRow: Row?
@@ -52,11 +69,15 @@ final class GameUI {
             self.notification = nil
         }
 
-        try? await Task.sleep(for: .seconds(0.8))
+        try? await Task.sleep(for: .seconds(2))
     }
 
     func showCarousel(_ carousel: Carousel) {
         self.carousel = carousel
+    }
+
+    func showAlert(_ alert: AlertItem) {
+        self.alert = alert
     }
 
     func namespace(for player: Player) -> Namespace.ID {
@@ -66,4 +87,10 @@ final class GameUI {
     func namespace(isMe: Bool) -> Namespace.ID {
         return isMe ? namespaces.playerCards : namespaces.botCards
     }
+
+//    func theMegaPuperTestFunction() {
+//        let group = DispatchGroup()
+//        var value: Int?
+//
+//    }
 }

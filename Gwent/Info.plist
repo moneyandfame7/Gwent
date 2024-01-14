@@ -5,6 +5,8 @@
 	<key>UIAppFonts</key>
 	<array>
 		<string>Gwent.ttf</string>
+		<string>PTSans-Bold.ttf</string>
+		<string>PTSans-Regular.ttf</string>
 	</array>
 </dict>
 </plist>

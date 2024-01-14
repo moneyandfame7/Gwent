@@ -9,8 +9,7 @@ import SwiftUI
 
 struct CardAnimationView: View {
 //    @Environment(GameViewModel.self) private var vm
-    
-    
+
     let card: Card
     @State private var scale: CGFloat = 0
     @State private var opacity: CGFloat = 0
@@ -29,12 +28,12 @@ struct CardAnimationView: View {
     private var hero: some View {
         Image(.Images.CardEffects.hero)
             .resizable()
-            .scaledToFill()
-        Image(.Images.CardEffects.hero)
-            .resizable()
-            .scaledToFill()
-            .offset(y: -20)
-            .rotationEffect(.degrees(90))
+//            .scaledToFill()
+//        Image(.Images.CardEffects.hero)
+//            .resizable()
+        ////            .scaledToFill()
+//            .offset(y: -20)
+//            .rotationEffect(.degrees(90))
     }
 
     private func animate() async {
@@ -74,10 +73,18 @@ struct CardAnimationView: View {
             } else if card.animateAs == .scorch {
                 Image(imageName)
                     .resizable()
-
                     .scaledToFill()
                     .opacity(opacity)
-
+            } else if card.ability == .spy {
+                ZStack {
+                    hero
+                        .opacity(opacity)
+                    Image(imageName)
+                        .resizable()
+                        .scaledToFit()
+                        .opacity(opacity)
+                        .scaleEffect(scale)
+                }
             } else if card.animateAs == .medic {
                 ZStack {
 //                            CardView(card: card)
@@ -133,5 +140,10 @@ struct CardAnimationView: View {
 }
 
 #Preview {
-    CardAnimationView(card: Card.all2[154])
+    VStack {
+        CardView(card: Card.all2[156], isPlayable: true)
+            .overlay {
+                CardAnimationView(card: Card.all2[156])
+            }
+    }
 }

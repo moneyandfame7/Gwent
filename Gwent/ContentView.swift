@@ -18,9 +18,13 @@ struct ContentView: View {
             case let .game(deck):
                 // game(deck, difficulty)
                 GameRootScreen(deck: deck)
-                    .transition(.move(edge: .bottom))
+//                        .transition(.push(from: .bottom))
+                    .transition(.offset(y: 100))
+//                    .transition(.move(edge: .bottom))
             }
         }
+        .background(.black)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 

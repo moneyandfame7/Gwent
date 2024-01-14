@@ -8,7 +8,7 @@
 import Foundation
 
 struct Round {
-    let winner: Player
+    let winner: Player?
     let scoreMe: Int
     let scoreAI: Int
 }

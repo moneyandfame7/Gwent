@@ -21,9 +21,6 @@ struct ClearWeatherView: View {
             .opacity(opacity)
             .onAppear {
                 Task {
-        //                    try await Task.sleep(for: .seconds(0.3))
-//                    SoundManager.shared.playSound(sound: .clearWeather)
-
                     withAnimation(.linear(duration: 0.3)) {
                         opacity = 1
                     }
