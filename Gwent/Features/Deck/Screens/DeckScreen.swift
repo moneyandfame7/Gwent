@@ -122,7 +122,7 @@ struct DeckScreen: View {
                         .opacity(0.6)
                     Spacer()
                     Button("Leader") {
-                        isLeaderCarouselPresented.toggle()
+                        vm.showLeaderPicker()
                     }
                     .buttonStyle(.bordered)
                     .tint(.brandYellowSecondary)
@@ -155,18 +155,12 @@ struct DeckScreen: View {
                     appState.navigate(to: .game(Deck.sample1))
                 }
                 .buttonStyle(.borderedProminent)
-
-                Button("Toggle alert") {
-                    withAnimation {
-                        isAlertVisible.toggle()
-                    }
-                }
             }
         }
         .overlay {
-            if isAlertVisible {
+            if vm.leaderCarousel != nil {
                 CarouselView(
-                    carousel: .constant(Carousel.preview)
+                    carousel: $vm.leaderCarousel
                 )
             }
         }

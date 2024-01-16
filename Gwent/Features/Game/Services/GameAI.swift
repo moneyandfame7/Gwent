@@ -5,7 +5,7 @@
 //  Created by Davyd Darusenkov on 08.01.2024.
 //
 
-import Foundation
+import SwiftUI
 
 // enum Difficulty {
 //    case potato, normal
@@ -24,9 +24,10 @@ final class GameAI {
 
     init(game: GameViewModel) {
         self.game = game
-        
+
         print("✅ GameAI - Init -")
     }
+
     deinit {
         print("‼️ GameAI - Deinit -")
     }
@@ -40,7 +41,7 @@ final class GameAI {
         if let leadingPlayer = game.leadingPlayer, leadingPlayer.isBot && opponent.isPassed {
             return await game.passRound()
         }
-        
+
         /// На кількість карток перевіряємо в turnEnd і roundStart,  тому force unwrap ????
         let card = game.bot.hand.randomElement()!
 
@@ -50,5 +51,25 @@ final class GameAI {
         } else {
             await game.playCard(card)
         }
+    }
+
+    /// In GameAI difficulty робити це не рандомно
+    func initialRedraw() {
+        for _ in 0 ..< 2 {
+            withAnimation(.smooth(duration: 0.3)) {
+                let randomToRemove = game.bot.hand.randomElement()!
+                game.bot.removeFromContainer(card: randomToRemove, .hand)
+                game.bot.addToContainer(card: randomToRemove, .deck)
+
+                let randomToRetrieve = game.bot.deck.cards.randomElement()!
+                game.bot.removeFromContainer(card: randomToRetrieve, .deck)
+                game.bot.addToContainer(card: randomToRetrieve, .hand)
+            }
+        }
+    }
+
+    /// Обирає найсильнішу картку з наданих карток і повертає її
+    func medic(cards: [Card]) {
+//        cards.max(by: {$0.availablePower < $1.availablePower})
     }
 }

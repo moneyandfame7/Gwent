@@ -68,6 +68,8 @@ final class DeckViewModel {
         .scoiatael: Card.all2.filter { ($0.faction == .scoiatael || $0.faction == .neutral) && $0.type != .leader },
     ]
 
+    var leaderCarousel: Carousel?
+
     var currentLeaders: [Card] {
         Card.all2.filter { $0.type == .leader && $0.faction == currentDeck.faction }
     }
@@ -114,6 +116,20 @@ final class DeckViewModel {
 
         collectionsByFaction[activeTab]!.remove(at: index)
         decksByFaction[activeTab]!.cards.append(card)
+    }
+
+    func showLeaderPicker() {
+        let leaders = Card.all2.filter { $0.type == .leader && $0.faction == currentDeck.faction }
+
+        leaderCarousel = Carousel(
+            cards: leaders,
+            count: 1,
+            title: "Pick your leader.",
+            cancelButton: "Hide",
+            onSelect: { card in
+                print("Leader is picked: ", card.name)
+            }
+        )
     }
 
     var deck: Deck = .sample1

@@ -74,9 +74,6 @@ final class GameViewModel {
 
     var isGameOver = false
 
-    /// Observation ignore ????
-    var isDoubleSpyPower = false
-
     var roundCount = 0
 
     /// Observation ignore ????

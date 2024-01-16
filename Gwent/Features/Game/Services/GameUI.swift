@@ -40,9 +40,12 @@ final class GameUI {
     var isAlertPresented: Bool = false
 
     var selectedCard: Card?
+    
     var selectedRow: Row?
 
     var isDisabled = false
+    
+    var isPassButtonDisabled = true
 
     func selectCard(_ card: Card) -> Void {
         if selectedCard?.id == card.id {
@@ -56,6 +59,7 @@ final class GameUI {
         return card.id == selectedCard?.id
     }
 
+    @MainActor
     func showNotification(_ notification: Notification) async -> Void {
         withAnimation {
             self.notification = notification
@@ -69,7 +73,7 @@ final class GameUI {
             self.notification = nil
         }
 
-        try? await Task.sleep(for: .seconds(2))
+        try? await Task.sleep(for: .seconds(1))
     }
 
     func showCarousel(_ carousel: Carousel) {

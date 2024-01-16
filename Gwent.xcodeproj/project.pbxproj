@@ -60,6 +60,9 @@
 		16BB29962B34DBD4007431B7 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16BB29952B34DBD4007431B7 /* DataManager.swift */; };
 		16BB29982B34DC4F007431B7 /* cards.json in Resources */ = {isa = PBXBuildFile; fileRef = 16BB29972B34DC4F007431B7 /* cards.json */; };
 		16BB299A2B34E338007431B7 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 16BB29992B34E338007431B7 /* Launch Screen.storyboard */; };
+		16CC25A62B554B4A00CE2AC9 /* BrandButton2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16CC25A52B554B4A00CE2AC9 /* BrandButton2.swift */; };
+		16CC25A82B556B8100CE2AC9 /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16CC25A72B556B8100CE2AC9 /* View.swift */; };
+		16CC25AA2B557C8E00CE2AC9 /* leader-abilities.json in Resources */ = {isa = PBXBuildFile; fileRef = 16CC25A92B557C8E00CE2AC9 /* leader-abilities.json */; };
 		16D127152B44698300810833 /* HStackOfCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D127142B44698300810833 /* HStackOfCards.swift */; };
 		16D840C82B4E954A00F7BFAF /* PTSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 16D840C62B4E954A00F7BFAF /* PTSans-Regular.ttf */; };
 		16D840C92B4E954A00F7BFAF /* PTSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 16D840C72B4E954A00F7BFAF /* PTSans-Bold.ttf */; };
@@ -127,6 +130,9 @@
 		16BB29952B34DBD4007431B7 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		16BB29972B34DC4F007431B7 /* cards.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = cards.json; sourceTree = "<group>"; };
 		16BB29992B34E338007431B7 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		16CC25A52B554B4A00CE2AC9 /* BrandButton2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandButton2.swift; sourceTree = "<group>"; };
+		16CC25A72B556B8100CE2AC9 /* View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = View.swift; sourceTree = "<group>"; };
+		16CC25A92B557C8E00CE2AC9 /* leader-abilities.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "leader-abilities.json"; sourceTree = "<group>"; };
 		16D127142B44698300810833 /* HStackOfCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HStackOfCards.swift; sourceTree = "<group>"; };
 		16D840C62B4E954A00F7BFAF /* PTSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PTSans-Regular.ttf"; sourceTree = "<group>"; };
 		16D840C72B4E954A00F7BFAF /* PTSans-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PTSans-Bold.ttf"; sourceTree = "<group>"; };
@@ -195,6 +201,7 @@
 			children = (
 				1687EBDA2B3C6BD10087555D /* IconButton.swift */,
 				1678FC7D2B3F0F7A006617CA /* BrandButton.swift */,
+				16CC25A52B554B4A00CE2AC9 /* BrandButton2.swift */,
 			);
 			path = Buttons;
 			sourceTree = "<group>";
@@ -386,6 +393,7 @@
 				169D49392B49932A00BCDE6B /* Features */,
 				1645C5492B34A40D00E12323 /* Other */,
 				16BB29972B34DC4F007431B7 /* cards.json */,
+				16CC25A92B557C8E00CE2AC9 /* leader-abilities.json */,
 				169A2CF02B35C75B00FB1583 /* abilities.json */,
 				16B6EE732B335E8500FD2CB2 /* Assets.xcassets */,
 				16B6EE832B337BCB00FD2CB2 /* Info.plist */,
@@ -417,6 +425,7 @@
 			children = (
 				16BB29932B34D25E007431B7 /* Array.swift */,
 				16D840CA2B4E9DE800F7BFAF /* Color.swift */,
+				16CC25A72B556B8100CE2AC9 /* View.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -496,6 +505,7 @@
 				16BB299A2B34E338007431B7 /* Launch Screen.storyboard in Resources */,
 				16B6EE772B335E8500FD2CB2 /* Preview Assets.xcassets in Resources */,
 				169A2CF12B35C75B00FB1583 /* abilities.json in Resources */,
+				16CC25AA2B557C8E00CE2AC9 /* leader-abilities.json in Resources */,
 				16D840C82B4E954A00F7BFAF /* PTSans-Regular.ttf in Resources */,
 				16B6EE742B335E8500FD2CB2 /* Assets.xcassets in Resources */,
 				16BB29982B34DC4F007431B7 /* cards.json in Resources */,
@@ -525,6 +535,7 @@
 				169A2CF92B35E61900FB1583 /* CombatRowView.swift in Sources */,
 				169A2CF72B35E4CC00FB1583 /* Row.swift in Sources */,
 				169A2CEB2B35B45900FB1583 /* TotalScoreView.swift in Sources */,
+				16CC25A62B554B4A00CE2AC9 /* BrandButton2.swift in Sources */,
 				16B6EE7F2B336D9C00FD2CB2 /* CardView.swift in Sources */,
 				169D494A2B4999F000BCDE6B /* Deck.swift in Sources */,
 				169D495A2B499D0A00BCDE6B /* GameSettingsScreen.swift in Sources */,
@@ -550,6 +561,7 @@
 				16F3375B2B4A811E00230FC3 /* CardItemView.swift in Sources */,
 				162E0F422B3DCA6E005039BC /* Player.swift in Sources */,
 				16BB29942B34D25E007431B7 /* Array.swift in Sources */,
+				16CC25A82B556B8100CE2AC9 /* View.swift in Sources */,
 				162F3E1C2B470DDF00D19AFE /* HornOverlayView.swift in Sources */,
 				162947E82B476CEC00195796 /* CardAnimationView.swift in Sources */,
 				16F98EF82B4C3010004A8413 /* GameFlow.swift in Sources */,

@@ -41,9 +41,10 @@ final class CardActions {
             return await playWithAbility(card, rowType: destination, from: container)
 
         } else if let destination {
-            await currentPlayer.moveCard(card, from: container, to: .row(destination))
+            currentPlayer.moveCard(card, from: container, to: destination)
         }
 
+        /// Safe delay before the ending turn and showing notification
         try? await Task.sleep(for: .seconds(1))
         await game.endTurn()
     }
@@ -56,17 +57,17 @@ final class CardActions {
         if card.ability == .commanderHorn && card.type == .special {
             currentPlayer.applyHorn(card, row: rowType)
 
-            try? await Task.sleep(for: .seconds(0.3))
-            await SoundManager.shared.playSound(sound: .horn)
+//            try? await Task.sleep(for: .seconds(0.3))
+            SoundManager.shared.playSound(sound: .horn)
 
         } else if card.ability == .spy {
             await applySpy(card, rowType: rowType, from: container)
 
         } else {
-            await currentPlayer.moveCard(card, from: container, to: .row(rowType))
+            currentPlayer.moveCard(card, from: container, to: rowType)
 
             if card.ability == .tightBond {
-                await SoundManager.shared.playSound(sound: .tightBond)
+                SoundManager.shared.playSound(sound: .tightBond)
 
                 currentPlayer.applyTightBond(card, rowType: rowType)
 
@@ -77,11 +78,14 @@ final class CardActions {
                 currentPlayer.applyMoraleBoost(card, rowType: rowType)
 
             } else if card.ability == .medic {
+                /// Delay before using the medic ability ( showing carousel ).
                 try? await Task.sleep(for: .seconds(2))
                 return await applyMedic(card)
             }
         }
 
+        /// Safe delay before the ending turn and showing notification
+        try? await Task.sleep(for: .seconds(1))
         await game.endTurn()
     }
 }
@@ -131,11 +135,12 @@ private extension CardActions {
             currentPlayerScorch[row.type] = shouldScorch
         }
 
+        SoundManager.shared.playSound(sound: .scorch)
         /// Animate scorch for target cards
         await withTaskGroup(of: Void.self) { group in
-            group.addTask {
-                await SoundManager.shared.playSound(sound: .scorch)
-            }
+//            group.addTask {
+//                await SoundManager.shared.playSound(sound: .scorch)
+//            }
 
             for (row, cards) in opponentScorch {
                 for card in cards {
@@ -180,7 +185,7 @@ private extension CardActions {
         guard let rowIndex = opponent.rows.firstIndex(where: { $0.type == rowType }) else {
             return
         }
-
+        SoundManager.shared.playSound(sound: .spy)
         withAnimation(.smooth(duration: 0.3)) {
             currentPlayer.removeFromContainer(card: card, container)
             // можливо можна зробити щось типу holderIs...
@@ -190,17 +195,20 @@ private extension CardActions {
         }
 
         await withTaskGroup(of: Void.self) { group in
-            group.addTask {
-                await SoundManager.shared.playSound(sound: .spy)
-            }
+//            group.addTask {
+//                await SoundManager.shared.playSound(sound: .spy)
+//            }
             group.addTask {
                 await opponent.animateInContainer(card: card, .row(rowType))
             }
         }
 
         for _ in 0 ..< 2 {
+            /// Delay between the drawing 1 card.
             try? await Task.sleep(for: .seconds(0.1))
             withAnimation(.smooth(duration: 0.3)) {
+                SoundManager.shared.playSound(sound: .drawCard)
+
                 currentPlayer.drawCard(randomHandPosition: true)
             }
         }
@@ -227,10 +235,10 @@ private extension CardActions {
             game.ui.showCarousel(Carousel(
                 cards: units,
                 count: 1,
+                title: "Pick a card to restore",
                 // TODO: TEST WITHOUT UNOWNED!!!!!!!!!!!!!!!
-                action: { [unowned self] selectedCard in
+                onSelect: { [unowned self] selectedCard in
                     Task {
-                        game.ui.carousel = nil
                         await processMedic(resurrectionCard: selectedCard)
                     }
                 }
@@ -247,11 +255,11 @@ private extension CardActions {
         currentPlayer.addToContainer(card: resurrectionCard, .discard)
 
         let topDiscardIndex = currentPlayer.discard.endIndex - 1
-
+        SoundManager.shared.playSound(sound: .medic)
         await withTaskGroup(of: Void.self) { group in
-            group.addTask {
-                await SoundManager.shared.playSound(sound: .medic)
-            }
+//            group.addTask {
+//                await SoundManager.shared.playSound(sound: .medic)
+//            }
 
             group.addTask {
                 currentPlayer.discard[topDiscardIndex].animateAs = .medic
@@ -260,7 +268,7 @@ private extension CardActions {
 
                 currentPlayer.discard[topDiscardIndex].animateAs = nil
 
-                try? await Task.sleep(for: .seconds(0.2))
+//                try? await Task.sleep(for: .seconds(0.2))
             }
         }
 
@@ -320,10 +328,10 @@ private extension CardActions {
         }
 
         let soundName = Card.getSoundAsset(weather: weather)
-
-        Task {
-            await SoundManager.shared.playSound(sound: soundName)
-        }
+        SoundManager.shared.playSound(sound: soundName)
+//        Task {
+//            await SoundManager.shared.playSound(sound: soundName)
+//        }
         var copy = card
         copy.holderIsBot = currentPlayer.isBot
 
@@ -347,57 +355,93 @@ private extension CardActions {
 
 private extension CardActions {
     func playLeader(_ card: Card) async {
-        switch card.leaderAbility {
+        guard let ability = card.leaderAbility else {
+            return
+        }
+        switch ability {
+        // MARK: Nilfgaard leaders
+
+        /// ID: #57
         case .look3Cards:
             await applyLook3Cards(card)
+        /// ID #58
         case .pickTorrentialRain:
             await applyPickTorrentialRain(card)
+        /// ID: #59
         case .drawFromDiscardPile:
             await applyDrawFromOpponentDiscard(card)
+        /// ID: #60
         case .cancelLeaderAbility:
             await applyDisableLeaderAbility(card)
 
-        /// Handle on startGame
-        case .doubleSpyPower:
-            await applyDoubleSpyPower(card)
+        // MARK: Monster leaders
+
+        /// ID: #64
         case .restoreFromDiscardPile:
             await applyDrawFromDiscard(card)
+        /// ID: #65
         case .doubleCloseCombatPower:
             await applyDoubleClosePower(card)
+        /// ID: #66
         case .discardAndDrawCards:
             await applyDiscardAndDraw(card)
-
+        /// ID: #67
         case .pickWeatherAndPlay:
             await applyPickWeatherAndPlay(card)
+
+        // MARK: Northern leaders
+
+        /// ID: #75
         case .pickFogAndPlay:
             await applyPickFogAndPlay(card)
+        /// ID: #76
         case .clearWeather:
             await applyClearWeather(card)
+        /// ID: #77
         case .doubleSiegePower:
             await applyDoubleSiegePower(card)
+        /// ID: #78
         case .destroyStrongestSiege:
             await applyDestroyStrongestSiege(card)
+
+        // MARK: Scoiatael leaders
+
         /// Handle on startGame
+        /// ID: #80
         case .drawExtraCard:
             await applyDrawExtraCard(card)
+        /// ID: #81
         case .pickFrostAndPlay:
             await applyPickFrostAndPlay(card)
+        /// ID: #82
         case .destroyStrongestClose:
             await applyDestroyStrongestClose(card)
+        /// ID: #83
         case .doubleRangedPower:
             await applyDoubleRangedPower(card)
-
-        default:
-            return
         }
     }
 
-    func applyLook3Cards(_ card: Card) async {}
+    func applyLook3Cards(_ card: Card) async {
+        guard let currentPlayer = game.currentPlayer, let opponent = game.opponent else {
+            return
+        }
+
+        if currentPlayer.isBot {
+            return
+        }
+
+        let cards = opponent.hand.randomElements(count: 3)
+
+//        game.ui.showCarousel(
+//            Carousel(cards: cards)
+//        )
+    }
+
     func applyPickTorrentialRain(_ card: Card) async {}
     func applyDrawFromOpponentDiscard(_ card: Card) async {}
     func applyDisableLeaderAbility(_ card: Card) async {}
 
-    func applyDoubleSpyPower(_ card: Card) async {}
     func applyDrawFromDiscard(_ card: Card) async {}
     func applyDoubleClosePower(_ card: Card) async {}
     func applyDiscardAndDraw(_ card: Card) async {}

@@ -26,11 +26,14 @@ final class GameFlow {
             self.game.currentPlayer = player
 
             Task { @MainActor in
-                try? await Task.sleep(for: .seconds(0.5))
+//                try? await Task.sleep(for: .seconds(0.5))
 
                 await self.game.ui.showNotification(notification)
 
+                SoundManager.shared.playSound(sound: .deck)
+
                 for _ in 0 ..< 10 {
+                    /// Delay between drawing 1 card.
                     try? await Task.sleep(for: .seconds(0.1))
                     withAnimation(.smooth(duration: 0.3)) {
                         self.game.player.drawCard()
@@ -38,9 +41,9 @@ final class GameFlow {
                     }
                 }
 
-                try? await Task.sleep(for: .seconds(0.4))
-
-                await self.startRound()
+                withAnimation(.smooth(duration: 1)) {
+                    self.initialRedraw()
+                }
             }
         }
     }
@@ -57,6 +60,7 @@ final class GameFlow {
         await endGame()
     }
 
+    @MainActor
     private func startRound() async {
         game.roundCount += 1
 
@@ -107,10 +111,10 @@ final class GameFlow {
     private func endRound() async {
         await declareResult()
 
-        try? await Task.sleep(for: .seconds(0.5))
+//        try? await Task.sleep(for: .seconds(0.5))
 
         // TODO: переробити, тут треба віддавати в відбій до певного юзера картки
-        game.weathers.removeAll()
+        clearWeathers()
 
         if game.player.health == 0 || game.bot.health == 0 {
             await endGame()
@@ -125,7 +129,19 @@ final class GameFlow {
         await endTurn()
     }
 
-    private func clearBoard() {
+    private func clearWeathers() {
+        let weathers = game.weathers
+
+        for weather in weathers {
+            guard let holderIsBot = weather.holderIsBot else {
+                continue
+            }
+
+            let holder = holderIsBot ? game.bot : game.player
+
+            game.weathers.removeAll(where: { $0.id == weather.id })
+            holder.discard.append(weather)
+        }
         /// Clear weathers
         /// If monsters - random card
         /// Clear rows
@@ -139,8 +155,6 @@ final class GameFlow {
 
         if !opponent.isPassed {
             game.currentPlayer = opponent
-
-//            try? await Task.sleep(for: .seconds(0.5)) // ?????
 
             await game.ui.showNotification(game.currentPlayer!.isBot ? .turnOp : .turnMe)
         }
@@ -168,6 +182,8 @@ final class GameFlow {
             await game.ui.showNotification(currentPlayer.isBot ? .roundPassedOp : .roundPassedMe)
         }
 
+        try? await Task.sleep(for: .seconds(1))
+
         if game.player.isPassed && game.bot.isPassed {
             await endRound()
         } else {
@@ -183,6 +199,46 @@ private extension GameFlow {
         game.firstPlayer = Int.random(in: 0 ... 1) == 0 ? game.player : game.bot
         game.currentPlayer = game.firstPlayer
         await game.ui.showNotification(game.firstPlayer!.isBot ? .coinOp : .coinMe)
+    }
+
+    func initialRedraw() {
+        /// Bot redraw
+        game.aiStrategy.initialRedraw()
+
+        /// Player redraw
+        game.ui.showCarousel(
+            Carousel(
+                cards: game.player.hand,
+                count: 2,
+                title: "Choose a card to redraw",
+                cancelButton: "Finish redrawing",
+                onSelect: { [unowned self] card in
+                    let random = game.player.deck.cards.randomElement()!
+                    withAnimation(.smooth(duration: 0.3)) {
+                        guard let index = game.ui.carousel!.cards.firstIndex(where: { $0.id == card.id }) else {
+                            return
+                        }
+
+                        game.ui.carousel!.cards.remove(at: index)
+                        game.ui.carousel!.cards.insert(random, at: index)
+
+                        game.player.removeFromContainer(card: card, .hand)
+                        game.player.addToContainer(card: card, .deck)
+
+                        game.player.removeFromContainer(card: random, .deck)
+                        game.player.addToContainer(card: random, .hand)
+                    }
+                },
+                completion: {
+                    Task {
+                        /// Delay before showing the ".roundStart" notification
+                        try? await Task.sleep(for: .seconds(0.4))
+
+                        await self.startRound()
+                    }
+                }
+            )
+        )
     }
 
     func declareResult() async {
@@ -235,12 +291,6 @@ private extension GameFlow {
         }
         if game.bot.leader.leaderAbility == .cancelLeaderAbility {
             game.player.isLeaderAvailable = false
-        }
-
-        func initLeader(player: Player) {
-            if player.leader.leaderAbility == .doubleSpyPower {
-                game.isDoubleSpyPower = true
-            }
         }
     }
 

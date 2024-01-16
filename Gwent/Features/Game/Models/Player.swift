@@ -73,25 +73,28 @@ class Player {
     }
 
     /// Removes card from "container" and adds to row(rowType).
-    @MainActor
-    func moveCard(_ card: Card, from source: CardContainer = .hand, to destination: CardContainer) async {
+
+    func moveCard(_ card: Card, from source: CardContainer = .hand, to rowType: Card.Row) {
         withAnimation(.smooth(duration: 0.3)) {
             removeFromContainer(card: card, source)
-            addToContainer(card: card, destination)
+            addToContainer(card: card, .row(rowType))
         }
 
-        Task(priority: .background) {
-            if card.type == .hero {
-                await SoundManager.shared.playSound(sound: .hero)
-
-            } else if card.combatRow == .close {
-                await SoundManager.shared.playSound(sound: .close)
-
-            } else if card.combatRow == .ranged {
-                await SoundManager.shared.playSound(sound: .ranged)
-
-            } else if card.combatRow == .siege {
-                await SoundManager.shared.playSound(sound: .siege)
+        if card.type == .hero {
+            SoundManager.shared.playSound(sound: .hero)
+        } else {
+            switch card.combatRow {
+            case .agile:
+                let sound: SoundManager.SoundName = rowType == .close ? .close : .ranged
+                SoundManager.shared.playSound(sound: sound)
+            case .close:
+                SoundManager.shared.playSound(sound: .close)
+            case .ranged:
+                SoundManager.shared.playSound(sound: .ranged)
+            case .siege:
+                SoundManager.shared.playSound(sound: .siege)
+            default:
+                return
             }
         }
     }
@@ -204,7 +207,7 @@ extension Player {
 
         rows[rowIndex].cards[cardIndex].shouldAnimate = true
 
-        try? await Task.sleep(for: .seconds(1))
+        try? await Task.sleep(for: .seconds(2))
 
         rows[rowIndex].cards[cardIndex].shouldAnimate = false
 
@@ -212,17 +215,13 @@ extension Player {
 
         for card in handUnits {
             if let rowType = card.availableRow {
-                Task { @MainActor in
-                    await moveCard(card, from: .hand, to: .row(rowType))
-                }
+                moveCard(card, from: .hand, to: rowType)
             }
             /// animate as musterInserted??
         }
         for card in deckUnits {
             if let rowType = card.availableRow {
-                Task { @MainActor in
-                    await moveCard(card, from: .deck, to: .row(rowType))
-                }
+                moveCard(card, from: .deck, to: rowType)
             }
             /// animate as musterInserted???
         }
@@ -241,6 +240,9 @@ extension Player {
     func clearRows() {
 //        var rowExceptionIndex: Int?
         var cardException: Card?
+
+        // MARK: #FactionAbility - Monsters: Handling
+
         if deck.faction == .monsters {
             let rowsWithUnits = rows.filter { $0.cards.filter { $0.type == .unit }.count > 0 }
 
@@ -252,7 +254,7 @@ extension Player {
                 cardException = rows[rowIndex].cards.randomElement()
             }
         }
-        /// Якщо faction monsters - не видаляти одну рандомну картку
+
         withAnimation(.smooth(duration: 0.3)) {
             for i in rows.indices {
                 let cards = rows[i].cards

@@ -23,5 +23,24 @@ extension Array {
         return Int.random(in: startIndex ... endIndex)
     }
 
-   
+    func randomElements(where predicate: ((Element) -> Bool)? = nil, count: Int = 1) -> [Element] {
+        /// self.isEmpty
+        if isEmpty {
+            return []
+        }
+
+        let elements = predicate != nil ? filter(predicate!) : self
+
+        if elements.isEmpty {
+            return []
+        }
+
+        var randomized: [Element] = []
+
+        for _ in 0 ..< count {
+            randomized.append(randomElement()!)
+        }
+
+        return randomized
+    }
 }

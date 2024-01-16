@@ -149,7 +149,7 @@ struct GameScreen: View {
         }
         .ignoresSafeArea()
         .task {
-            try? await Task.sleep(for: .seconds(2))
+            try? await Task.sleep(for: .seconds(1))
 
             vm.startGame()
         }
@@ -184,4 +184,5 @@ struct GameScreen: View {
 #Preview {
     GameScreen()
         .environment(GameViewModel.preview)
+        .environment(\.colorScheme, .dark)
 }

@@ -1,0 +1,21 @@
+{
+  "look_3_cards": "Look at 3 random cards from your opponent's hand.",
+  "cancel_leader_ability": "Cancel your opponent's Leader Ability.",
+  "pick_torrential_rain" : "Pick a Torrential Rain card from your deck and play it instantly.",
+  "draw_from_discard_pile": "Draw a card from your opponent's discard pile.",
+  
+  "restore_from_discard_pile":"Restore a card from your discard pile to your hand.",
+  "double_close_combat_power": "Double the strength of all your Close Combat units (unless a Commander's horn is also present on that row).",
+  "discard_and_draw_cards": "Discard 2 card and draw 1 card of your choice from your deck.",
+  "pick_weather_and_play": "Pick any weather card from your deck and play it instantly.",
+
+  "pick_fog_and_play": "Pick an Impenetrable Fog card from your deck and play it instantly.",
+  "clear_weather": "Clear any weather effects (resulting from Biting Frost, Torrential Rain or Impenetrable Fog cards) in play.",
+  "double_siege_power": "Doubles the strength of all your Siege units (unless a Commander's Horn is also present on that row).",
+  "destroy_strongest_siege": "Destroy your enemy's strongest Siege unit(s) if the combined strength of all his or her Siege units is 10 or more.",
+
+  "draw_extra_card": "Draw an extra card at the beginning of the battle.",
+  "pick_frost_and_play": "Pick a Biting Frost card from your deck and play it instantly.",
+  "destroy_strongest_close" :"Destroy your enemy's strongest Close Combat unit(s) if the combined strength of all his or her Close Combat units is 10 or more.",
+  "double_ranged_power": "Doubles the strength of all your Ranged Combat units (unless a Commander's Horn is also present on that row)."
+}

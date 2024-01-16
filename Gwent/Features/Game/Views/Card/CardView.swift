@@ -140,24 +140,6 @@ struct CardView: View {
                     .clipShape(.rect(cornerRadius: rect.radius))
             }
         }
-        .task {
-            guard isPlayable else {
-                return
-            }
-
-//            if card.type == .hero {
-//                await SoundManager.shared.playSound(sound: .hero)
-//
-//            } else if card.combatRow == .close {
-//                await SoundManager.shared.playSound(sound: .close)
-//
-//            } else if card.combatRow == .ranged {
-//                await SoundManager.shared.playSound(sound: .ranged)
-//
-//            } else if card.combatRow == .siege {
-//                await SoundManager.shared.playSound(sound: .siege)
-//            }
-        }
     }
 }
 

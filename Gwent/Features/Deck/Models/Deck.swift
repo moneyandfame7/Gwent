@@ -16,6 +16,12 @@ struct Deck {
 extension Deck {
     static let sample1 = Deck(
         leader: .leader,
+        cards: Array(Card.all2[74 ... 99]),
+        faction: .northern
+    )
+
+    static let sample2 = Deck(
+        leader: .leader,
         cards: Array(Card.all2[0 ... 20].reversed() + [
             Card.all2[152],
             Card.all2[153],
@@ -28,11 +34,5 @@ extension Deck {
 //             Card.all2[11],
 //             Card.all2[12]],
         faction: .monsters
-    )
-
-    static let sample2 = Deck(
-        leader: .leader,
-        cards: Array(Card.all2[74 ... 99]),
-        faction: .northern
     )
 }

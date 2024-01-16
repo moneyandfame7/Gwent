@@ -22,11 +22,13 @@ struct NotificationView: View {
 
     var body: some View {
         HStack {
-            Spacer().frame(width: 150)
+            Spacer().frame(width: 120)
             Text(asset.title)
                 .font(.title3)
                 .fontWeight(.bold)
                 .padding(.horizontal)
+                .minimumScaleFactor(0.5)
+                .lineLimit(3)
         }
 
         .frame(height: 100)
@@ -55,6 +57,6 @@ struct NotificationView: View {
 
 #Preview {
     VStack {
-        NotificationView(variant: .coinMe)
+        NotificationView(variant: .nilfgaard)
     }
 }

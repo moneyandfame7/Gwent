@@ -114,7 +114,6 @@ extension Card {
 
         // MARK: - monsters
 
-        case doubleSpyPower = "double_spy_power"
         case restoreFromDiscardPile = "restore_from_discard_pile"
         case doubleCloseCombatPower = "double_close_combat_power"
         case discardAndDrawCards = "discard_and_draw_cards"

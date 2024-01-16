@@ -13,7 +13,7 @@ class SoundManager: NSObject {
 
     private var completions: [AVAudioPlayer: () -> Void] = [:]
 
-    func playSound(sound: SoundManager.SoundName) async {
+    func playSound(sound: SoundManager.SoundName)  {
         guard let file = NSDataAsset(name: sound.assetName) else {
             print("😡 Sound \(sound.rawValue) not found in assets!")
             return
@@ -29,7 +29,7 @@ class SoundManager: NSObject {
                     newPlayer.play()
                 }
 
-                try? await Task.sleep(for: .seconds(newPlayer.duration))
+//                try? await Task.sleep(for: .seconds(newPlayer.duration))
                 return
             }
 
@@ -37,7 +37,7 @@ class SoundManager: NSObject {
                 player.play()
             }
 
-            try? await Task.sleep(for: .seconds(player.duration))
+//            try? await Task.sleep(for: .seconds(player.duration))
 
         } catch {
             print("😡 ERROR: \(error.localizedDescription)")

@@ -9,115 +9,179 @@ import SwiftUI
 
 struct CarouselView: View {
     @Binding var carousel: Carousel?
-    @State private var currentScrollID: Card.ID? = Card.inHand.count / 2
 
-    private var currentCard: Card {
-        Card.all2.first { $0.id == currentScrollID }!
+    @State private var activeID: Card.ID?
+
+    @State private var selectedCount = 0
+
+    private let cardHeight: CGFloat = 400
+
+    private let shadowRadius: CGFloat = 10
+
+    private var activeCard: Card? {
+        carousel!.cards.first(where: { $0.id == activeID })
+    }
+
+    // MARK: Functions
+
+    private func onClose() {
+        carousel?.completion?()
+        carousel = nil
+    }
+
+    private func onSelect(card: Card) {
+        guard let selectAction = carousel?.onSelect else {
+            return
+        }
+
+        selectAction(card)
+        
+        if let count = carousel?.count {
+            selectedCount += 1
+
+            if selectedCount >= count {
+                onClose()
+            }
+        } else {
+            onClose()
+        }
+    }
+
+    // MARK: Views
+
+    @ViewBuilder
+    private func titleView(_ title: String) -> some View {
+        let processedTitle = if let count = carousel?.count, count > 1 {
+            "\(title) (\(selectedCount) of \(count))"
+        } else {
+            title
+        }
+
+        HStack(spacing: 0) {
+            Text(processedTitle)
+                .font(.custom("Gwent", size: 22, relativeTo: .title3))
+                .textCase(.uppercase)
+                .foregroundStyle(.white)
+                .textBorder()
+        }
+        .frame(maxWidth: .infinity)
+        .padding([.vertical, .horizontal])
+        .padding(.bottom, 50)
+    }
+
+    @ViewBuilder
+    private func itemView(card: Card) -> some View {
+        let isActive = card.id == activeID
+        Image("Cards/\(card.image)")
+            .resizable()
+            .scaledToFit()
+            .frame(height: cardHeight)
+            .clipShape(.rect(cornerRadius: 20))
+            .containerRelativeFrame(.horizontal)
+            .scrollTransition(.animated, axis: .horizontal) { content, phase in
+                content
+                    .scaleEffect(phase.isIdentity ? 1.0 : 0.8)
+                    .brightness(phase.isIdentity ? 0 : -0.15)
+            }
+            .onTapGesture {
+                onSelect(card: card)
+            }
+            .shadow(color: .brandYellow, radius: isActive ? shadowRadius : 0)
+    }
+
+    @ViewBuilder
+    private func abilityView(ability: Card.Ability) -> some View {
+        let abilityInfo = Ability.all[ability.rawValue]!
+
+        VStack(spacing: 15) {
+            Text(abilityInfo.name)
+                .font(.custom("Gwent", size: 28, relativeTo: .title))
+                .foregroundStyle(.brandYellowSecondary)
+            Text(abilityInfo.description)
+                .font(.custom("PTSans-Regular", size: 16, relativeTo: .body))
+                .foregroundStyle(.brandYellowSecondary)
+        }
+        .frame(maxWidth: .infinity)
+        .background(.black.opacity(0.8))
+        .overlay(alignment: .topLeading) {
+            Image("Abilities/\(ability.rawValue)")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 30, height: 30)
+        }
+        .safeAreaPadding(10)
+        .padding(.bottom, 50)
+    }
+
+    @ViewBuilder
+    private func leaderAbilityView(ability: Card.LeaderAbility) -> some View {
+        let text = Ability.leaders[ability.rawValue]!
+
+        VStack(spacing: 0) {
+            Text(text)
+                .font(.custom("Gwent", size: 16, relativeTo: .body))
+                .multilineTextAlignment(.center)
+                .foregroundStyle(.brandYellowSecondary)
+        }
+        .frame(maxWidth: .infinity)
+        .background(.black.opacity(0.8))
+        .safeAreaPadding(25)
+        .padding(.bottom, 50)
     }
 
     var body: some View {
         VStack(spacing: 15) {
-            if !carousel!.title.isEmpty {
-                HStack {
-                    Spacer()
-                    Text(carousel!.title)
-                        .font(.headline)
-                    //                    .fontWeight(.head)
-                    //                    .font(.title3)
-                    Spacer()
-                    IconButton(systemName: "xmark") {
-                        carousel = nil
-                    }
-                }
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(.black.opacity(0.8))
-                .padding(.top, 65)
-                .foregroundStyle(.brandYellowSecondary)
+            if let title = carousel?.title, !title.isEmpty {
+                titleView(title)
             } else {
-                Spacer().frame(height: 105)
+                Spacer().frame(height: 100)
             }
-            ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack(spacing: 0) {
-                    ForEach(carousel!.cards) { card in
-                        let isActive = currentScrollID == card.id
-                        Image("Cards/\(card.image)")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(height: 450)
-                            .clipShape(RoundedRectangle(cornerRadius: 22.0))
-                            .overlay {
-                                RoundedRectangle(cornerRadius: 25)
-                                    .stroke(.brandYellow.gradient, lineWidth: isActive ? 4 : 0)
-                            }
-                            .shadow(
-                                color: .brandYellow,
-                                radius: isActive ? 10 : 0
-                            )
-                            .containerRelativeFrame(.horizontal)
-                            .scrollTransition(.animated, axis: .horizontal) { content, phase in
-                                content
-                                    .brightness(phase.isIdentity ? 0 : 0.1)
-                                    .scaleEffect(phase.isIdentity ? 1.0 : 0.8)
-                            }
-                            .id(card.id)
-                            .onTapGesture {
-                                carousel?.action(card)
-                                print("#\(card.id)")
-                            }
+            VStack(spacing: 0) {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    LazyHStack(spacing: 10) {
+                        ForEach(carousel!.cards) { card in
+                            itemView(card: card)
+                        }
                     }
+                    .scrollTargetLayout()
                 }
-                .scrollTargetLayout()
+                .scrollTargetBehavior(.viewAligned)
+                .scrollPosition(id: $activeID, anchor: .center)
+                .safeAreaPadding(.horizontal, 80)
+                .frame(height: cardHeight + shadowRadius + 25)
+                Spacer()
+                if let ability = activeCard?.ability {
+                    abilityView(ability: ability)
+                }
+                if let leaderAbility = activeCard?.leaderAbility {
+                    leaderAbilityView(ability: leaderAbility)
+                }
             }
-            .scrollPosition(id: $currentScrollID)
-            .scrollTargetBehavior(.viewAligned)
-//            .safeAreaPadding(.horizontal, 65)
-            .frame(height: 490)
+            .frame(maxWidth: .infinity)
 
-            if let ability = currentCard.ability, let abilityInfo = Ability.all[ability.rawValue] {
-                VStack {
-                    HStack {
-                        Text(abilityInfo.name.capitalized)
-//                            .font(.title2)
-//                            .fontWeight(.heavy)
-                            .font(.custom("Gwent", size: 30))
+            HStack {
+                if let cancelButton = carousel!.cancelButton {
+                    BrandButton2(title: cancelButton) {
+                        onClose()
                     }
-                    //                        Spacer()
-                    Text(abilityInfo.description)
-                        .multilineTextAlignment(.center)
-                        .padding(.vertical)
-                        .font(.custom("PTSans-Regular", size: 16))
                 }
-                .overlay(alignment: .topLeading) {
-                    Image("Abilities/\(ability.rawValue)")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 30, height: 30)
-                }
-                .padding(.top)
-                .padding(.horizontal)
-                .frame(minHeight: 100)
-                .frame(maxWidth: .infinity)
-                .background(.black.opacity(0.8))
-                .foregroundStyle(.brandYellowSecondary)
             }
-            Spacer()
-        }
-        .onChange(of: currentScrollID) {
-            Task(priority: .background) {
-                await SoundManager.shared.playSound(sound: .drawCard)
-            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-
         .background(.ultraThinMaterial)
-
-        .ignoresSafeArea()
+        .onAppear {
+            if let initID = carousel?.initID {
+                activeID = initID
+            } else if let firstCard = carousel?.cards.first {
+                activeID = firstCard.id
+            }
+        }
     }
 }
 
 #Preview {
-    CarouselView(
-        carousel: .constant(Carousel.preview)
-    )
+    CarouselView(carousel: .constant(Carousel.pickLeader))
+        .environment(\.colorScheme, .dark)
 }

@@ -75,6 +75,20 @@ struct CardAnimationView: View {
                     .resizable()
                     .scaledToFill()
                     .opacity(opacity)
+
+            } else if card.animateAs == .medic {
+                ZStack {
+                    Image(.Images.CardEffects.medicGreen)
+                        .resizable()
+                        .scaledToFit()
+                        .brightness(-0.4)
+                        .opacity(opacity)
+                    Image(imageName)
+                        .resizable()
+                        .scaledToFit()
+                        .opacity(opacity)
+                        .scaleEffect(scale)
+                }
             } else if card.ability == .spy {
                 ZStack {
                     hero
@@ -84,22 +98,6 @@ struct CardAnimationView: View {
                         .scaledToFit()
                         .opacity(opacity)
                         .scaleEffect(scale)
-                }
-            } else if card.animateAs == .medic {
-                ZStack {
-//                            CardView(card: card)
-                    Image(.Images.CardEffects.medicGreen)
-                        .resizable()
-                        .scaledToFit()
-                        .brightness(-0.4)
-                        .opacity(opacity)
-//
-                    Image(imageName)
-                        .resizable()
-                        .scaledToFit()
-                        .opacity(opacity)
-                        .scaleEffect(scale)
-//                                .frame(width: 35)
                 }
             } else if card.ability == .tightBond {
                 VStack(alignment: .center) {
