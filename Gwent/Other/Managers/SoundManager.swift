@@ -67,7 +67,7 @@ extension SoundManager {
         case drawCard = "draw_card"
 
         /// Cards
-        case hero, close, ranged, siege, medic, scorch, spy
+        case hero, close, ranged, siege, medic, scorch, spy, decoy
         case tightBond = "tight_bond"
 
         var assetName: String {
@@ -81,7 +81,7 @@ extension SoundManager {
             case .deck, .drawCard:
                 return "Sounds/common/\(rawValue)"
 
-            case .hero, .close, .ranged, .siege, .medic, .scorch, .spy, .tightBond:
+                case .hero, .close, .ranged, .siege, .medic, .scorch, .spy, .tightBond, .decoy:
                 return "Sounds/cards/\(rawValue)"
             }
         }

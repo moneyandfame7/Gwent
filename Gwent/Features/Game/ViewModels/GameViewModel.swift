@@ -107,6 +107,10 @@ final class GameViewModel {
         flow.startGame()
     }
 
+    func isLeaderAvailable(player: Player) -> Bool {
+        return cardActions.isLeaderAvailable(player: player)
+    }
+
     func restartGame() {
         flow.restartGame()
     }
@@ -117,6 +121,10 @@ final class GameViewModel {
 
     func playCard(_ card: Card, rowType: Card.Row? = nil, from container: CardContainer = .hand) async {
         await cardActions.play(card, rowType: rowType, from: container)
+    }
+
+    func playDecoy(_ decoy: Card, target: Card, rowType: Card.Row) async {
+        await cardActions.playDecoy(decoy, target: target, rowType: rowType)
     }
 
     func endTurn() async {

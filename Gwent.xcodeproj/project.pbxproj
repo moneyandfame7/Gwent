@@ -60,6 +60,9 @@
 		16BB29962B34DBD4007431B7 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16BB29952B34DBD4007431B7 /* DataManager.swift */; };
 		16BB29982B34DC4F007431B7 /* cards.json in Resources */ = {isa = PBXBuildFile; fileRef = 16BB29972B34DC4F007431B7 /* cards.json */; };
 		16BB299A2B34E338007431B7 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 16BB29992B34E338007431B7 /* Launch Screen.storyboard */; };
+		16BE07F72B569AE600501C44 /* SelectedCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16BE07F62B569AE600501C44 /* SelectedCard.swift */; };
+		16BE07F92B56A84900501C44 /* PositionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16BE07F82B56A84900501C44 /* PositionView.swift */; };
+		16BE07FC2B56BC3D00501C44 /* AbilityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16BE07FB2B56BC3D00501C44 /* AbilityView.swift */; };
 		16CC25A62B554B4A00CE2AC9 /* BrandButton2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16CC25A52B554B4A00CE2AC9 /* BrandButton2.swift */; };
 		16CC25A82B556B8100CE2AC9 /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16CC25A72B556B8100CE2AC9 /* View.swift */; };
 		16CC25AA2B557C8E00CE2AC9 /* leader-abilities.json in Resources */ = {isa = PBXBuildFile; fileRef = 16CC25A92B557C8E00CE2AC9 /* leader-abilities.json */; };
@@ -130,6 +133,9 @@
 		16BB29952B34DBD4007431B7 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		16BB29972B34DC4F007431B7 /* cards.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = cards.json; sourceTree = "<group>"; };
 		16BB29992B34E338007431B7 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		16BE07F62B569AE600501C44 /* SelectedCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedCard.swift; sourceTree = "<group>"; };
+		16BE07F82B56A84900501C44 /* PositionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PositionView.swift; sourceTree = "<group>"; };
+		16BE07FB2B56BC3D00501C44 /* AbilityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbilityView.swift; sourceTree = "<group>"; };
 		16CC25A52B554B4A00CE2AC9 /* BrandButton2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandButton2.swift; sourceTree = "<group>"; };
 		16CC25A72B556B8100CE2AC9 /* View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = View.swift; sourceTree = "<group>"; };
 		16CC25A92B557C8E00CE2AC9 /* leader-abilities.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "leader-abilities.json"; sourceTree = "<group>"; };
@@ -172,6 +178,7 @@
 				16F3375C2B4A86B100230FC3 /* CarouselView.swift */,
 				1673636D2B4DEB0C007D11E4 /* AlertView.swift */,
 				16331CDE2B4F00A10047540C /* CardFlipAnimationView.swift */,
+				16BE07F82B56A84900501C44 /* PositionView.swift */,
 			);
 			path = VIews;
 			sourceTree = "<group>";
@@ -238,6 +245,7 @@
 				169A2CF62B35E4CC00FB1583 /* Row.swift */,
 				169D49432B49964700BCDE6B /* Notification.swift */,
 				160E7B282B4AD245008F3A21 /* CardContainer.swift */,
+				16BE07F62B569AE600501C44 /* SelectedCard.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -282,6 +290,7 @@
 				160346782B371B3500FFDB13 /* DeckOfCardsView.swift */,
 				169A2CEC2B35BFEA00FB1583 /* CardDetailsView.swift */,
 				16B6EE7E2B336D9C00FD2CB2 /* CardView.swift */,
+				16BE07FB2B56BC3D00501C44 /* AbilityView.swift */,
 			);
 			path = Card;
 			sourceTree = "<group>";
@@ -530,7 +539,9 @@
 				1603467D2B371FF500FFDB13 /* CardsContainerView.swift in Sources */,
 				16B6EE722B335E8400FD2CB2 /* ContentView.swift in Sources */,
 				16F3375D2B4A86B100230FC3 /* CarouselView.swift in Sources */,
+				16BE07F92B56A84900501C44 /* PositionView.swift in Sources */,
 				160E7B262B4AB8EE008F3A21 /* Carousel.swift in Sources */,
+				16BE07FC2B56BC3D00501C44 /* AbilityView.swift in Sources */,
 				16D127152B44698300810833 /* HStackOfCards.swift in Sources */,
 				169A2CF92B35E61900FB1583 /* CombatRowView.swift in Sources */,
 				169A2CF72B35E4CC00FB1583 /* Row.swift in Sources */,
@@ -577,6 +588,7 @@
 				169D494F2B499A3C00BCDE6B /* DeckViewModel.swift in Sources */,
 				1678FC802B3F1666006617CA /* PlayerStatsView.swift in Sources */,
 				169D49522B499A9100BCDE6B /* AppScreen.swift in Sources */,
+				16BE07F72B569AE600501C44 /* SelectedCard.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

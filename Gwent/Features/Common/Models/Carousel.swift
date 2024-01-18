@@ -10,20 +10,20 @@ import Foundation
 struct Carousel {
     var cards: [Card] = []
 
-    var count: Int
+    var count: Int?
     var title: String
     let initID: Card.ID?
     var cancelButton: String?
-    var onSelect: (Card) -> Void
+    var onSelect: ((Card) -> Void)?
     var completion: (() -> Void)?
 
     init(
         cards: [Card],
-        count: Int,
+        count: Int? = nil,
         title: String = "",
         initID: Card.ID? = nil,
         cancelButton: String? = nil,
-        onSelect: @escaping (Card) -> Void,
+        onSelect: ((Card) -> Void)? = nil,
         completion: (() -> Void)? = nil
 
     ) {

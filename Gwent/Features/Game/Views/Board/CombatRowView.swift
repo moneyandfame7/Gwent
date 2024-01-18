@@ -35,21 +35,25 @@ struct RowView: View {
     private var isSelectable: Bool {
         // якщо це якась спеціальна картка там напевно можна обирати ряд у суперника, але це пізніше
 
-        guard let selectedCard = vm.ui.selectedCard else {
+        guard let selectedCardDetails = vm.ui.selectedCard?.details else {
+            return false
+        }
+        
+        if selectedCardDetails.ability == .decoy {
             return false
         }
 
-        let sameRow = selectedCard.combatRow == row.type
-        let isSpy = selectedCard.ability == .spy
+        let sameRow = selectedCardDetails.combatRow == row.type
+        let isSpy = selectedCardDetails.ability == .spy
 
         if !isMe {
             return isSpy && sameRow
         }
 
-        let isAgileRow = selectedCard.combatRow == .agile && (row
+        let isAgileRow = selectedCardDetails.combatRow == .agile && (row
             .type == .close || row.type == .ranged)
 
-        let isDecoy = selectedCard.ability == .decoy && row.cards.count > 0
+        let isDecoy = selectedCardDetails.ability == .decoy && row.cards.count > 0
         return !isSpy && (isDecoy || sameRow || isAgileRow)
     }
 
@@ -58,12 +62,49 @@ struct RowView: View {
         guard isMe else {
             return false
         }
-        guard let selectedCard = vm.ui.selectedCard else {
+        guard let selectedCardDetails = vm.ui.selectedCard?.details else {
             return false
         }
-        let isHorn = selectedCard.type == .special && selectedCard.ability == .commanderHorn
 
-        return isHorn && row.horn == nil
+        return selectedCardDetails.isHorn && row.horn == nil
+    }
+
+    private func isCardSelectable(_ card: Card) -> Bool {
+        guard isMe else {
+            return false
+        }
+        guard let selectedCardDetails = vm.ui.selectedCard?.details else {
+            return false
+        }
+
+        return card.type == .unit && selectedCardDetails.ability == .decoy
+    }
+
+    @ViewBuilder
+    private func cardItemView(_ card: Card) -> some View {
+        let isSelectable = isCardSelectable(card)
+
+        CardView(card: card, isPlayable: true, size: .extraSmall)
+            .matchedGeometryEffect(id: card.id, in: vm.ui.namespace(isMe: isMe))
+            .overlay {
+                if isSelectable {
+                    highlightView
+                }
+            }
+            .onTapGesture {
+                if vm.ui.isDisabled {
+                    return
+                }
+                if isSelectable {
+                    Task {
+                        await vm.playDecoy(
+                            vm.ui.selectedCard!.details,
+                            target: card,
+                            rowType: row.type
+                        )
+                    }
+                }
+            }
     }
 
     var totalScoreView: some View {
@@ -141,7 +182,7 @@ struct RowView: View {
             }
             Task {
                 await vm.playCard(
-                    vm.ui.selectedCard!,
+                    vm.ui.selectedCard!.details,
                     rowType: row.type
                 )
             }
@@ -163,17 +204,12 @@ struct RowView: View {
                 }
 
                 HStackOfCards(row.cards, id: \.id) { card in
-                    CardView(card: card, isPlayable: true, size: .extraSmall)
-                        .matchedGeometryEffect(id: card.id, in: vm.ui.namespace(isMe: isMe))
+                    cardItemView(card)
                 }
             }
         }
         .background(Image(.Assets.texture).resizable())
         .border(.gray, width: 1)
-//        .overlay(alignment: .leading) {
-//            totalScoreView
-//                .offset(x: 70)
-//        }
         .overlay {
             overlayView
         }
@@ -191,7 +227,7 @@ struct RowView: View {
 //                appState.ui.selectedCard?.details = nil
 
                 await vm.playCard(
-                    vm.ui.selectedCard!,
+                    vm.ui.selectedCard!.details,
                     rowType: row.type
                 )
             }

@@ -121,11 +121,10 @@ struct DeckScreen: View {
                         .font(.headline)
                         .opacity(0.6)
                     Spacer()
-                    Button("Leader") {
+                    BrandButton2(title: "Leader") {
                         vm.showLeaderPicker()
                     }
-                    .buttonStyle(.bordered)
-                    .tint(.brandYellowSecondary)
+                    
                     Spacer()
                     BrandButton("Deck") {
                         vm.isDeckPresented = true

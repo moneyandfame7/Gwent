@@ -39,9 +39,11 @@ struct Rect {
     var radius: CGFloat
 
     // хз неправильно напевно але впадлу перероблювати
-    private let aspectRatio: CGFloat = 1.94666666667
+    private let aspectRatio: CGFloat = /*1.94666666667*/ 1.89024390244
     /// Яку частину картки займає тільки опис ( нижня частина картки )
-    private let partOfDescriptionSize = 3.875
+    private let partOfDescriptionSize = /*3.875*/ 3.78048780488
+
+
 
     private let partOfPower = 3.3
 
@@ -87,6 +89,7 @@ struct Rect {
 
     enum Size {
         case extraSmall, small, medium, large
+        
     }
 }
 

@@ -82,6 +82,10 @@ final class DeckViewModel {
         collectionsByFaction[activeTab]!
     }
 
+    func changeLeader(_ card: Card) {
+        decksByFaction[activeTab]!.leader = card
+    }
+
     var isDeckPresented = false
 
     var prevTab: FactionTab {
@@ -125,9 +129,10 @@ final class DeckViewModel {
             cards: leaders,
             count: 1,
             title: "Pick your leader.",
+            initID: currentDeck.leader.id,
             cancelButton: "Hide",
             onSelect: { card in
-                print("Leader is picked: ", card.name)
+                self.changeLeader(card)
             }
         )
     }

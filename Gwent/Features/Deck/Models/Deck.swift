@@ -15,8 +15,8 @@ struct Deck {
 
 extension Deck {
     static let sample1 = Deck(
-        leader: .leader,
-        cards: Array(Card.all2[74 ... 99]),
+        leader: Card.all2[82],
+        cards: Array(Card.all2[20 ... 40] + [Card.all2[168]]),
         faction: .northern
     )
 

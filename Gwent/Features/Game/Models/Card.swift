@@ -8,7 +8,7 @@
 import Foundation
 
 struct Card: Identifiable, Hashable {
-    let id: Int
+    var id: Int
     let name: String
     let image: String
     let price: Int?
@@ -27,6 +27,9 @@ struct Card: Identifiable, Hashable {
 
     var animateAs: Card.Animation?
 
+    // Це карта, якої не було у гравця, вона була створена для використання ability лідера.
+    var isCreatedByLeader: Bool = false
+
     var availablePower: Int? {
         return editedPower ?? power
     }
@@ -34,6 +37,12 @@ struct Card: Identifiable, Hashable {
     var availableRow: Card.Row? {
         combatRow == .agile ? .close : combatRow
     }
+    
+    var isHorn: Bool {
+        ability == .commanderHorn && type == .special
+    }
+    
+    
 
     // animation/animateAs: "Scorch" || "Medic" ??? + подумати про tightBond ( можна просто юзати shouldAnimate для тригера анімації )
 }
@@ -74,6 +83,8 @@ extension Card {
     static let sample: Self = Card.all2[0]
 
     static let leader: Self = Card.all2[59]
+
+    static let horn: Self = Card.all2[28]
 
     static func weathers() -> [Self] {
         return Card.all2.filter { $0.weather != nil }

@@ -32,32 +32,38 @@ struct GameScreen: View {
         .frame(maxWidth: .infinity)
     }
 
+    private var opponentView: some View {
+        VStack(spacing: 0) {
+            Spacer()
+            PlayerStatsView(player: vm.bot)
+                .padding(.horizontal)
+        }
+
+        .frame(maxWidth: .infinity, maxHeight: 130)
+        .background(Image(.Assets.texture).resizable().rotationEffect(.degrees(180)))
+        .overlay(alignment: .top) {
+            HStack(spacing: -15) {
+                ForEach(vm.bot.hand) { card in
+                    Image(.Assets.deckBackMonsters)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 70)
+                        .matchedGeometryEffect(
+                            id: card.id,
+                            in: card.ability == .spy ? vm.ui.namespaces.playerCards : vm.ui.namespaces
+                                .botCards
+                        )
+                }
+            }
+            .offset(y: -30)
+        }
+    }
+
     var body: some View {
         @Bindable var vm = vm
-        VStack(spacing: 0) {
-            VStack(spacing: 0) {
-                Spacer()
-                PlayerStatsView(player: vm.bot)
-                    .padding(.horizontal)
-            }
 
-            .frame(maxWidth: .infinity, maxHeight: 130)
-            .background(Image(.Assets.texture).resizable().rotationEffect(.degrees(180)))
-            .overlay(alignment: .top) {
-                HStack(spacing: -15) {
-                    ForEach(vm.bot.hand) { card in
-                        Image(.Assets.deckBackMonsters)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(height: 70)
-                            .matchedGeometryEffect(
-                                id: card.id,
-                                in: vm.ui.namespaces.botCards
-                            )
-                    }
-                }
-                .offset(y: -30)
-            }
+        VStack(spacing: 0) {
+            opponentView
 
             // MARK: - board start-
 
@@ -74,7 +80,7 @@ struct GameScreen: View {
                     leadingPlayer: vm.leadingPlayer,
                     currentPlayer: vm.currentPlayer
                 )
-                let isSelectable = vm.ui.selectedCard?.weather != nil
+                let isSelectable = vm.ui.selectedCard?.details.weather != nil
                 ZStack {
                     Image(systemName: "cloud.sun.rain.circle.fill")
                         .foregroundStyle(.brandYellowSecondary.opacity(0.5))
@@ -100,7 +106,7 @@ struct GameScreen: View {
                         return
                     }
                     Task {
-                        await vm.playCard(vm.ui.selectedCard!)
+                        await vm.playCard(vm.ui.selectedCard!.details)
                     }
                 }
                 TotalScoreView(
@@ -112,21 +118,6 @@ struct GameScreen: View {
             .zIndex(1)
             .frame(maxWidth: .infinity, maxHeight: 75)
             .background(Image(.Assets.texture).resizable())
-//            .overlay(alignment: .leading) {
-//                TotalScoreView(
-//                    player: vm.bot,
-//                    leadingPlayer: vm.leadingPlayer,
-//                    currentPlayer: vm.currentPlayer
-//                )
-//            }
-//            .overlay(alignment: .trailing) {
-//                TotalScoreView(
-//                    player: vm.player,
-//                    leadingPlayer: vm.leadingPlayer,
-//                    currentPlayer: vm.currentPlayer
-//                )
-//            }
-
             VStack(spacing: 0) {
                 ForEach(vm.player.rows, id: \.type) { row in
                     RowView(row: row, isMe: true)
@@ -137,7 +128,6 @@ struct GameScreen: View {
             // MARK: - board end-
 
             /// Hand
-            ///
             VStack {
                 PlayerStatsView(player: vm.player)
                     .padding()
@@ -165,17 +155,16 @@ struct GameScreen: View {
             if vm.ui.carousel != nil {
                 CarouselView(carousel: $vm.ui.carousel)
             }
+
+            if vm.ui.alert != nil {
+                AlertView(alert: $vm.ui.alert)
+            }
         }
         .overlay(alignment: .top) {
             let hasClearWeather = vm.weathers.contains(where: { $0.weather == .clearWeather })
 
             if hasClearWeather {
                 ClearWeatherView()
-            }
-        }
-        .overlay {
-            if vm.ui.alert != nil {
-                AlertView(alert: $vm.ui.alert)
             }
         }
     }

@@ -15,10 +15,10 @@ struct Row {
     var horn: Card? {
         didSet {
             for i in cards.indices {
-                let power = cards[i].editedPower ?? cards[i].power
+                let power = cards[i].availablePower
 
                 if let power, cards[i].type != .hero {
-                    cards[i].editedPower = horn != nil ? power * 2 : nil // * hornCount ?? чи як це
+                    cards[i].editedPower = horn != nil ? power * 2 : nil
                 }
             }
         }
@@ -51,13 +51,13 @@ struct Row {
         }
     }
 
-    mutating func addCard(_ card: Card) {
+    mutating func addCard(_ card: Card, at: Int? = nil) {
         var copy = card
         copy.editedPower = calculateCardPower(copy)
 
         let randomPositionAtRow = cards.randomIndex()
 
-        cards.insert(copy, at: randomPositionAtRow)
+        cards.insert(copy, at: at ?? randomPositionAtRow)
     }
 
     func calculateCardPower(_ card: Card) -> Int {
@@ -70,10 +70,10 @@ struct Row {
             total = 1
         }
 
-        let bond = cards.filter { $0.name == card.name }
+        let bonds = cards.filter { $0.name == card.name }
 
-        if card.ability == .tightBond && bond.count > 1 {
-            total *= bond.count
+        if card.ability == .tightBond && bonds.count > 1 {
+            total *= bonds.count
         }
 
         // -1 --> тому що абілка додає до всіх карток ОКРІМ себе

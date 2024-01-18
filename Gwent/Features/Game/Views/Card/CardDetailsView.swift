@@ -7,94 +7,120 @@
 
 import SwiftUI
 
-/// якщо це картка лідера, то не буде isReadyForUse, треба натиснути на саму картку і вона заюзається, потім повернеться
-/// на місце.
+/// Деякі картки грають ОДРАЗУ, наприклад: leader, scorch, можливо weathers ( але в оригіналі - ні )
+/// тому при натисканні буде трохи інший ефект: вона анімується і автоматично використовується
+///
+/// Якщо isPlayable - true і holder - bot: то це анімація картки перед її використанням. ( сховати всі кнопки )
+/// Якщо isPlayable - false і  holder - bot: то це я дивлюсь картку його лідера, тому є кнопка закриття
 struct CardDetailsView: View {
     @Environment(GameViewModel.self) private var vm
 
-    @Binding var selectedCard: Card?
-
-    @State private var isReadyToUse = false
+    @Binding var selectedCard: SelectedCard?
 
     private var shouldPlayInstantly: Bool {
-        selectedCard?.type == .leader || selectedCard?.ability == .scorch
+        selectedCard?.details.type == .leader || selectedCard?.details.ability == .scorch
+    }
+
+    private var isCanPlay: Bool {
+        if selectedCard?.holder == .bot {
+            return false
+        }
+
+        if selectedCard?.details.type == .leader {
+            return vm.isLeaderAvailable(player: vm.player)
+        }
+
+        return true
+    }
+
+    private func getOffsetX(geometry: GeometryProxy) -> CGFloat {
+        if selectedCard!.isReadyToUse {
+            return selectedCard!.holder == .me ? cardRect.width + 50 : -(cardRect.width + 50)
+        }
+
+        return 0
+    }
+
+    private var cardRect: Rect {
+        if selectedCard!.isReadyToUse {
+            return Rect(size: .small)
+        }
+
+        return Rect(size: .large)
+    }
+
+    private func onTap() async {
+        if shouldPlayInstantly {
+            await vm.playCard(selectedCard!.details)
+        } else {
+            withAnimation(.smooth(duration: 0.3)) {
+                selectedCard!.isReadyToUse.toggle()
+            }
+        }
     }
 
     var body: some View {
-        VStack(spacing: 25) {
-            CardView(
-                card: selectedCard!,
-                isCompact: isReadyToUse,
-                size: isReadyToUse ? .small : .large
-            )
-            .overlay(alignment: .topTrailing) {
-                HStack {
-                    if shouldPlayInstantly {
-                        IconButton(systemName: "gamecontroller.fill") {
-                            print("Should Play")
-                            Task {
-                                await vm.playCard(selectedCard!)
+        GeometryReader { proxy in
+            VStack(spacing: 25) {
+                if isCanPlay {
+                    Text("Tap to play")
+                        .font(.custom("Gwent", size: 22, relativeTo: .title3))
+                        .textCase(.uppercase)
+                        .foregroundStyle(.white)
+                        .textBorder()
+                        .padding(.top, 20)
+                        .opacity(selectedCard!.isReadyToUse ? 0 : 1)
+                }
+                Spacer()
+                CardView(
+                    card: selectedCard!.details,
+                    isCompact: selectedCard!.isReadyToUse,
+                    rect: cardRect
+                )
+                .overlay(alignment: .topTrailing) {
+                    HStack {
+                        if shouldPlayInstantly && isCanPlay {
+                            IconButton(systemName: "gamecontroller.fill") {
+                                print("Should Play")
+                                Task {
+                                    await vm.playCard(selectedCard!.details)
+                                }
                             }
+                            .scaleEffect(selectedCard!.isReadyToUse ? 0 : 1)
                         }
-                        .scaleEffect(isReadyToUse ? 0 : 1)
+                        if selectedCard!.isPlayable {
+                            IconButton(systemName: "xmark") {
+                                selectedCard = nil
+                            }
+                            .opacity(selectedCard!.isReadyToUse ? 0 : 1)
+                        }
                     }
-
-                    IconButton(systemName: "xmark") {
-                        selectedCard = nil
-                    }
-                    .opacity(isReadyToUse ? 0 : 1)
+                    .offset(x: -10, y: 10)
                 }
-                .offset(x: -10, y: 10)
-            }
-
-            .onTapGesture {
-                if shouldPlayInstantly {
+                .offset(x: getOffsetX(geometry: proxy))
+                .shadow(color: .brandYellow, radius: 25)
+                .onTapGesture {
+                    if !isCanPlay {
+                        return
+                    }
                     Task {
-                        await vm.playCard(selectedCard!)
-                    }
-                } else {
-                    withAnimation(.smooth(duration: 0.3)) {
-                        isReadyToUse.toggle()
+                        await onTap()
                     }
                 }
-            }
-            .offset(x: isReadyToUse ? 150 : 0)
-            .shadow(color: .brandYellow, radius: 25)
-
-            if let ability = selectedCard!.ability, !isReadyToUse {
-                if let info = Ability.all[ability.rawValue] {
-                    VStack {
-                        HStack {
-                            Text(info.name.capitalized)
-                                .font(.title2)
-                                .fontWeight(.heavy)
-                        }
-//                        Spacer()
-                        Text(info.description)
-                            .multilineTextAlignment(.center)
-                            .padding(.vertical)
-                    }
-                    .overlay(alignment: .topLeading) {
-                        Image("Abilities/\(ability.rawValue)")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 30, height: 30)
-                    }
-                    .padding()
-
-                    .frame(minHeight: 100)
-                    .frame(maxWidth: .infinity)
-                    .background(.black.opacity(0.8))
+                Spacer()
+                if !selectedCard!.isReadyToUse {
+                    AbilityView(card: selectedCard!.details)
                 }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .foregroundStyle(.brandYellowSecondary)
+            .background(.ultraThinMaterial.opacity(selectedCard!.isReadyToUse ? 0 : 1))
         }
-        .foregroundStyle(.brandYellowSecondary)
     }
 }
 
 #Preview {
-    CardDetailsView(
-        selectedCard: .constant(.all2[152])
-    )
-    .environment(GameViewModel.preview)
+    CardDetailsView(selectedCard: .constant(SelectedCard.preview))
+        .environment(GameViewModel.preview)
+        .environment(\.colorScheme, .dark)
 }

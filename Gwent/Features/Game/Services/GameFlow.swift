@@ -40,8 +40,18 @@ final class GameFlow {
                         self.game.bot.drawCard()
                     }
                 }
+                if self.game.player.deck.leader.leaderAbility == .drawExtraCard {
+                    withAnimation(.smooth(duration: 0.3)) {
+                        self.game.player.drawCard()
+                    }
+                }
+                if self.game.bot.deck.leader.leaderAbility == .drawExtraCard {
+                    withAnimation(.smooth(duration: 0.3)) {
+                        self.game.player.drawCard()
+                    }
+                }
 
-                withAnimation(.smooth(duration: 1)) {
+                withAnimation(.smooth(duration: 0.3)) {
                     self.initialRedraw()
                 }
             }
@@ -214,20 +224,30 @@ private extension GameFlow {
                 cancelButton: "Finish redrawing",
                 onSelect: { [unowned self] card in
                     let random = game.player.deck.cards.randomElement()!
-                    withAnimation(.smooth(duration: 0.3)) {
-                        guard let index = game.ui.carousel!.cards.firstIndex(where: { $0.id == card.id }) else {
-                            return
-                        }
 
-                        game.ui.carousel!.cards.remove(at: index)
-                        game.ui.carousel!.cards.insert(random, at: index)
-
-                        game.player.removeFromContainer(card: card, .hand)
-                        game.player.addToContainer(card: card, .deck)
-
-                        game.player.removeFromContainer(card: random, .deck)
-                        game.player.addToContainer(card: random, .hand)
+                    guard let index = game.ui.carousel!.cards.firstIndex(where: { $0.id == card.id }) else {
+                        return
                     }
+
+                    game.ui.carousel!.cards.remove(at: index)
+                    game.ui.carousel!.cards.insert(random, at: index)
+
+                    /// Move selected card to deck.
+                    ///
+                    game.player.swapContainers(card, from: .hand, to: .deck)
+//                    game.player.removeFromContainer(at: index, .hand)
+//                    game.player.addToContainer(card: card, .deck)
+
+                    /// Move random card to hand.
+                    game.player.removeFromContainer(card: random, .deck)
+                    game.player.insertToContainer(random, .hand, at: index)
+//
+//                    game.player.removeFromContainer(card: card, .hand)
+//                    game.player.addToContainer(card: card, .deck)
+//
+//                    game.player.removeFromContainer(card: random, .deck)
+//                    game.player.addToContainer(card: random, .hand)
+
                 },
                 completion: {
                     Task {

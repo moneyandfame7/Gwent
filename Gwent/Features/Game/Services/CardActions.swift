@@ -29,9 +29,23 @@ final class CardActions {
             return
         }
 
-        game.ui.selectedCard = nil
+        if card.type == .leader || card.type == .special && card.ability == .scorch {
+            withAnimation(.smooth(duration: 0.3)) {
+                game.ui.selectedCard?.isReadyToUse = true
+            }
+            try? await Task.sleep(for: .seconds(0.7))
 
-        if card.weather != nil {
+            Task { @MainActor in
+                try? await Task.sleep(for: .seconds(0.3))
+                game.ui.selectedCard = nil
+            }
+        } else {
+            game.ui.selectedCard = nil
+        }
+
+        if card.type == .leader {
+            return await playLeader(card)
+        } else if card.weather != nil {
             await playWeather(card, from: container)
 
         } else if card.type == .special && card.ability == .scorch {
@@ -49,11 +63,79 @@ final class CardActions {
         await game.endTurn()
     }
 
+    @MainActor
+    func playDecoy(_ decoy: Card, target: Card, rowType: Card.Row) async {
+        guard let currentPlayer = game.currentPlayer else {
+            return
+        }
+        guard let decoyIndex = currentPlayer.hand.firstIndex(where: { $0.id == decoy.id }) else {
+            return
+        }
+
+        guard let targetIndex = currentPlayer.getRow(rowType).cards.firstIndex(where: { $0.id == target.id }) else {
+            return
+        }
+        game.ui.selectedCard = nil
+
+        SoundManager.shared.playSound(sound: .decoy)
+        withAnimation(.smooth(duration: 0.5)) {
+            /// Replace with decoy
+            currentPlayer.removeFromContainer(at: decoyIndex, .hand)
+            currentPlayer.insertToContainer(decoy, .row(rowType), at: targetIndex)
+
+            /// Remove target card
+            currentPlayer.removeFromContainer(card: target, .row(rowType))
+            currentPlayer.insertToContainer(target, .hand, at: decoyIndex)
+        }
+
+        try? await Task.sleep(for: .seconds(0.3))
+
+        await game.endTurn()
+    }
+
+    func isLeaderAvailable(player: Player) -> Bool {
+        guard let leaderAbility = player.deck.leader.leaderAbility else {
+            return false
+        }
+
+        let opponent = game.getOpponent(for: player)
+
+        switch leaderAbility {
+        case .look3Cards:
+            return !opponent.hand.isEmpty
+        case .pickTorrentialRain:
+            return true
+        case .drawFromDiscardPile:
+            return !opponent.discard.isEmpty
+
+        case .restoreFromDiscardPile:
+            return !player.discard.isEmpty
+        case .doubleCloseCombatPower:
+            return player.getRow(.close).horn == nil
+        case .discardAndDrawCards:
+            return player.hand.count >= 2 && player.deck.cards.count >= 1
+        case .pickWeatherAndPlay:
+            return true
+
+        case .pickFogAndPlay, .clearWeather, .destroyStrongestSiege:
+            return true
+        case .doubleSiegePower:
+            return player.getRow(.siege).horn == nil
+
+        case .pickFrostAndPlay, .destroyStrongestClose:
+            return true
+        case .doubleRangedPower:
+            return player.getRow(.ranged).horn == nil
+
+        default: return false
+        }
+    }
+
     private func playWithAbility(_ card: Card, rowType: Card.Row, from container: CardContainer) async {
         guard let currentPlayer = game.currentPlayer else {
             return
         }
-
+        print("Ability thread", Thread.current.description)
         if card.ability == .commanderHorn && card.type == .special {
             currentPlayer.applyHorn(card, row: rowType)
 
@@ -67,7 +149,6 @@ final class CardActions {
             currentPlayer.moveCard(card, from: container, to: rowType)
 
             if card.ability == .tightBond {
-                SoundManager.shared.playSound(sound: .tightBond)
 
                 currentPlayer.applyTightBond(card, rowType: rowType)
 
@@ -103,16 +184,21 @@ private extension CardActions {
         }
 
         let maxPower = (currentPlayer.rows + opponent.rows)
-            .flatMap { $0.cards.compactMap { $0.editedPower ?? $0.power } }
+            .flatMap { $0.cards
+                .filter { $0.type != .hero }
+                .compactMap { $0.editedPower ?? $0.power }
+            }
             .max()
-
-        guard let maxPower, maxPower > 0 else {
-            return
-        }
+        
+        SoundManager.shared.playSound(sound: .scorch)
 
         withAnimation(.smooth(duration: 0.7)) {
             currentPlayer.removeFromContainer(card: card, .hand)
             currentPlayer.addToContainer(card: card, .discard)
+        }
+
+        guard let maxPower, maxPower > 0 else {
+            return
         }
 
         print("Max: \(maxPower)")
@@ -135,7 +221,7 @@ private extension CardActions {
             currentPlayerScorch[row.type] = shouldScorch
         }
 
-        SoundManager.shared.playSound(sound: .scorch)
+        
         /// Animate scorch for target cards
         await withTaskGroup(of: Void.self) { group in
 //            group.addTask {
@@ -281,9 +367,11 @@ private extension CardActions {
 // MARK: Weathers
 
 private extension CardActions {
+//    @MainActor
     func playWeather(_ card: Card, from container: CardContainer) async {
         // MARK: - Clear Weather
 
+        print("Thread", Thread.current.description)
         if card.weather == .clearWeather {
             moveToWeathers(card, from: container)
 
@@ -336,13 +424,19 @@ private extension CardActions {
         copy.holderIsBot = currentPlayer.isBot
 
         withAnimation {
-            currentPlayer.removeFromContainer(card: card, container)
+            if !card.isCreatedByLeader {
+                currentPlayer.removeFromContainer(card: card, container)
+            }
             game.weathers.append(copy)
         }
     }
 
     func moveWeatherToDiscard(at index: [Card].Index) {
         let removed = game.weathers.remove(at: index)
+
+        if removed.isCreatedByLeader {
+            return
+        }
 
         // TODO: in GameViewModel add these function?
         let holder = removed.holderIsBot! ? game.bot : game.player
@@ -355,39 +449,57 @@ private extension CardActions {
 
 private extension CardActions {
     func playLeader(_ card: Card) async {
-        guard let ability = card.leaderAbility else {
+        guard let currentPlayer = game.currentPlayer,
+              let ability = card.leaderAbility
+        else {
             return
         }
+
+        func completion() {
+            Task {
+                currentPlayer.isLeaderAvailable = false
+
+                try? await Task.sleep(for: .seconds(1))
+
+                await game.endTurn()
+            }
+        }
+
         switch ability {
         // MARK: Nilfgaard leaders
 
-        /// ID: #57
+        /// ID: #58
+        // With completion -> return
         case .look3Cards:
-            await applyLook3Cards(card)
-        /// ID #58
+            return applyLook3Cards(card, completion: completion)
+        /// ID #59
         case .pickTorrentialRain:
             await applyPickTorrentialRain(card)
-        /// ID: #59
-        case .drawFromDiscardPile:
-            await applyDrawFromOpponentDiscard(card)
         /// ID: #60
-        case .cancelLeaderAbility:
-            await applyDisableLeaderAbility(card)
+        // With completion -> return
+        case .drawFromDiscardPile:
+            return applyDrawFromOpponentDiscard(card, completion: completion)
+        /// ID: #61 - is processed at the start of the game
+//        case .cancelLeaderAbility:
+//            await applyDisableLeaderAbility(card)
 
         // MARK: Monster leaders
 
         /// ID: #64
+        // With completion -> return
         case .restoreFromDiscardPile:
-            await applyDrawFromDiscard(card)
+            return applyDrawFromDiscard(card, completion: completion)
         /// ID: #65
         case .doubleCloseCombatPower:
             await applyDoubleClosePower(card)
         /// ID: #66
+        // With completion -> return
         case .discardAndDrawCards:
-            await applyDiscardAndDraw(card)
+            return applyDiscardAndDraw(card, completion: completion)
         /// ID: #67
+        // With completion -> return
         case .pickWeatherAndPlay:
-            await applyPickWeatherAndPlay(card)
+            return await applyPickWeatherAndPlay(card, completion: completion)
 
         // MARK: Northern leaders
 
@@ -406,10 +518,9 @@ private extension CardActions {
 
         // MARK: Scoiatael leaders
 
-        /// Handle on startGame
-        /// ID: #80
-        case .drawExtraCard:
-            await applyDrawExtraCard(card)
+        /// ID: #80 - is processed at the start of the game
+//        case .drawExtraCard:
+//            await applyDrawExtraCard(card)
         /// ID: #81
         case .pickFrostAndPlay:
             await applyPickFrostAndPlay(card)
@@ -419,41 +530,316 @@ private extension CardActions {
         /// ID: #83
         case .doubleRangedPower:
             await applyDoubleRangedPower(card)
+        default:
+            print("default Leader case: ", card)
+            return
         }
+
+        completion()
     }
 
-    func applyLook3Cards(_ card: Card) async {
+    func applyLook3Cards(_ card: Card, completion: @escaping () -> Void) {
         guard let currentPlayer = game.currentPlayer, let opponent = game.opponent else {
             return
         }
 
         if currentPlayer.isBot {
-            return
+            return completion()
         }
 
         let cards = opponent.hand.randomElements(count: 3)
 
-//        game.ui.showCarousel(
-//            Carousel(cards: cards)
-//        )
+        let carousel = Carousel(
+            cards: cards,
+            title: "Look random opponent cards",
+            cancelButton: "Hide",
+            completion: completion
+        )
+
+        game.ui.showCarousel(carousel)
     }
 
-    func applyPickTorrentialRain(_ card: Card) async {}
-    func applyDrawFromOpponentDiscard(_ card: Card) async {}
-    func applyDisableLeaderAbility(_ card: Card) async {}
+    func applyPickTorrentialRain(_ card: Card) async {
+        await processPickOneWeather(.torrentialRain)
+    }
 
-    func applyDrawFromDiscard(_ card: Card) async {}
-    func applyDoubleClosePower(_ card: Card) async {}
-    func applyDiscardAndDraw(_ card: Card) async {}
+    func applyDrawFromOpponentDiscard(_ card: Card, completion: @escaping () -> Void) {
+        guard let currentPlayer = game.currentPlayer, let opponent = game.opponent else {
+            return
+        }
 
-    func applyPickWeatherAndPlay(_ card: Card) async {}
-    func applyPickFogAndPlay(_ card: Card) async {}
-    func applyClearWeather(_ card: Card) async {}
-    func applyDoubleSiegePower(_ card: Card) async {}
-    func applyDestroyStrongestSiege(_ card: Card) async {}
+        let cards = opponent.discard.filter { $0.type == .unit }
 
-    func applyDrawExtraCard(_ card: Card) async {}
-    func applyPickFrostAndPlay(_ card: Card) async {}
-    func applyDestroyStrongestClose(_ card: Card) async {}
-    func applyDoubleRangedPower(_ card: Card) async {}
+        if cards.isEmpty {
+            print("Discard is empty")
+            return completion()
+        }
+
+        if currentPlayer.isBot {
+            // let card = game.aiStrategy.medic(cards: cards)
+//            opponent.removeFromContainer(card: card, .discard)
+//            currentPlayer.addToContainer(card: card, .hand)
+
+            return completion()
+        }
+
+        let carousel = Carousel(
+            cards: cards,
+            count: 1,
+            title: "Pick a card",
+            onSelect: { card in
+                opponent.removeFromContainer(card: card, .discard)
+                currentPlayer.addToContainer(card: card, .hand)
+            },
+            completion: completion
+        )
+
+        game.ui.showCarousel(carousel)
+    }
+
+//    func applyDisableLeaderAbility(_ card: Card) async {}
+
+    func applyDrawFromDiscard(_ card: Card, completion: @escaping () -> Void) {
+        guard let currentPlayer = game.currentPlayer else {
+            return
+        }
+
+        let cards = currentPlayer.discard.filter { $0.type == .unit }
+
+        if cards.isEmpty {
+            print("My Discard is empty")
+            return completion()
+        }
+
+        if currentPlayer.isBot {
+            // let card=           game.aiStrategy.medic(cards: cards)
+//            currentPlayer.removeFromContainer(card: card, .discard)
+//            currentPlayer.addToContainer(card: card, .hand)
+            return completion()
+        }
+
+        let carousel = Carousel(
+            cards: cards,
+            count: 1,
+            title: "Pick a card",
+            onSelect: { card in
+                withAnimation(.smooth(duration: 0.5)) {
+                    currentPlayer.swapContainers(card, from: .discard, to: .hand)
+                }
+            },
+            completion: completion
+        )
+
+        game.ui.showCarousel(carousel)
+    }
+
+    func applyDoubleClosePower(_ card: Card) async {
+        await processDoublePower(rowType: .close)
+    }
+
+    func applyDiscardAndDraw(_ card: Card, completion: @escaping () -> Void) {
+        guard let currentPlayer = game.currentPlayer else {
+            return
+        }
+
+        let hand = currentPlayer.hand
+
+        if hand.count < 2 {
+            print("Current player hand size <2")
+            return completion()
+        }
+
+        if currentPlayer.isBot {
+            for _ in 0 ..< 2 {
+                let randomToRemove = hand.randomElement()!
+
+                currentPlayer.removeFromContainer(card: randomToRemove, .hand)
+                currentPlayer.addToContainer(card: randomToRemove, .discard)
+            }
+
+            let randomToDraw = currentPlayer.deck.cards.randomElement()!
+
+            currentPlayer.removeFromContainer(card: randomToDraw, .deck)
+            currentPlayer.addToContainer(card: randomToDraw, .hand)
+
+            return completion()
+        }
+
+        let carouselForDrawing = Carousel(
+            cards: currentPlayer.deck.cards,
+            title: "Choose a card to draw",
+            onSelect: { card in
+                currentPlayer.removeFromContainer(card: card, .deck)
+                currentPlayer.addToContainer(card: card, .hand)
+            },
+            completion: completion
+        )
+
+        let carouselForDiscarding = Carousel(
+            cards: hand,
+            count: 2,
+            title: "Choose a card to discard",
+            onSelect: { card in
+                guard let index = self.game.ui.carousel!.cards.firstIndex(where: { $0.id == card.id }) else {
+                    return
+                }
+
+                self.game.ui.carousel!.cards.remove(at: index)
+
+                currentPlayer.removeFromContainer(card: card, .hand)
+                currentPlayer.addToContainer(card: card, .discard)
+            },
+            completion: {
+                Task { @MainActor in
+                    try? await Task.sleep(for: .seconds(0.5))
+
+                    self.game.ui.showCarousel(carouselForDrawing)
+                }
+            }
+        )
+
+        game.ui.showCarousel(carouselForDiscarding)
+    }
+
+    func applyPickWeatherAndPlay(_ card: Card, completion: @escaping () -> Void) async {
+        guard let currentPlayer = game.currentPlayer else {
+            return
+        }
+
+        let cards = currentPlayer.deck.cards.filter { $0.type == .weather }
+
+        if cards.isEmpty {
+            print("No weather cards in your deck.")
+            return completion()
+        }
+
+        if currentPlayer.isBot {
+            let random = cards.randomElement()!
+
+            await playWeather(random, from: .deck)
+
+            return completion()
+        }
+
+        let carousel = Carousel(
+            cards: cards,
+            title: "Pick a weather to play",
+            onSelect: { card in
+                Task {
+                    await self.playWeather(card, from: .deck)
+                }
+            },
+            completion: completion
+        )
+
+        game.ui.showCarousel(carousel)
+    }
+
+    func applyPickFogAndPlay(_ card: Card) async {
+        await processPickOneWeather(.impenetrableFog)
+    }
+
+    func applyClearWeather(_ card: Card) async {
+        var clearWeather = Card.all2[25]
+        clearWeather.isCreatedByLeader = true
+        clearWeather.id *= 123
+
+        await playWeather(clearWeather, from: .deck)
+    }
+
+    func applyDoubleSiegePower(_ card: Card) async {
+        await processDoublePower(rowType: .siege)
+    }
+
+    func applyDestroyStrongestSiege(_ card: Card) async {
+        await processDestroyStrongest(rowType: .siege)
+    }
+
+    func applyPickFrostAndPlay(_ card: Card) async {
+        await processPickOneWeather(.bitingFrost)
+    }
+
+    func applyDestroyStrongestClose(_ card: Card) async {
+        await processDestroyStrongest(rowType: .close)
+    }
+
+    func applyDoubleRangedPower(_ card: Card) async {
+        await processDoublePower(rowType: .ranged)
+    }
+}
+
+// MARK: Leader abilities helpers
+
+private extension CardActions {
+    @MainActor
+    func processDestroyStrongest(rowType: Card.Row) async {
+        guard let opponent = game.opponent else {
+            return
+        }
+
+        let row = opponent.getRow(rowType)
+
+        let totalPower = row.totalPower
+
+        if totalPower < 10 {
+            return
+        }
+        let max = row.cards
+            .filter { $0.type != .hero }
+            .compactMap { $0.availablePower }
+            .max()
+
+        guard let max else {
+            return
+        }
+
+        let scorched = row.cards.filter { $0.availablePower == max }
+
+        await withTaskGroup(of: Void.self) { group in
+            for card in scorched {
+                group.addTask {
+                    await opponent.animateInContainer(card: card, as: .scorch, .row(rowType))
+                }
+            }
+        }
+
+        for card in scorched {
+            withAnimation(.smooth(duration: 0.3)) {
+                opponent.swapContainers(card, from: .row(rowType), to: .discard)
+            }
+        }
+    }
+
+    func processDoublePower(rowType: Card.Row) async {
+        guard let currentPlayer = game.currentPlayer else {
+            return
+        }
+
+        guard currentPlayer.getRow(rowType).horn == nil else {
+            print("Horn is already exist")
+            return
+        }
+
+        var horn = Card.all2[27]
+
+        horn.id *= 123
+        horn.isCreatedByLeader = true
+        /// Буде помилка, що не видалено картку з контейнера, бо ми її щойно створили і її немає в ніякому контейнері.
+        currentPlayer.applyHorn(horn, row: rowType)
+
+        /// Затримка після анімації переміщення картки
+        try? await Task.sleep(for: .seconds(0.3))
+    }
+
+    func processPickOneWeather(_ weatherType: Card.Weather) async {
+        guard let currentPlayer = game.currentPlayer else {
+            return
+        }
+
+        guard let weather = currentPlayer.deck.cards.first(where: { $0.weather == weatherType }) else {
+            return
+        }
+
+        await playWeather(weather, from: .deck)
+    }
 }

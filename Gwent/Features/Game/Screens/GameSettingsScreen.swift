@@ -19,7 +19,6 @@ struct GameSettingsScreen: View {
                 vm.settings.toggleScreen()
             }
             Button("Alert") {
-              
 //                vm.ui.showAlert(
 //                    AlertItem(
 //                        title: "Title",
@@ -37,20 +36,6 @@ struct GameSettingsScreen: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(.black.opacity(0.9))
         .ignoresSafeArea()
-//        .alert(isPresented: $vm.ui.isAlertPresented)
-//        .alert(Text()
-        .alert(vm.ui.alert?.title ?? "", isPresented: $vm.ui.isAlertPresented) {
-            if let alert = vm.ui.alert {
-                Group {
-                    Button(alert.confirmButton.title, action: alert.confirmButton.action)
-                    Button(alert.cancelButton.title, role: .cancel, action: alert.cancelButton.action)
-                }
-            }
-        } message: {
-            if let alert = vm.ui.alert {
-                Text(alert.description)
-            }
-        }
     }
 }
 

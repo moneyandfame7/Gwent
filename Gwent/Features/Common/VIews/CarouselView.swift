@@ -19,7 +19,8 @@ struct CarouselView: View {
     private let shadowRadius: CGFloat = 10
 
     private var activeCard: Card? {
-        carousel!.cards.first(where: { $0.id == activeID })
+        carousel?.cards.first(where: { $0.id == activeID }) ??
+            carousel?.cards.first(where: { $0.id == carousel?.initID })
     }
 
     // MARK: Functions
@@ -35,7 +36,7 @@ struct CarouselView: View {
         }
 
         selectAction(card)
-        
+
         if let count = carousel?.count {
             selectedCount += 1
 
@@ -89,46 +90,6 @@ struct CarouselView: View {
             .shadow(color: .brandYellow, radius: isActive ? shadowRadius : 0)
     }
 
-    @ViewBuilder
-    private func abilityView(ability: Card.Ability) -> some View {
-        let abilityInfo = Ability.all[ability.rawValue]!
-
-        VStack(spacing: 15) {
-            Text(abilityInfo.name)
-                .font(.custom("Gwent", size: 28, relativeTo: .title))
-                .foregroundStyle(.brandYellowSecondary)
-            Text(abilityInfo.description)
-                .font(.custom("PTSans-Regular", size: 16, relativeTo: .body))
-                .foregroundStyle(.brandYellowSecondary)
-        }
-        .frame(maxWidth: .infinity)
-        .background(.black.opacity(0.8))
-        .overlay(alignment: .topLeading) {
-            Image("Abilities/\(ability.rawValue)")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 30, height: 30)
-        }
-        .safeAreaPadding(10)
-        .padding(.bottom, 50)
-    }
-
-    @ViewBuilder
-    private func leaderAbilityView(ability: Card.LeaderAbility) -> some View {
-        let text = Ability.leaders[ability.rawValue]!
-
-        VStack(spacing: 0) {
-            Text(text)
-                .font(.custom("Gwent", size: 16, relativeTo: .body))
-                .multilineTextAlignment(.center)
-                .foregroundStyle(.brandYellowSecondary)
-        }
-        .frame(maxWidth: .infinity)
-        .background(.black.opacity(0.8))
-        .safeAreaPadding(25)
-        .padding(.bottom, 50)
-    }
-
     var body: some View {
         VStack(spacing: 15) {
             if let title = carousel?.title, !title.isEmpty {
@@ -139,7 +100,7 @@ struct CarouselView: View {
             VStack(spacing: 0) {
                 ScrollView(.horizontal, showsIndicators: false) {
                     LazyHStack(spacing: 10) {
-                        ForEach(carousel!.cards) { card in
+                        ForEach(carousel?.cards ?? []) { card in
                             itemView(card: card)
                         }
                     }
@@ -150,17 +111,14 @@ struct CarouselView: View {
                 .safeAreaPadding(.horizontal, 80)
                 .frame(height: cardHeight + shadowRadius + 25)
                 Spacer()
-                if let ability = activeCard?.ability {
-                    abilityView(ability: ability)
-                }
-                if let leaderAbility = activeCard?.leaderAbility {
-                    leaderAbilityView(ability: leaderAbility)
+                if let activeCard {
+                    AbilityView(card: activeCard)
                 }
             }
             .frame(maxWidth: .infinity)
 
             HStack {
-                if let cancelButton = carousel!.cancelButton {
+                if let cancelButton = carousel?.cancelButton {
                     BrandButton2(title: cancelButton) {
                         onClose()
                     }

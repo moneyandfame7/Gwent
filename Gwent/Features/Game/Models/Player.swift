@@ -29,6 +29,7 @@ class Player {
         }
     }
 
+    /// Означає, що лідер вже використаний / заблоковано іншим лідером ( .cancelLeaderAbility ).
     var isLeaderAvailable = false
 
     var canPlay: Bool {
@@ -118,7 +119,9 @@ extension Player {
             return
         }
         withAnimation(.smooth(duration: 0.3)) {
-            removeFromContainer(card: card, container)
+            if !card.isCreatedByLeader {
+                removeFromContainer(card: card, container)
+            }
             rows[rowIndex].horn = card
         }
     }
@@ -153,6 +156,8 @@ extension Player {
         guard bonds.count > 1 else {
             return
         }
+
+        SoundManager.shared.playSound(sound: .tightBond)
 
         for card in bonds {
             guard let cardIndex = rows[rowIndex].cards.firstIndex(where: { $0.id == card.id }) else {
@@ -211,7 +216,7 @@ extension Player {
 
         rows[rowIndex].cards[cardIndex].shouldAnimate = false
 
-        try? await Task.sleep(for: .seconds(1))
+//        try? await Task.sleep(for: .seconds(1))
 
         for card in handUnits {
             if let rowType = card.availableRow {
@@ -259,8 +264,17 @@ extension Player {
             for i in rows.indices {
                 let cards = rows[i].cards
 
+                if let horn = rows[i].horn {
+                    rows[i].horn = nil
+                    if !horn.isCreatedByLeader {
+                        addToContainer(card: horn, .discard)
+                    }
+                }
+
                 rows[i].cards.removeAll(where: { $0.id != cardException?.id })
                 discard.append(contentsOf: cards.filter { $0.id != cardException?.id })
+
+                rows[i].moraleBoost = 0
             }
         }
     }
@@ -269,23 +283,54 @@ extension Player {
 // MARK: Container helpers
 
 extension Player {
-    func addToContainer(card: Card, _ container: CardContainer) {
+    func swapContainers(_ card: Card, from source: CardContainer, to destination: CardContainer) {
+        removeFromContainer(card: card, source)
+        addToContainer(card: card, destination)
+    }
+
+    func insertToContainer(_ card: Card, _ container: CardContainer, at: Int) {
+        var copy = card
+        copy.editedPower = nil
+
         switch container {
         case .hand:
-            hand.append(card)
+            hand.insert(copy, at: at)
+        case .deck:
+            deck.cards.insert(copy, at: at)
+        case .discard:
+            discard.insert(copy, at: at)
+        case let .row(rowType):
+            guard let rowIndex = rows.firstIndex(where: { $0.type == rowType }) else {
+                return
+            }
+            rows[rowIndex].addCard(copy, at: at)
+
+        default:
+            print("Unsupported container in Player <insertToContainer>")
+            return
+        }
+    }
+
+    func addToContainer(card: Card, _ container: CardContainer) {
+        var copy = card
+        copy.editedPower = nil
+        
+        switch container {
+        case .hand:
+            hand.append(copy)
 
         case .deck:
-            deck.cards.append(card)
+            deck.cards.append(copy)
 
         case .discard:
-            discard.append(card)
+            discard.append(copy)
 
         case let .row(rowType):
             guard let rowIndex = rows.firstIndex(where: { $0.type == rowType }) else {
                 print("Row index hui pizda")
                 fatalError()
             }
-            return rows[rowIndex].addCard(card)
+            return rows[rowIndex].addCard(copy)
 
         default:
             fatalError("Unsupported container in Player")
@@ -309,6 +354,19 @@ extension Player {
 
             rows[rowIndex].cards[cardIndex].shouldAnimate = false
             rows[rowIndex].cards[cardIndex].animateAs = nil
+        default:
+            print("‼️ Not realized")
+        }
+    }
+
+    func removeFromContainer(at: Int, _ container: CardContainer) {
+        switch container {
+        case .hand:
+            hand.remove(at: at)
+        case .deck:
+            deck.cards.remove(at: at)
+        case .discard:
+            discard.remove(at: at)
         default:
             print("‼️ Not realized")
         }

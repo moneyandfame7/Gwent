@@ -24,39 +24,28 @@ final class GameUI {
         }
     }
 
-    var carousel: Carousel? {
-        didSet {
-            isDisabled = notification != nil
-        }
-    }
+    var carousel: Carousel?
 
-    var alert: AlertItem? {
-        didSet {
-            isAlertPresented = alert != nil
-            isDisabled = alert != nil
-        }
-    }
+    var alert: AlertItem?
 
-    var isAlertPresented: Bool = false
+    var selectedCard: SelectedCard?
 
-    var selectedCard: Card?
-    
     var selectedRow: Row?
 
     var isDisabled = false
-    
+
     var isPassButtonDisabled = true
 
-    func selectCard(_ card: Card) -> Void {
-        if selectedCard?.id == card.id {
+    func selectCard(_ card: Card, holder: Tag = .me) -> Void {
+        if selectedCard?.details.id == card.id {
             selectedCard = nil
         } else {
-            selectedCard = card
+            selectedCard = SelectedCard(details: card, holder: holder)
         }
     }
 
     func isCardSelected(_ card: Card) -> Bool {
-        return card.id == selectedCard?.id
+        return card.id == selectedCard?.details.id
     }
 
     @MainActor
@@ -77,7 +66,9 @@ final class GameUI {
     }
 
     func showCarousel(_ carousel: Carousel) {
-        self.carousel = carousel
+        withAnimation {
+            self.carousel = carousel
+        }
     }
 
     func showAlert(_ alert: AlertItem) {

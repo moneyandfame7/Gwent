@@ -22,6 +22,12 @@ extension Array {
     func randomIndex() -> Int {
         return Int.random(in: startIndex ... endIndex)
     }
+}
+
+extension Array where Element: Identifiable {
+    public subscript(id: Element.ID) -> Element? {
+        first { $0.id == id }
+    }
 
     func randomElements(where predicate: ((Element) -> Bool)? = nil, count: Int = 1) -> [Element] {
         /// self.isEmpty
@@ -38,7 +44,13 @@ extension Array {
         var randomized: [Element] = []
 
         for _ in 0 ..< count {
-            randomized.append(randomElement()!)
+            guard let randomEl = randomElement(where: { random in
+                !randomized.contains(where: { $0.id == random.id })
+            }) else {
+                break
+            }
+
+            randomized.append(randomEl)
         }
 
         return randomized
