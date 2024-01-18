@@ -33,14 +33,14 @@ final class GameViewModel {
     /// Players, based on game progress.
     var firstPlayer: Player?
 
-    var currentPlayer: Player? {
-        didSet {
-            if let currentPlayer {
-                ui.isDisabled = currentPlayer.isBot
-            }
-        }
-    }
-
+    var currentPlayer: Player?
+//    {
+//        didSet {
+//            if let currentPlayer {
+//                ui.isDisabled = currentPlayer.isBot
+//            }
+//        }
+//    }
     var leadingPlayer: Player? {
         if player.totalScore > bot.totalScore {
             return player

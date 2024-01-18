@@ -20,7 +20,9 @@ final class GameUI {
 
     var notification: Notification? {
         didSet {
-            isDisabled = notification != nil
+            if notification != nil {
+                isDisabled = true
+            }
         }
     }
 
@@ -32,7 +34,7 @@ final class GameUI {
 
     var selectedRow: Row?
 
-    var isDisabled = false
+    var isDisabled = true
 
     var isPassButtonDisabled = true
 
@@ -58,21 +60,19 @@ final class GameUI {
             }
 
             try? await Task.sleep(for: .seconds(1))
-        } else {
-            if card.type == .leader || card.type == .special && card.ability == .scorch {
-                withAnimation(.smooth(duration: 0.3)) {
-                    selectedCard?.isReadyToUse = true
-                }
-                try? await Task.sleep(for: .seconds(0.7))
-
-                Task { @MainActor in
-                    try? await Task.sleep(for: .seconds(0.3))
-                    selectedCard = nil
-                }
+        } else if card.type == .leader || card.type == .special && card.ability == .scorch {
+            withAnimation(.smooth(duration: 0.3)) {
+                selectedCard?.isReadyToUse = true
             }
+            try? await Task.sleep(for: .seconds(0.7))
 
-            selectedCard = nil
+            Task { @MainActor in
+                try? await Task.sleep(for: .seconds(0.3))
+                selectedCard = nil
+            }
         }
+
+        selectedCard = nil
     }
 
     func isCardSelected(_ card: Card) -> Bool {
@@ -81,11 +81,15 @@ final class GameUI {
 
     @MainActor
     func showNotification(_ notification: Notification) async -> Void {
+        let duration = notification == .coinMe || notification == .coinOp ? 2 : 1.5
+
+        if self.notification != nil {
+            try? await Task.sleep(for: .seconds(duration))
+        }
+
         withAnimation {
             self.notification = notification
         }
-
-        let duration = notification == .coinMe || notification == .coinOp ? 2 : 1.5
 
         try? await Task.sleep(for: .seconds(duration))
 

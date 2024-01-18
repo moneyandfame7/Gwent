@@ -231,7 +231,7 @@ extension Player {
             /// animate as musterInserted???
         }
 
-        try? await Task.sleep(for: .seconds(0.5))
+//        try? await Task.sleep(for: .seconds(0.5))
     }
 }
 

@@ -60,10 +60,10 @@ struct Row {
         cards.insert(copy, at: at ?? randomPositionAtRow)
     }
 
-    func calculateCardPower(_ card: Card) -> Int {
+    func calculateCardPower(_ card: Card) -> Int? {
         var total: Int = card.power ?? 0
         if card.type == .hero {
-            return total
+            return nil
         }
 
         if hasWeather {

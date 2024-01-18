@@ -29,6 +29,10 @@ final class CardActions {
             return
         }
 
+        if !currentPlayer.isBot {
+            game.ui.isDisabled = true
+        }
+
         await game.ui.animateCardUsage(card, holder: currentPlayer.tag)
 
         if card.type == .leader {

@@ -174,6 +174,7 @@ final class GameFlow {
         }
 
         if currentPlayer.isBot {
+            game.ui.isDisabled = true
             await game.aiStrategy.startTurn()
         } else {
             game.ui.isDisabled = false
