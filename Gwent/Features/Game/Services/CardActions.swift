@@ -29,19 +29,7 @@ final class CardActions {
             return
         }
 
-        if card.type == .leader || card.type == .special && card.ability == .scorch {
-            withAnimation(.smooth(duration: 0.3)) {
-                game.ui.selectedCard?.isReadyToUse = true
-            }
-            try? await Task.sleep(for: .seconds(0.7))
-
-            Task { @MainActor in
-                try? await Task.sleep(for: .seconds(0.3))
-                game.ui.selectedCard = nil
-            }
-        } else {
-            game.ui.selectedCard = nil
-        }
+        await game.ui.animateCardUsage(card, holder: currentPlayer.tag)
 
         if card.type == .leader {
             return await playLeader(card)
@@ -149,7 +137,6 @@ final class CardActions {
             currentPlayer.moveCard(card, from: container, to: rowType)
 
             if card.ability == .tightBond {
-
                 currentPlayer.applyTightBond(card, rowType: rowType)
 
             } else if card.ability == .muster {
@@ -189,7 +176,7 @@ private extension CardActions {
                 .compactMap { $0.editedPower ?? $0.power }
             }
             .max()
-        
+
         SoundManager.shared.playSound(sound: .scorch)
 
         withAnimation(.smooth(duration: 0.7)) {
@@ -221,7 +208,6 @@ private extension CardActions {
             currentPlayerScorch[row.type] = shouldScorch
         }
 
-        
         /// Animate scorch for target cards
         await withTaskGroup(of: Void.self) { group in
 //            group.addTask {

@@ -38,7 +38,10 @@ struct RowView: View {
         guard let selectedCardDetails = vm.ui.selectedCard?.details else {
             return false
         }
-        
+        if isMe && vm.ui.selectedCard?.holder == .bot {
+            return false
+        }
+
         if selectedCardDetails.ability == .decoy {
             return false
         }

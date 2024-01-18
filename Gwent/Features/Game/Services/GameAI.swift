@@ -32,6 +32,7 @@ final class GameAI {
         print("‼️ GameAI - Deinit -")
     }
 
+    @MainActor
     func startTurn() async {
         guard let opponent = game.opponent else {
             return
@@ -72,7 +73,7 @@ final class GameAI {
     func medic(cards: [Card]) {
 //        cards.max(by: {$0.availablePower < $1.availablePower})
     }
-    
+
     /// Обирати рандомну картку: GameAINormal
     /// якщо немає сенсу використовувати - перевебирання або пасувати
     /// якщо це скорч - юзати якщо має сенс ( у плеєра має бути декілька карток з однаковою силою чи шось таке )

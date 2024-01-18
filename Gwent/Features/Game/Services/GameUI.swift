@@ -44,6 +44,37 @@ final class GameUI {
         }
     }
 
+    @MainActor
+    /// Ця функція використовується перед самим застосуванням картки.
+    /// Якщо це бот, то потрібно показувати картку, а якщо Я - дія з карткою залежить від її типу.
+    func animateCardUsage(_ card: Card, holder: Tag) async {
+        if holder == .bot {
+            selectCard(card, holder: .bot)
+
+            try? await Task.sleep(for: .seconds(0.5))
+
+            withAnimation(.smooth(duration: 0.3)) {
+                selectedCard?.isReadyToUse = true
+            }
+
+            try? await Task.sleep(for: .seconds(1))
+        } else {
+            if card.type == .leader || card.type == .special && card.ability == .scorch {
+                withAnimation(.smooth(duration: 0.3)) {
+                    selectedCard?.isReadyToUse = true
+                }
+                try? await Task.sleep(for: .seconds(0.7))
+
+                Task { @MainActor in
+                    try? await Task.sleep(for: .seconds(0.3))
+                    selectedCard = nil
+                }
+            }
+
+            selectedCard = nil
+        }
+    }
+
     func isCardSelected(_ card: Card) -> Bool {
         return card.id == selectedCard?.details.id
     }
