@@ -47,8 +47,6 @@
 		169D495A2B499D0A00BCDE6B /* GameSettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 169D49592B499D0A00BCDE6B /* GameSettingsScreen.swift */; };
 		169D495C2B499D1D00BCDE6B /* GameSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 169D495B2B499D1D00BCDE6B /* GameSettings.swift */; };
 		169D495E2B499F3500BCDE6B /* GameEndScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 169D495D2B499F3500BCDE6B /* GameEndScreen.swift */; };
-		169EAAAD2B4D75F1005B1233 /* FactionAbilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 169EAAAC2B4D75F1005B1233 /* FactionAbilities.swift */; };
-		169EAAAF2B4D7AF6005B1233 /* GameEventManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 169EAAAE2B4D7AF6005B1233 /* GameEventManager.swift */; };
 		169EAAB12B4D8D70005B1233 /* AlertItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 169EAAB02B4D8D70005B1233 /* AlertItem.swift */; };
 		16B6EE702B335E8400FD2CB2 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16B6EE6F2B335E8400FD2CB2 /* Application.swift */; };
 		16B6EE722B335E8400FD2CB2 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16B6EE712B335E8400FD2CB2 /* ContentView.swift */; };
@@ -118,8 +116,6 @@
 		169D49592B499D0A00BCDE6B /* GameSettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSettingsScreen.swift; sourceTree = "<group>"; };
 		169D495B2B499D1D00BCDE6B /* GameSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSettings.swift; sourceTree = "<group>"; };
 		169D495D2B499F3500BCDE6B /* GameEndScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameEndScreen.swift; sourceTree = "<group>"; };
-		169EAAAC2B4D75F1005B1233 /* FactionAbilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactionAbilities.swift; sourceTree = "<group>"; };
-		169EAAAE2B4D7AF6005B1233 /* GameEventManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameEventManager.swift; sourceTree = "<group>"; };
 		169EAAB02B4D8D70005B1233 /* AlertItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertItem.swift; sourceTree = "<group>"; };
 		16B6EE6C2B335E8400FD2CB2 /* Gwent.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Gwent.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		16B6EE6F2B335E8400FD2CB2 /* Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
@@ -447,8 +443,6 @@
 				16F98EF72B4C3010004A8413 /* GameFlow.swift */,
 				16F98EF92B4C3022004A8413 /* CardActions.swift */,
 				16F98EFB2B4C3A93004A8413 /* GameAI.swift */,
-				169EAAAC2B4D75F1005B1233 /* FactionAbilities.swift */,
-				169EAAAE2B4D7AF6005B1233 /* GameEventManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -558,7 +552,6 @@
 				1673636E2B4DEB0C007D11E4 /* AlertView.swift in Sources */,
 				1687EBDB2B3C6BD10087555D /* IconButton.swift in Sources */,
 				169A2CED2B35BFEA00FB1583 /* CardDetailsView.swift in Sources */,
-				169EAAAF2B4D7AF6005B1233 /* GameEventManager.swift in Sources */,
 				1678FC7A2B3EE9F8006617CA /* GameViewModel.swift in Sources */,
 				1678FC7E2B3F0F7A006617CA /* BrandButton.swift in Sources */,
 				1645C5462B34A04100E12323 /* FogView.swift in Sources */,
@@ -583,7 +576,6 @@
 				16331CDF2B4F00A10047540C /* CardFlipAnimationView.swift in Sources */,
 				160346852B37304D00FFDB13 /* Round.swift in Sources */,
 				1645C54C2B34A44A00E12323 /* SoundManager.swift in Sources */,
-				169EAAAD2B4D75F1005B1233 /* FactionAbilities.swift in Sources */,
 				162F3E202B4714EC00D19AFE /* NotificationView.swift in Sources */,
 				169D494F2B499A3C00BCDE6B /* DeckViewModel.swift in Sources */,
 				1678FC802B3F1666006617CA /* PlayerStatsView.swift in Sources */,

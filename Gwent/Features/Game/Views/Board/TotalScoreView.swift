@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct TotalScoreView: View {
-//    var isMe: Bool
+    @Environment(GameViewModel.self) private var vm
 
     var player: Player
     var leadingPlayer: Player?
@@ -59,7 +59,7 @@ struct TotalScoreView: View {
                         .frame(width: 70, height: 70)
                 }
             }
-            .shadow(color: .brandYellow, radius: isCurrent ? 15 : 0)
+            .shadow(color: .brandYellow, radius: isCurrent && !vm.ui.isTurnHighlightDisabled ? 15 : 0)
             if player.isPassed {
                 Text("Passed")
                     .font(.title3)
@@ -82,4 +82,5 @@ struct TotalScoreView: View {
 
         TotalScoreView(player: GameViewModel.preview.player, leadingPlayer: leadingPlayer)
     }
+    .environment(GameViewModel.preview)
 }

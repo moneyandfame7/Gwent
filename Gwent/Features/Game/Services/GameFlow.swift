@@ -21,35 +21,20 @@ final class GameFlow {
     }
 
     func startGame() {
-        defineFirstPlayer { player, notification in
-            self.game.firstPlayer = player
-            self.game.currentPlayer = player
+        defineFirstPlayer { [unowned self] player, notification in
+            game.firstPlayer = player
 
-            Task { @MainActor in
-//                try? await Task.sleep(for: .seconds(0.5))
+            if game.player.leader.leaderAbility == .cancelLeaderAbility {
+                game.bot.isLeaderAvailable = false
+            }
+            if game.bot.leader.leaderAbility == .cancelLeaderAbility {
+                game.player.isLeaderAvailable = false
+            }
+            
+            Task {
+                await game.ui.showNotification(notification)
 
-                await self.game.ui.showNotification(notification)
-
-                SoundManager.shared.playSound(sound: .deck)
-
-                for _ in 0 ..< 10 {
-                    /// Delay between drawing 1 card.
-                    try? await Task.sleep(for: .seconds(0.1))
-                    withAnimation(.smooth(duration: 0.3)) {
-                        self.game.player.drawCard()
-                        self.game.bot.drawCard()
-                    }
-                }
-                if self.game.player.deck.leader.leaderAbility == .drawExtraCard {
-                    withAnimation(.smooth(duration: 0.3)) {
-                        self.game.player.drawCard()
-                    }
-                }
-                if self.game.bot.deck.leader.leaderAbility == .drawExtraCard {
-                    withAnimation(.smooth(duration: 0.3)) {
-                        self.game.player.drawCard()
-                    }
-                }
+                await dealCards()
 
                 withAnimation(.smooth(duration: 0.3)) {
                     self.initialRedraw()
@@ -75,7 +60,8 @@ final class GameFlow {
         game.roundCount += 1
 
         /// Ось це ЛОГІЧНО неправильно, але вирішити не можу поки що.
-        game.currentPlayer = (game.roundCount % 2 == 0) ? game.firstPlayer : game.opponent
+
+        game.currentPlayer = (game.roundCount % 2 == 0) ? game.firstPlayer : game.getOpponent(for: game.firstPlayer!)
 
         // MARK: #FactionAbility - Northern Realms
 
@@ -163,6 +149,7 @@ final class GameFlow {
             return
         }
 
+        game.ui.isTurnHighlightDisabled = false
         if !opponent.isPassed {
             game.currentPlayer = opponent
 
@@ -185,6 +172,8 @@ final class GameFlow {
         guard let currentPlayer = game.currentPlayer else {
             return
         }
+        game.ui.isTurnHighlightDisabled = true
+
         if !currentPlayer.isPassed && !currentPlayer.canPlay {
             currentPlayer.passRound()
         }
@@ -212,6 +201,31 @@ private extension GameFlow {
         await game.ui.showNotification(game.firstPlayer!.isBot ? .coinOp : .coinMe)
     }
 
+    @MainActor
+    func dealCards() async {
+        SoundManager.shared.playSound(sound: .deck)
+
+        // TODO: move to dealCards
+        for _ in 0 ..< 10 {
+            /// Delay between drawing 1 card.
+            try? await Task.sleep(for: .seconds(0.1))
+            withAnimation(.smooth(duration: 0.3)) {
+                self.game.player.drawCard()
+                self.game.bot.drawCard()
+            }
+        }
+        if game.player.deck.leader.leaderAbility == .drawExtraCard {
+            withAnimation(.smooth(duration: 0.3)) {
+                self.game.player.drawCard()
+            }
+        }
+        if game.bot.deck.leader.leaderAbility == .drawExtraCard {
+            withAnimation(.smooth(duration: 0.3)) {
+                self.game.player.drawCard()
+            }
+        }
+    }
+
     func initialRedraw() {
         /// Bot redraw
         game.aiStrategy.initialRedraw()
@@ -234,28 +248,19 @@ private extension GameFlow {
                     game.ui.carousel!.cards.insert(random, at: index)
 
                     /// Move selected card to deck.
-                    ///
                     game.player.swapContainers(card, from: .hand, to: .deck)
-//                    game.player.removeFromContainer(at: index, .hand)
-//                    game.player.addToContainer(card: card, .deck)
 
                     /// Move random card to hand.
                     game.player.removeFromContainer(card: random, .deck)
                     game.player.insertToContainer(random, .hand, at: index)
-//
-//                    game.player.removeFromContainer(card: card, .hand)
-//                    game.player.addToContainer(card: card, .deck)
-//
-//                    game.player.removeFromContainer(card: random, .deck)
-//                    game.player.addToContainer(card: random, .hand)
 
                 },
-                completion: {
+                completion: { [unowned self] in
                     Task {
                         /// Delay before showing the ".roundStart" notification
                         try? await Task.sleep(for: .seconds(0.4))
 
-                        await self.startRound()
+                        await startRound()
                     }
                 }
             )
@@ -334,11 +339,11 @@ private extension GameFlow {
                 AlertItem(
                     title: "Would you like to go first",
                     description: "The Scoia'tael faction perk allows you to decide who will get to go first",
-                    cancelButton: ("Let Opponent Start", {
-                        completion(self.game.bot, .coinOp)
+                    cancelButton: ("Let Opponent Start", { [unowned self] in
+                        completion(game.bot, .coinOp)
                     }),
-                    confirmButton: ("Go First", {
-                        completion(self.game.player, .coinMe)
+                    confirmButton: ("Go First", { [unowned self] in
+                        completion(game.player, .coinMe)
                     })
                 )
             )

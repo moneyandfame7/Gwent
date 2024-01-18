@@ -28,7 +28,6 @@ final class GameViewModel {
 
     private(set) var aiStrategy: GameAI!
 
-    let eventManager = GameEventManager()
 
     /// Players, based on game progress.
     var firstPlayer: Player?
@@ -99,11 +98,6 @@ final class GameViewModel {
     }
 
     func startGame() {
-        eventManager.attach(for: .turnStart) {
-            print("Game handler trigger")
-            try? await Task.sleep(for: .seconds(2))
-            return nil
-        }
         flow.startGame()
     }
 

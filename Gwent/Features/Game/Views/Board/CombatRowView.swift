@@ -33,12 +33,10 @@ struct RowView: View {
     }
 
     private var isSelectable: Bool {
-        // якщо це якась спеціальна картка там напевно можна обирати ряд у суперника, але це пізніше
-
         guard let selectedCardDetails = vm.ui.selectedCard?.details else {
             return false
         }
-        if isMe && vm.ui.selectedCard?.holder == .bot {
+        if vm.ui.selectedCard?.holder == .bot {
             return false
         }
 

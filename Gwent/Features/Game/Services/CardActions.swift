@@ -669,21 +669,21 @@ private extension CardActions {
             cards: hand,
             count: 2,
             title: "Choose a card to discard",
-            onSelect: { card in
-                guard let index = self.game.ui.carousel!.cards.firstIndex(where: { $0.id == card.id }) else {
+            onSelect: { [unowned self] card in
+                guard let index = game.ui.carousel!.cards.firstIndex(where: { $0.id == card.id }) else {
                     return
                 }
 
-                self.game.ui.carousel!.cards.remove(at: index)
+                game.ui.carousel!.cards.remove(at: index)
 
                 currentPlayer.removeFromContainer(card: card, .hand)
                 currentPlayer.addToContainer(card: card, .discard)
             },
-            completion: {
+            completion: { [unowned self] in
                 Task { @MainActor in
                     try? await Task.sleep(for: .seconds(0.5))
 
-                    self.game.ui.showCarousel(carouselForDrawing)
+                    game.ui.showCarousel(carouselForDrawing)
                 }
             }
         )
@@ -714,9 +714,9 @@ private extension CardActions {
         let carousel = Carousel(
             cards: cards,
             title: "Pick a weather to play",
-            onSelect: { card in
+            onSelect: { [unowned self] card in
                 Task {
-                    await self.playWeather(card, from: .deck)
+                    await playWeather(card, from: .deck)
                 }
             },
             completion: completion

@@ -37,6 +37,8 @@ final class GameUI {
     var isDisabled = true
 
     var isPassButtonDisabled = true
+    
+    var isTurnHighlightDisabled = true
 
     func selectCard(_ card: Card, holder: Tag = .me) -> Void {
         if selectedCard?.details.id == card.id {
