@@ -114,16 +114,28 @@ extension Player {
 // MARK: Abilities
 
 extension Player {
-    func applyHorn(_ card: Card, row: Card.Row, from container: CardContainer = .hand) {
-        guard let rowIndex = rows.firstIndex(where: { $0.type == row }) else {
+    func playHorn(_ card: Card, rowType: Card.Row, from container: CardContainer = .hand) {
+        guard let rowIndex = rows.firstIndex(where: { $0.type == rowType }) else {
             return
         }
+
+        SoundManager.shared.playSound(sound: .horn)
         withAnimation(.smooth(duration: 0.3)) {
             if !card.isCreatedByLeader {
                 removeFromContainer(card: card, container)
             }
             rows[rowIndex].horn = card
         }
+    }
+
+    func applyHorn(_ card: Card, rowType: Card.Row, from container: CardContainer = .hand) {
+        guard let rowIndex = rows.firstIndex(where: { $0.type == rowType }) else {
+            return
+        }
+        
+        SoundManager.shared.playSound(sound: .horn)
+        rows[rowIndex].hornEffects += 1
+        
     }
 
     func applyWeather(_ type: Card.Weather) {
@@ -275,6 +287,7 @@ extension Player {
                 discard.append(contentsOf: cards.filter { $0.id != cardException?.id })
 
                 rows[i].moraleBoost = 0
+                rows[i].hornEffects = 0
             }
         }
     }
@@ -314,7 +327,7 @@ extension Player {
     func addToContainer(card: Card, _ container: CardContainer) {
         var copy = card
         copy.editedPower = nil
-        
+
         switch container {
         case .hand:
             hand.append(copy)

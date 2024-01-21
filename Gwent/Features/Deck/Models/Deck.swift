@@ -17,9 +17,10 @@ extension Deck {
     static let sample1 = Deck(
         leader: Card.all2[82],
         cards: [
-            Card.all2[47],
+            
             Card.all2[53],
             Card.all2[67],
+
             Card.all2[101],
             Card.all2[110],
             Card.all2[111],
@@ -28,13 +29,17 @@ extension Deck {
             Card.all2[118],
             Card.all2[124],
             Card.all2[127],
-            Card.all2[129],
+
             Card.all2[138],
             Card.all2[151],
             Card.all2[168],
             Card.all2[175],
-            Card.all2[181],
+            Card.all2[155],
             Card.all2[193],
+            Card.all2[37],
+            Card.all2[9],
+            Card.all2[10],
+            Card.all2[38],
         ],
         faction: .northern
     )

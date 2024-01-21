@@ -140,6 +140,6 @@ struct CarouselView: View {
 }
 
 #Preview {
-    CarouselView(carousel: .constant(Carousel.pickLeader))
+    CarouselView(carousel: .constant(Carousel.redraw))
         .environment(\.colorScheme, .dark)
 }

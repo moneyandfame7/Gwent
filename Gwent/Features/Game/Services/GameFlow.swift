@@ -119,7 +119,9 @@ final class GameFlow {
         }
     }
 
+    @MainActor
     func passRound() async {
+        game.ui.selectedCard = nil
         game.currentPlayer?.passRound()
 
         await endTurn()

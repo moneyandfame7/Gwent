@@ -41,14 +41,16 @@ struct TotalScoreView: View {
                     .font(.system(size: 20, weight: .heavy))
                     .foregroundStyle(.black)
                     .shadow(color: .white, radius: 1)
-                    
-//                if isLeading {
-//                    Image(.Assets.spikelets)
-//                        .resizable()
-//                        .scaledToFit()
-//                        .frame(width: 70, height: 70)
-//                        
-//                }
+
+                Text("Passed")
+//                    .font(.title3)
+                    .font(.custom("PTSans-Bold", size: 20, relativeTo: .title3))
+                    .fontWeight(.bold)
+                    .foregroundStyle(.brandYellowSecondary)
+                    .transition(.identity)
+                    .offset(y: 45)
+                    .opacity(player.isPassed ? 1 : 0)
+
             }
             .transition(.identity)
             .overlay {
@@ -60,13 +62,6 @@ struct TotalScoreView: View {
                 }
             }
             .shadow(color: .brandYellow, radius: isCurrent && !vm.ui.isTurnHighlightDisabled ? 15 : 0)
-            if player.isPassed {
-                Text("Passed")
-                    .font(.title3)
-                    .fontWeight(.bold)
-                    .foregroundStyle(.brandYellowSecondary)
-                    .transition(.identity)
-            }
         }
         .padding(.horizontal)
     }

@@ -12,6 +12,7 @@
 		160346852B37304D00FFDB13 /* Round.swift in Sources */ = {isa = PBXBuildFile; fileRef = 160346842B37304D00FFDB13 /* Round.swift */; };
 		160E7B262B4AB8EE008F3A21 /* Carousel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 160E7B252B4AB8EE008F3A21 /* Carousel.swift */; };
 		160E7B292B4AD245008F3A21 /* CardContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 160E7B282B4AD245008F3A21 /* CardContainer.swift */; };
+		161FF8312B596E0A00B2763D /* PassedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 161FF8302B596E0A00B2763D /* PassedView.swift */; };
 		162947E82B476CEC00195796 /* CardAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 162947E72B476CEC00195796 /* CardAnimationView.swift */; };
 		162E0F422B3DCA6E005039BC /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 162E0F412B3DCA6E005039BC /* Player.swift */; };
 		162F3E1C2B470DDF00D19AFE /* HornOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 162F3E1B2B470DDF00D19AFE /* HornOverlayView.swift */; };
@@ -81,6 +82,7 @@
 		160346842B37304D00FFDB13 /* Round.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Round.swift; sourceTree = "<group>"; };
 		160E7B252B4AB8EE008F3A21 /* Carousel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Carousel.swift; sourceTree = "<group>"; };
 		160E7B282B4AD245008F3A21 /* CardContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardContainer.swift; sourceTree = "<group>"; };
+		161FF8302B596E0A00B2763D /* PassedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassedView.swift; sourceTree = "<group>"; };
 		162947E72B476CEC00195796 /* CardAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardAnimationView.swift; sourceTree = "<group>"; };
 		162E0F412B3DCA6E005039BC /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		162F3E1B2B470DDF00D19AFE /* HornOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HornOverlayView.swift; sourceTree = "<group>"; };
@@ -268,6 +270,7 @@
 		169D493E2B49954B00BCDE6B /* Overlays */ = {
 			isa = PBXGroup;
 			children = (
+				161FF8302B596E0A00B2763D /* PassedView.swift */,
 				1645C5412B34A02900E12323 /* ClearWeatherView.swift */,
 				1645C5432B34A03A00E12323 /* FrostView.swift */,
 				1645C5452B34A04100E12323 /* FogView.swift */,
@@ -538,6 +541,7 @@
 				16BE07FC2B56BC3D00501C44 /* AbilityView.swift in Sources */,
 				16D127152B44698300810833 /* HStackOfCards.swift in Sources */,
 				169A2CF92B35E61900FB1583 /* CombatRowView.swift in Sources */,
+				161FF8312B596E0A00B2763D /* PassedView.swift in Sources */,
 				169A2CF72B35E4CC00FB1583 /* Row.swift in Sources */,
 				169A2CEB2B35B45900FB1583 /* TotalScoreView.swift in Sources */,
 				16CC25A62B554B4A00CE2AC9 /* BrandButton2.swift in Sources */,

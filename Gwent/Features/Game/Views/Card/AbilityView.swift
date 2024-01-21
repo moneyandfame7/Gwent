@@ -60,5 +60,5 @@ struct AbilityView: View {
 }
 
 #Preview {
-    AbilityView(card: Card.leader)
+    AbilityView(card: Card.all2[58])
 }

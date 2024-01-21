@@ -14,12 +14,10 @@ struct Row {
 
     var horn: Card? {
         didSet {
-            for i in cards.indices {
-                let power = cards[i].availablePower
-
-                if let power, cards[i].type != .hero {
-                    cards[i].editedPower = horn != nil ? power * 2 : nil
-                }
+            if horn == nil {
+                hornEffects = min(0, hornEffects - 1)
+            } else {
+                hornEffects += 1
             }
         }
     }
@@ -27,6 +25,29 @@ struct Row {
     var hasWeather = false {
         didSet {
             calculateCardsPower()
+        }
+    }
+
+    var hornEffects: Int = 0 {
+        didSet {
+            if hornEffects > 1 {
+                return
+            }
+
+            for i in cards.indices {
+                let power = cards[i].availablePower
+
+                guard let power, cards[i].type != .hero else {
+                    continue
+                }
+
+//                cards[i].editedPower = calculateCardPower(cards[i])
+                if hornEffects - (cards[i].ability == .commanderHorn ? 1 : 0) > 0 {
+                    // щоб не застосувати до картки з цією ж абілкою
+                }
+
+                cards[i].editedPower = hornEffects != 0 ? power * 2 : nil
+            }
         }
     }
 
@@ -79,6 +100,9 @@ struct Row {
         // -1 --> тому що абілка додає до всіх карток ОКРІМ себе
         total += max(0, moraleBoost + (card.ability == .moraleBoost ? -1 : 0))
 
+        if hornEffects - (card.ability == .commanderHorn && card.type == .unit ? 1 : 0) > 0 {
+            total *= 2
+        }
         // TODO: перерахувати всі можливі ефекти на картці, але поки що буде ось так???
         // в CardView в мене якщо editedPower <= power, то буде червона, але зроблю, щоб було тільки якщо <
         //         if total == card.power && hasWeather {

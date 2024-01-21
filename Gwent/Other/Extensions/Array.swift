@@ -20,7 +20,7 @@ extension Array {
     }
 
     func randomIndex() -> Int {
-        return Int.random(in: startIndex ..< endIndex)
+        return indices.randomElement() ?? 0
     }
 }
 

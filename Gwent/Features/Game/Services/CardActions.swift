@@ -25,11 +25,11 @@ final class CardActions {
         // ability - if game.currentPlayer.isAI - game.ai.ability(...) - обирати там де найбільша сила рядку
         let destination = rowType ?? (card.combatRow == .agile ? .close : card.combatRow)
 
-        guard let currentPlayer = game.currentPlayer else {
+        guard let currentPlayer = game.currentPlayer, let opponent = game.opponent else {
             return
         }
 
-        if !currentPlayer.isBot {
+        if !currentPlayer.isBot && !opponent.isPassed {
             game.ui.isDisabled = true
         }
 
@@ -123,16 +123,14 @@ final class CardActions {
         }
     }
 
+    @MainActor
     private func playWithAbility(_ card: Card, rowType: Card.Row, from container: CardContainer) async {
         guard let currentPlayer = game.currentPlayer else {
             return
         }
         print("Ability thread", Thread.current.description)
         if card.ability == .commanderHorn && card.type == .special {
-            currentPlayer.applyHorn(card, row: rowType)
-
-//            try? await Task.sleep(for: .seconds(0.3))
-            SoundManager.shared.playSound(sound: .horn)
+            currentPlayer.playHorn(card, rowType: rowType)
 
         } else if card.ability == .spy {
             await applySpy(card, rowType: rowType, from: container)
@@ -140,7 +138,10 @@ final class CardActions {
         } else {
             currentPlayer.moveCard(card, from: container, to: rowType)
 
-            if card.ability == .tightBond {
+            if card.ability == .commanderHorn {
+                currentPlayer.applyHorn(card, rowType: rowType, from: container)
+
+            } else if card.ability == .tightBond {
                 currentPlayer.applyTightBond(card, rowType: rowType)
 
             } else if card.ability == .muster {
@@ -294,7 +295,7 @@ private extension CardActions {
         guard let currentPlayer = game.currentPlayer else {
             return
         }
-        let units = currentPlayer.discard.filter { $0.type != .special && $0.type != .hero }
+        let units = currentPlayer.discard.filter { $0.type == .unit }
 
         if units.count <= 0 {
             return await game.endTurn()
@@ -322,6 +323,7 @@ private extension CardActions {
         }
     }
 
+    @MainActor
     func processMedic(resurrectionCard: Card) async {
         guard let currentPlayer = game.currentPlayer else {
             return
@@ -815,7 +817,7 @@ private extension CardActions {
         horn.id *= 123
         horn.isCreatedByLeader = true
         /// Буде помилка, що не видалено картку з контейнера, бо ми її щойно створили і її немає в ніякому контейнері.
-        currentPlayer.applyHorn(horn, row: rowType)
+        currentPlayer.playHorn(horn, rowType: rowType)
 
         /// Затримка після анімації переміщення картки
         try? await Task.sleep(for: .seconds(0.3))

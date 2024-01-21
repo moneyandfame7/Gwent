@@ -96,6 +96,10 @@ struct CardView: View {
     var rect: Rect
     var isPlayable: Bool
 
+    private var isAnimatable: Bool {
+        isPlayable && card.type == .hero || card.shouldAnimate || card.animateAs != nil
+    }
+
     /// Яку частину картки займає тільки опис ( нижня частина картки )
 
     init(card: Card, isCompact: Bool = true, isPlayable: Bool = false, size: Rect.Size = .extraSmall) {
@@ -131,7 +135,7 @@ struct CardView: View {
         )
         .clipShape(.rect(cornerRadius: rect.radius))
         .overlay {
-            if card.shouldAnimate || card.animateAs != nil {
+            if isAnimatable {
                 CardAnimationView(card: card)
                     .clipShape(.rect(cornerRadius: rect.radius))
             }

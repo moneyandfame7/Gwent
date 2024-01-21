@@ -72,14 +72,19 @@ struct PlayerStatsView: View {
                     )
                 }
                 .onTapGesture {
-                    if vm.ui.isDisabled {
+                    if vm.ui.isDisabled || player.discard.isEmpty {
                         return
                     }
-                    /// appState.ui.showCarousel(cards)
+
+                    vm.ui.showCarousel(Carousel(
+                        cards: player.discard,
+                        title: "\(player.isBot ? "Opponent" : "My") discard pile",
+                        cancelButton: "Hide"
+                    ))
                 }
                 DeckOfCardsView(
                     deck: player.deck.cards,
-                    faction: .scoiatael,
+                    faction: player.deck.faction,
                     animNamespace: vm.ui.namespace(for: player),
                     isMe: !player.isBot
                 )
@@ -91,7 +96,7 @@ struct PlayerStatsView: View {
 #Preview {
     VStack {
         PlayerStatsView(player: GameViewModel.preview.bot)
-            
+
         Spacer()
         PlayerStatsView(player: GameViewModel.preview.player)
     }

@@ -32,7 +32,7 @@ struct DeckOfCardsView: View {
             return nil
         }
 
-        return "Assets/deck_back_\(faction.rawValue)"
+        return "Images/deck_back/\(faction.rawValue)"
     }
 
     var body: some View {

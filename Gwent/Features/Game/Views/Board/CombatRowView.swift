@@ -33,6 +33,10 @@ struct RowView: View {
     }
 
     private var isSelectable: Bool {
+        if vm.ui.isDisabled {
+            return false
+        }
+        
         guard let selectedCardDetails = vm.ui.selectedCard?.details else {
             return false
         }
@@ -171,7 +175,7 @@ struct RowView: View {
         }
         .frame(width: 80)
         .frame(maxHeight: .infinity)
-        .border(.gray.opacity(0.5), width: 2)
+//        .border(.gray.opacity(0.3), width: 2)
         .overlay {
             if isSpecialSelectable {
                 highlightView
@@ -193,7 +197,7 @@ struct RowView: View {
     var body: some View {
         HStack(spacing: 0) {
             hornView
-                .zIndex(1)
+                .zIndex(2)
             ZStack {
                 if let imageName {
                     Image(imageName)
@@ -210,7 +214,7 @@ struct RowView: View {
             }
         }
         .background(Image(.Assets.texture).resizable())
-        .border(.gray, width: 1)
+        .border(.brandBrown, width: 1)
         .overlay {
             overlayView
         }
@@ -219,6 +223,12 @@ struct RowView: View {
             guard isSelectable else {
                 if row.cards.count > 0 {
                     print("Show card carousel.")
+
+                    vm.ui.showCarousel(Carousel(
+                        cards: row.cards,
+                        title: "Cards in \(row.type) row",
+                        cancelButton: "Hide"
+                    ))
                 }
                 // if combatRow.cards.count > 0 -> appState.ui.showCarousel(combatRow.cards)
                 return
