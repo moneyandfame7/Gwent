@@ -7,16 +7,9 @@
 
 import SwiftUI
 
-//                    .overlay {
-//                        if let selectedDetails = viewModel.selectedCard.details, selectedDetails.combatRow == .siege {
-//                            Rectangle()
-//                                .fill(.brandYellow.opacity(0.3))
-//                        }
-////                            .border(.brandYellow, width: 3)
-//                    }
 struct RowView: View {
     @Environment(GameViewModel.self) private var vm
-    let row: Row
+    @Binding var row: Row
 
     let isMe: Bool
 
@@ -33,10 +26,6 @@ struct RowView: View {
     }
 
     private var isSelectable: Bool {
-        if vm.ui.isDisabled {
-            return false
-        }
-        
         guard let selectedCardDetails = vm.ui.selectedCard?.details else {
             return false
         }
@@ -74,6 +63,7 @@ struct RowView: View {
         return selectedCardDetails.isHorn && row.horn == nil
     }
 
+    /// Чи можна тапнути по кардці? тапаємо по екранчіку..
     private func isCardSelectable(_ card: Card) -> Bool {
         guard isMe else {
             return false
@@ -85,34 +75,75 @@ struct RowView: View {
         return card.type == .unit && selectedCardDetails.ability == .decoy
     }
 
+    private func onTapRow() async {
+        if vm.ui.isDisabled {
+            return
+        }
+        guard isSelectable else {
+            if row.cards.isEmpty {
+                return
+            }
+            let carousel = Carousel(
+                cards: row.cards,
+                title: "Cards in \(row.type) row",
+                cancelButton: "Hide"
+            )
+
+            return vm.ui.showCarousel(carousel)
+        }
+
+        await vm.playCard(
+            vm.ui.selectedCard!.details,
+            rowType: row.type
+        )
+    }
+
+    private func onTapCard(_ card: Card, selectable: Bool) async {
+        if vm.ui.isDisabled {
+            return
+        }
+
+        if !selectable {
+            return await onTapRow()
+        }
+
+        await vm.playDecoy(
+            vm.ui.selectedCard!.details,
+            target: card,
+            rowType: row.type
+        )
+    }
+
+    private func onTapSpecial() async {
+        if vm.ui.isDisabled {
+            return
+        }
+
+        guard isSpecialSelectable else {
+            return
+        }
+
+        await vm.playCard(
+            vm.ui.selectedCard!.details,
+            rowType: row.type
+        )
+    }
+
     @ViewBuilder
     private func cardItemView(_ card: Card) -> some View {
-        let isSelectable = isCardSelectable(card)
+        let selectable = isCardSelectable(card)
 
         CardView(card: card, isPlayable: true, size: .extraSmall)
             .matchedGeometryEffect(id: card.id, in: vm.ui.namespace(isMe: isMe))
-            .overlay {
-                if isSelectable {
-                    highlightView
-                }
-            }
+            .overlay(highlightView(selectable))
             .onTapGesture {
-                if vm.ui.isDisabled {
-                    return
-                }
-                if isSelectable {
-                    Task {
-                        await vm.playDecoy(
-                            vm.ui.selectedCard!.details,
-                            target: card,
-                            rowType: row.type
-                        )
-                    }
+                Task {
+                    await onTapCard(card, selectable: selectable)
                 }
             }
     }
 
-    var totalScoreView: some View {
+    private var totalScoreView: some View {
         VStack {
             Text("\(row.totalPower)")
                 .font(.system(size: 14))
@@ -127,35 +158,44 @@ struct RowView: View {
                 .frame(width: 25, height: 25)
         )
         .frame(width: 25, height: 25)
-//        .position(x: 80, y: 37.5)
-    }
-
-    var highlightView: some View {
-        Rectangle()
-            .fill(.brandYellow.opacity(0.3))
     }
 
     @ViewBuilder
-    var overlayView: some View {
-        if row.hasWeather {
-            if row.type == .close {
-                FrostView()
-            } else if row.type == .ranged {
-                FogView()
-            } else {
-                RainView()
-            }
-        }
-        if isSelectable {
-            highlightView
-        }
-        if row.horn != nil {
-            HornOverlayView()
-                .offset(y: 3)
+    private func highlightView(_ highlight: Bool) -> some View {
+        if highlight {
+            Rectangle()
+                .fill(.brandYellow.opacity(0.3))
         }
     }
 
-    var hornView: some View {
+    @ViewBuilder
+    private var overlayView: some View {
+        Group {
+            if row.hasWeather {
+                if row.type == .close {
+                    FrostView()
+                } else if row.type == .ranged {
+                    FogView()
+                } else {
+                    RainView()
+                }
+            }
+
+            highlightView(isSelectable)
+
+            let showHornOverlay = row.cards.contains(where: { $0.ability == .commanderHorn }) || row.horn != nil
+
+            if showHornOverlay {
+                HornOverlayView()
+                    .offset(y: 3)
+            }
+        }
+        // Важливо, щоб можна було обрати картку, коли є якийсь overlay.
+        .allowsHitTesting(false)
+    }
+
+    @ViewBuilder
+    private var hornView: some View {
         ZStack {
             Image(.Assets.boardRowHorn)
                 .resizable()
@@ -175,21 +215,10 @@ struct RowView: View {
         }
         .frame(width: 80)
         .frame(maxHeight: .infinity)
-//        .border(.gray.opacity(0.3), width: 2)
-        .overlay {
-            if isSpecialSelectable {
-                highlightView
-            }
-        }
+        .overlay(highlightView(isSpecialSelectable))
         .onTapGesture {
-            guard isSpecialSelectable else {
-                return
-            }
             Task {
-                await vm.playCard(
-                    vm.ui.selectedCard!.details,
-                    rowType: row.type
-                )
+                await onTapSpecial()
             }
         }
     }
@@ -215,44 +244,42 @@ struct RowView: View {
         }
         .background(Image(.Assets.texture).resizable())
         .border(.brandBrown, width: 1)
-        .overlay {
-            overlayView
-        }
-
+        .overlay(overlayView)
         .onTapGesture {
-            guard isSelectable else {
-                if row.cards.count > 0 {
-                    print("Show card carousel.")
-
-                    vm.ui.showCarousel(Carousel(
-                        cards: row.cards,
-                        title: "Cards in \(row.type) row",
-                        cancelButton: "Hide"
-                    ))
-                }
-                // if combatRow.cards.count > 0 -> appState.ui.showCarousel(combatRow.cards)
-                return
-            }
             Task {
-                print("PLAY_CARD")
-//                appState.ui.selectedCard?.details = nil
-
-                await vm.playCard(
-                    vm.ui.selectedCard!.details,
-                    rowType: row.type
-                )
+                await onTapRow()
             }
+        }
+        .onChange(of: row.hornEffects) { _, _ in
+            row.calculateCardsPower()
+        }
+        .onChange(of: row.moraleBoost) { _, _ in
+            row.calculateCardsPower()
         }
     }
 }
 
-#Preview {
+#Preview("Default") {
     RowView(
-        row: Row(
+        row: .constant(Row(
             type: .close,
             cards: Array(Card.all2[0 ... 9])
-        ),
+        )),
         isMe: true
+    )
+    .environment(GameViewModel.preview)
+    .frame(maxHeight: 75)
+}
+
+#Preview("With overlay") {
+    RowView(
+        row: .constant(
+            Row(
+                type: .close,
+                cards: [Card.all2[5]],
+                hasWeather: true
+            )
+        ), isMe: true
     )
     .environment(GameViewModel.preview)
     .frame(maxHeight: 75)

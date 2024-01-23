@@ -13,7 +13,7 @@ final class GameFlow {
     init(game: GameViewModel) {
         self.game = game
 
-        print("✅ GameFlow - Deinit -")
+        print("✅ GameFlow - Init -")
     }
 
     deinit {
@@ -30,7 +30,7 @@ final class GameFlow {
             if game.bot.leader.leaderAbility == .cancelLeaderAbility {
                 game.player.isLeaderAvailable = false
             }
-            
+
             Task {
                 await game.ui.showNotification(notification)
 
@@ -146,6 +146,7 @@ final class GameFlow {
         ///
     }
 
+    @MainActor
     private func startTurn() async {
         guard let opponent = game.opponent else {
             return
@@ -197,6 +198,7 @@ final class GameFlow {
 // MARK: Helpers
 
 private extension GameFlow {
+    @MainActor
     func flipCoin() async {
         game.firstPlayer = Int.random(in: 0 ... 1) == 0 ? game.player : game.bot
         game.currentPlayer = game.firstPlayer
@@ -223,7 +225,7 @@ private extension GameFlow {
         }
         if game.bot.deck.leader.leaderAbility == .drawExtraCard {
             withAnimation(.smooth(duration: 0.3)) {
-                self.game.player.drawCard()
+                self.game.bot.drawCard()
             }
         }
     }
@@ -279,7 +281,7 @@ private extension GameFlow {
         var isMeWin = false
 
         if game.leadingPlayer == nil {
-            if isMeNilf && isBotNilf {
+            if isMeNilf == isBotNilf {
                 await game.ui.showNotification(.roundDraw)
             } else if isMeNilf {
                 await game.ui.showNotification(.nilfgaard)
@@ -330,25 +332,25 @@ private extension GameFlow {
 
         let firstPlayer = Int.random(in: 0 ... 1) == 0 ? game.bot : game.player
 
-        if isBotScoiatael && isPlayerScoiatael || (!isBotScoiatael && !isPlayerScoiatael) {
+        if isBotScoiatael == isPlayerScoiatael {
             completion(firstPlayer, firstPlayer.isBot ? .coinOp : .coinMe)
 
         } else if isBotScoiatael {
             completion(firstPlayer, firstPlayer.isBot ? .scoiatael : .coinMe)
 
         } else if isPlayerScoiatael {
-            game.ui.showAlert(
-                AlertItem(
-                    title: "Would you like to go first",
-                    description: "The Scoia'tael faction perk allows you to decide who will get to go first",
-                    cancelButton: ("Let Opponent Start", { [unowned self] in
-                        completion(game.bot, .coinOp)
-                    }),
-                    confirmButton: ("Go First", { [unowned self] in
-                        completion(game.player, .coinMe)
-                    })
-                )
+            let alert = AlertItem(
+                title: "Would you like to go first",
+                description: "The Scoia'tael faction perk allows you to decide who will get to go first",
+                cancelButton: ("Let Opponent Start", { [unowned self] in
+                    completion(game.bot, .coinOp)
+                }),
+                confirmButton: ("Go First", { [unowned self] in
+                    completion(game.player, .coinMe)
+                })
             )
+
+            game.ui.showAlert(alert)
         }
     }
 }

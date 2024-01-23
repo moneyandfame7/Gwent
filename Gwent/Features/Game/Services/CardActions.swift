@@ -71,7 +71,7 @@ final class CardActions {
 
         SoundManager.shared.playSound(sound: .decoy)
         withAnimation(.smooth(duration: 0.5)) {
-            /// Replace with decoy
+            /// Add decoy
             currentPlayer.removeFromContainer(at: decoyIndex, .hand)
             currentPlayer.insertToContainer(decoy, .row(rowType), at: targetIndex)
 
@@ -130,7 +130,7 @@ final class CardActions {
         }
         print("Ability thread", Thread.current.description)
         if card.ability == .commanderHorn && card.type == .special {
-            currentPlayer.playHorn(card, rowType: rowType)
+            await currentPlayer.playHorn(card, rowType: rowType)
 
         } else if card.ability == .spy {
             await applySpy(card, rowType: rowType, from: container)
@@ -139,7 +139,7 @@ final class CardActions {
             currentPlayer.moveCard(card, from: container, to: rowType)
 
             if card.ability == .commanderHorn {
-                currentPlayer.applyHorn(card, rowType: rowType, from: container)
+                await currentPlayer.applyHorn(card, rowType: rowType, from: container)
 
             } else if card.ability == .tightBond {
                 currentPlayer.applyTightBond(card, rowType: rowType)
@@ -359,11 +359,10 @@ private extension CardActions {
 // MARK: Weathers
 
 private extension CardActions {
-//    @MainActor
+    @MainActor
     func playWeather(_ card: Card, from container: CardContainer) async {
         // MARK: - Clear Weather
 
-        print("Thread", Thread.current.description)
         if card.weather == .clearWeather {
             moveToWeathers(card, from: container)
 
@@ -395,7 +394,9 @@ private extension CardActions {
                 withAnimation(.smooth(duration: 0.3)) {
                     moveWeatherToDiscard(at: sameWeatherIndex)
                 }
-                try? await Task.sleep(for: .seconds(0.55))
+                // Можливо варто повернути затримку, треба тестити, якщо це картка повертається до бота, а не до мене.
+                // якщо повертається до мене, то впринципі все ок працює.
+//                try? await Task.sleep(for: .seconds(0.55))
             }
 
             moveToWeathers(card, from: container)
@@ -817,7 +818,7 @@ private extension CardActions {
         horn.id *= 123
         horn.isCreatedByLeader = true
         /// Буде помилка, що не видалено картку з контейнера, бо ми її щойно створили і її немає в ніякому контейнері.
-        currentPlayer.playHorn(horn, rowType: rowType)
+        await currentPlayer.playHorn(horn, rowType: rowType)
 
         /// Затримка після анімації переміщення картки
         try? await Task.sleep(for: .seconds(0.3))

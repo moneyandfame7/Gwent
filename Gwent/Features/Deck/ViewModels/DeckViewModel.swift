@@ -61,7 +61,7 @@ final class DeckViewModel {
         .scoiatael: Deck(leader: Card.leader, faction: .scoiatael),
     ]
 
-    private(set) var collectionsByFaction: [FactionTab: [Card]] = [
+    private(set)  var collectionsByFaction: [FactionTab: [Card]] = [
         .northern: Card.all2.filter { ($0.faction == .northern || $0.faction == .neutral) && $0.type != .leader },
         .nilfgaard: Card.all2.filter { ($0.faction == .nilfgaard || $0.faction == .neutral) && $0.type != .leader },
         .monsters: Card.all2.filter { ($0.faction == .monsters || $0.faction == .neutral) && $0.type != .leader },

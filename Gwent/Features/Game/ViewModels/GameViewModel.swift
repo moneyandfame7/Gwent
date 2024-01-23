@@ -10,12 +10,13 @@ import SwiftUI
 
 // TODO: переробити щоб currentPlayer НІКОЛИ не був nil ???? ( в init викликати startGame )
 // в кінці гри якщо робити restart - то reset стейту і заново викликати startGame
+
 @Observable
 final class GameViewModel {
     static let preview = GameViewModel(deck: .sample1)
 
-    let player: Player
-    let bot: Player
+    var player: Player
+    var bot: Player
 
     /// Game Services
     var ui = GameUI()
@@ -33,13 +34,7 @@ final class GameViewModel {
     var firstPlayer: Player?
 
     var currentPlayer: Player?
-//    {
-//        didSet {
-//            if let currentPlayer {
-//                ui.isDisabled = currentPlayer.isBot
-//            }
-//        }
-//    }
+
     var leadingPlayer: Player? {
         if player.totalScore > bot.totalScore {
             return player
@@ -75,7 +70,8 @@ final class GameViewModel {
 
     var roundCount = 0
 
-    /// Observation ignore ????
+    /// Observation ignore ????]
+    @ObservationIgnored
     var roundHistory: [Round] = []
 
     init(deck: Deck) {

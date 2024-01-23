@@ -114,7 +114,9 @@ extension Player {
 // MARK: Abilities
 
 extension Player {
-    func playHorn(_ card: Card, rowType: Card.Row, from container: CardContainer = .hand) {
+    /// Це special card.
+    @MainActor
+    func playHorn(_ card: Card, rowType: Card.Row, from container: CardContainer = .hand) async {
         guard let rowIndex = rows.firstIndex(where: { $0.type == rowType }) else {
             return
         }
@@ -124,18 +126,19 @@ extension Player {
             if !card.isCreatedByLeader {
                 removeFromContainer(card: card, container)
             }
-            rows[rowIndex].horn = card
         }
+        await rows[rowIndex].addHorn(card)
     }
 
-    func applyHorn(_ card: Card, rowType: Card.Row, from container: CardContainer = .hand) {
+    /// Це Dandelion
+    @MainActor
+    func applyHorn(_ card: Card, rowType: Card.Row, from container: CardContainer = .hand) async {
         guard let rowIndex = rows.firstIndex(where: { $0.type == rowType }) else {
             return
         }
-        
+
         SoundManager.shared.playSound(sound: .horn)
-        rows[rowIndex].hornEffects += 1
-        
+        await rows[rowIndex].addHorn(card)
     }
 
     func applyWeather(_ type: Card.Weather) {
@@ -192,7 +195,7 @@ extension Player {
             return
         }
 
-        rows[rowIndex].moraleBoost += 1
+//        rows[rowIndex].moraleBoost += 1
     }
 
     @MainActor
@@ -286,8 +289,8 @@ extension Player {
                 rows[i].cards.removeAll(where: { $0.id != cardException?.id })
                 discard.append(contentsOf: cards.filter { $0.id != cardException?.id })
 
-                rows[i].moraleBoost = 0
-                rows[i].hornEffects = 0
+//                rows[i].moraleBoost = 0
+//                rows[i].hornEffects = 0
             }
         }
     }
@@ -301,9 +304,9 @@ extension Player {
         addToContainer(card: card, destination)
     }
 
+    /// Adds card to specific row and calculate edited power of card.
     func insertToContainer(_ card: Card, _ container: CardContainer, at: Int) {
-        var copy = card
-        copy.editedPower = nil
+        let copy = card.withResetedPower()
 
         switch container {
         case .hand:
@@ -380,6 +383,15 @@ extension Player {
             deck.cards.remove(at: at)
         case .discard:
             discard.remove(at: at)
+        case let .row(rowType):
+            guard let rowIndex = rows.firstIndex(where: { $0.type == rowType }) else {
+                print("‼️ Not found row \(rowType)")
+
+                return
+            }
+
+            rows[rowIndex].cards.remove(at: at)
+
         default:
             print("‼️ Not realized")
         }

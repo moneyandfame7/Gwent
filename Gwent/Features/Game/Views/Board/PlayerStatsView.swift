@@ -32,13 +32,13 @@ struct PlayerStatsView: View {
                             .scaledToFit()
                             .frame(height: 30)
                             .shadow(radius: 25)
-
+                            .grayscale(player.health == 1 ? 0.99 : 0)
                         Image(.Assets.emerald)
                             .resizable()
                             .scaledToFit()
                             .frame(height: 30)
                             .shadow(radius: 25)
-                            .grayscale(0.99)
+                            .grayscale(player.health == 0 ? 0.99 : 0)
                     }
                 }
 //                        Spacer()

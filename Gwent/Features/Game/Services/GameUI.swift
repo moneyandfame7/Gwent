@@ -37,7 +37,7 @@ final class GameUI {
     var isDisabled = true
 
     var isPassButtonDisabled = true
-    
+
     var isTurnHighlightDisabled = true
 
     func selectCard(_ card: Card, holder: Tag = .me) -> Void {
@@ -48,9 +48,8 @@ final class GameUI {
         }
     }
 
+    /// Якщо це картка бота - анімується її використання, якщо це моя - трошки по іншому.
     @MainActor
-    /// Ця функція використовується перед самим застосуванням картки.
-    /// Якщо це бот, то потрібно показувати картку, а якщо Я - дія з карткою залежить від її типу.
     func animateCardUsage(_ card: Card, holder: Tag) async {
         if holder == .bot {
             selectCard(card, holder: .bot)

@@ -68,7 +68,7 @@ struct GameScreen: View {
             // MARK: - board start-
 
             VStack(spacing: 0) {
-                ForEach(vm.bot.rows, id: \.type) { row in
+                ForEach($vm.bot.rows, id: \.type) { row in
                     RowView(row: row, isMe: false)
                 }
             }
@@ -121,7 +121,7 @@ struct GameScreen: View {
             .frame(maxWidth: .infinity, maxHeight: 75)
             .background(Image(.Assets.texture).resizable())
             VStack(spacing: 0) {
-                ForEach(vm.player.rows, id: \.type) { row in
+                ForEach($vm.player.rows, id: \.type) { row in
                     RowView(row: row, isMe: true)
                 }
             }

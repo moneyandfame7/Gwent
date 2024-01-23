@@ -5,22 +5,16 @@
 //  Created by Davyd Darusenkov on 22.12.2023.
 //
 
-import Foundation
+import SwiftUI
 
 struct Row {
     let type: Card.Row
-    // TODO: треба зробити це private set, додати функцію addCard, і там вже calculateCard score???
-    var cards: [Card] = []
 
-    var horn: Card? {
-        didSet {
-            if horn == nil {
-                hornEffects = min(0, hornEffects - 1)
-            } else {
-                hornEffects += 1
-            }
-        }
-    }
+    /*private(set)*/ var cards: [Card] = []
+
+    var horn: Card?
+
+    private(set) var showHornOverlay = false
 
     var hasWeather = false {
         didSet {
@@ -28,48 +22,37 @@ struct Row {
         }
     }
 
-    var hornEffects: Int = 0 {
-        didSet {
-            if hornEffects > 1 {
-                return
-            }
-
-            for i in cards.indices {
-                let power = cards[i].availablePower
-
-                guard let power, cards[i].type != .hero else {
-                    continue
-                }
-
-//                cards[i].editedPower = calculateCardPower(cards[i])
-                if hornEffects - (cards[i].ability == .commanderHorn ? 1 : 0) > 0 {
-                    // щоб не застосувати до картки з цією ж абілкою
-                }
-
-                cards[i].editedPower = hornEffects != 0 ? power * 2 : nil
-            }
-        }
+    /// Processed in RowView
+    var hornEffects: Int {
+        cards.reduce(0) { $0 + ($1.ability == .commanderHorn ? 1 : 0) } + (horn != nil ? 1 : 0)
     }
 
-    var moraleBoost: Int = 0 {
-        didSet {
-            calculateCardsPower()
-        }
-    }
-
-    // Card Name : Count of cards
-    var tightBond: [String: Int] = [:] {
-        didSet {
-//            let count =
-//            let bonds = cards.filter { $0.name  }
-        }
+    /// Processed in RowView
+    var moraleBoost: Int {
+        cards.reduce(0) { $0 + ($1.ability == .moraleBoost ? 1 : 0) }
     }
 
     var totalPower: Int {
-        cards.reduce(0) { partialResult, card in
+        /// $0 - prevResult, $1 - item
+        cards.reduce(0) { $0 + ($1.editedPower ?? $1.power ?? 0) }
+    }
 
-            partialResult + (card.editedPower ?? card.power ?? 0)
+    @MainActor
+    mutating func addHorn(_ card: Card) async {
+        if horn != nil {
+            return
         }
+
+        withAnimation(.smooth(duration: 0.3)) {
+            horn = card
+        }
+
+        showHornOverlay = true
+
+        try? await Task.sleep(for: .seconds(1))
+
+        showHornOverlay = false
+//
     }
 
     mutating func addCard(_ card: Card, at: Int? = nil) {
@@ -81,9 +64,15 @@ struct Row {
         cards.insert(copy, at: at ?? randomPositionAtRow)
     }
 
+    mutating func removeCard(_ card: Card) {}
+
+    mutating func removeCard(at: Int) {
+        cards.remove(at: at)
+    }
+
     func calculateCardPower(_ card: Card) -> Int? {
         var total: Int = card.power ?? 0
-        if card.type == .hero {
+        if card.type == .hero || card.ability == .decoy {
             return nil
         }
 
@@ -100,18 +89,16 @@ struct Row {
         // -1 --> тому що абілка додає до всіх карток ОКРІМ себе
         total += max(0, moraleBoost + (card.ability == .moraleBoost ? -1 : 0))
 
-        if hornEffects - (card.ability == .commanderHorn && card.type == .unit ? 1 : 0) > 0 {
+        if (hornEffects - (card.ability == .commanderHorn && card.type == .unit ? 1 : 0)) > 0 {
+            print("Ця картка НЕ ДАНДАЛІОН ЙОБАНИЙ: \(card.name)")
+
             total *= 2
         }
-        // TODO: перерахувати всі можливі ефекти на картці, але поки що буде ось так???
-        // в CardView в мене якщо editedPower <= power, то буде червона, але зроблю, щоб було тільки якщо <
-        //         if total == card.power && hasWeather {
-        //
-        //         }
+
         return total
     }
 
-    private mutating func calculateCardsPower() {
+    mutating func calculateCardsPower() {
         for i in cards.indices {
             cards[i].editedPower = calculateCardPower(cards[i])
         }

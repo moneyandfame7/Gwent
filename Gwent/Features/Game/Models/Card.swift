@@ -37,12 +37,21 @@ struct Card: Identifiable, Hashable {
     var availableRow: Card.Row? {
         combatRow == .agile ? .close : combatRow
     }
-    
+
     var isHorn: Bool {
         ability == .commanderHorn && type == .special
     }
-    
-    
+
+    var isDandelion: Bool {
+        ability == .commanderHorn && type == .unit
+    }
+
+    func withResetedPower() -> Card {
+        var copy = self
+        copy.editedPower = nil
+
+        return copy
+    }
 
     // animation/animateAs: "Scorch" || "Medic" ??? + подумати про tightBond ( можна просто юзати shouldAnimate для тригера анімації )
 }
