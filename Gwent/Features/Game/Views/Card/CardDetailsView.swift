@@ -88,7 +88,7 @@ struct CardDetailsView: View {
                             }
                             .scaleEffect(selectedCard!.isReadyToUse ? 0 : 1)
                         }
-                        if selectedCard!.isPlayable {
+                        if selectedCard!.isPlayable && selectedCard!.holder == .me {
                             IconButton(systemName: "xmark") {
                                 selectedCard = nil
                             }
@@ -120,7 +120,7 @@ struct CardDetailsView: View {
 }
 
 #Preview {
-    CardDetailsView(selectedCard: .constant(SelectedCard.preview))
+    CardDetailsView(selectedCard: .constant(SelectedCard.bot))
         .environment(GameViewModel.preview)
         .environment(\.colorScheme, .dark)
 }

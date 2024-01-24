@@ -26,7 +26,9 @@
 		1645C5462B34A04100E12323 /* FogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1645C5452B34A04100E12323 /* FogView.swift */; };
 		1645C5482B34A04C00E12323 /* RainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1645C5472B34A04C00E12323 /* RainView.swift */; };
 		1645C54C2B34A44A00E12323 /* SoundManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1645C54B2B34A44A00E12323 /* SoundManager.swift */; };
-		165349F82B5FA59900F9B20C /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = 165349F72B5FA59900F9B20C /* Game.swift */; };
+		165911A42B6049830083E6F4 /* AIStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 165911A32B6049830083E6F4 /* AIStrategy.swift */; };
+		165911A62B6049920083E6F4 /* AIPotato.swift in Sources */ = {isa = PBXBuildFile; fileRef = 165911A52B6049920083E6F4 /* AIPotato.swift */; };
+		165911A82B6049E90083E6F4 /* AINormal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 165911A72B6049E90083E6F4 /* AINormal.swift */; };
 		1673636E2B4DEB0C007D11E4 /* AlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1673636D2B4DEB0C007D11E4 /* AlertView.swift */; };
 		1678FC782B3EE85A006617CA /* GameUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1678FC772B3EE85A006617CA /* GameUI.swift */; };
 		1678FC7A2B3EE9F8006617CA /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1678FC792B3EE9F8006617CA /* GameViewModel.swift */; };
@@ -98,7 +100,9 @@
 		1645C5452B34A04100E12323 /* FogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FogView.swift; sourceTree = "<group>"; };
 		1645C5472B34A04C00E12323 /* RainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RainView.swift; sourceTree = "<group>"; };
 		1645C54B2B34A44A00E12323 /* SoundManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundManager.swift; sourceTree = "<group>"; };
-		165349F72B5FA59900F9B20C /* Game.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Game.swift; sourceTree = "<group>"; };
+		165911A32B6049830083E6F4 /* AIStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIStrategy.swift; sourceTree = "<group>"; };
+		165911A52B6049920083E6F4 /* AIPotato.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIPotato.swift; sourceTree = "<group>"; };
+		165911A72B6049E90083E6F4 /* AINormal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AINormal.swift; sourceTree = "<group>"; };
 		1673636D2B4DEB0C007D11E4 /* AlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertView.swift; sourceTree = "<group>"; };
 		1678FC772B3EE85A006617CA /* GameUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameUI.swift; sourceTree = "<group>"; };
 		1678FC792B3EE9F8006617CA /* GameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModel.swift; sourceTree = "<group>"; };
@@ -213,6 +217,16 @@
 			path = Managers;
 			sourceTree = "<group>";
 		};
+		165911A22B6049780083E6F4 /* AI */ = {
+			isa = PBXGroup;
+			children = (
+				165911A32B6049830083E6F4 /* AIStrategy.swift */,
+				165911A52B6049920083E6F4 /* AIPotato.swift */,
+				165911A72B6049E90083E6F4 /* AINormal.swift */,
+			);
+			path = AI;
+			sourceTree = "<group>";
+		};
 		1687EBD92B3C6BC20087555D /* Buttons */ = {
 			isa = PBXGroup;
 			children = (
@@ -256,7 +270,6 @@
 				169D49432B49964700BCDE6B /* Notification.swift */,
 				160E7B282B4AD245008F3A21 /* CardContainer.swift */,
 				16BE07F62B569AE600501C44 /* SelectedCard.swift */,
-				165349F72B5FA59900F9B20C /* Game.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -454,6 +467,7 @@
 		16F98EF62B4C2FEB004A8413 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				165911A22B6049780083E6F4 /* AI */,
 				16352DC92B5FDD0D00C9FD20 /* CardActions */,
 				169D495B2B499D1D00BCDE6B /* GameSettings.swift */,
 				1678FC772B3EE85A006617CA /* GameUI.swift */,
@@ -541,6 +555,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				165911A82B6049E90083E6F4 /* AINormal.swift in Sources */,
 				160E7B292B4AD245008F3A21 /* CardContainer.swift in Sources */,
 				169D494D2B499A2E00BCDE6B /* DeckScreen.swift in Sources */,
 				1678FC782B3EE85A006617CA /* GameUI.swift in Sources */,
@@ -554,7 +569,6 @@
 				160E7B262B4AB8EE008F3A21 /* Carousel.swift in Sources */,
 				16BE07FC2B56BC3D00501C44 /* AbilityView.swift in Sources */,
 				16D127152B44698300810833 /* HStackOfCards.swift in Sources */,
-				165349F82B5FA59900F9B20C /* Game.swift in Sources */,
 				169A2CF92B35E61900FB1583 /* RowView.swift in Sources */,
 				161FF8312B596E0A00B2763D /* PassedView.swift in Sources */,
 				169A2CF72B35E4CC00FB1583 /* Row.swift in Sources */,
@@ -564,6 +578,7 @@
 				169D494A2B4999F000BCDE6B /* Deck.swift in Sources */,
 				169D495A2B499D0A00BCDE6B /* GameSettingsScreen.swift in Sources */,
 				1645C5422B34A02900E12323 /* ClearWeatherView.swift in Sources */,
+				165911A62B6049920083E6F4 /* AIPotato.swift in Sources */,
 				16B6EE702B335E8400FD2CB2 /* Application.swift in Sources */,
 				169D495E2B499F3500BCDE6B /* GameEndScreen.swift in Sources */,
 				169D495C2B499D1D00BCDE6B /* GameSettings.swift in Sources */,
@@ -582,6 +597,7 @@
 				169D49442B49964700BCDE6B /* Notification.swift in Sources */,
 				160346792B371B3500FFDB13 /* DeckOfCardsView.swift in Sources */,
 				16F3375B2B4A811E00230FC3 /* CardItemView.swift in Sources */,
+				165911A42B6049830083E6F4 /* AIStrategy.swift in Sources */,
 				162E0F422B3DCA6E005039BC /* Player.swift in Sources */,
 				16BB29942B34D25E007431B7 /* Array.swift in Sources */,
 				16CC25A82B556B8100CE2AC9 /* View.swift in Sources */,

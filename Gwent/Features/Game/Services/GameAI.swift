@@ -7,9 +7,10 @@
 
 import SwiftUI
 
-// enum Difficulty {
-//    case potato, normal
-// }
+enum Difficulty {
+    case potato, normal
+}
+
 //
 // protocol GameAI {
 // func startTurn() async
@@ -18,6 +19,27 @@ import SwiftUI
 // class GameAIPotato: GameAI {}
 //
 // class GameAINormal: GameAI {}
+
+final class AI {
+    /// Bi-directional usage.
+    private unowned var game: GameViewModel!
+
+    private(set) var strategy: AIStrategy!
+
+    init(game: GameViewModel, difficulty: Difficulty) {
+        self.game = game
+        setDifficulty(difficulty)
+    }
+
+    func setDifficulty(_ difficulty: Difficulty) {
+        switch difficulty {
+        case .normal:
+            strategy = AINormal(game: game)
+        case .potato:
+            strategy = AIPotato(game: game)
+        }
+    }
+}
 
 final class GameAI {
     private unowned var game: GameViewModel

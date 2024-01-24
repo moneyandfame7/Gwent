@@ -9,7 +9,7 @@ import SwiftUI
 
 struct RowView: View {
     @Environment(GameViewModel.self) private var vm
-    @Binding var row: Row
+    let row: Row
 
     let isMe: Bool
 
@@ -183,9 +183,7 @@ struct RowView: View {
 
             highlightView(isSelectable)
 
-            let showHornOverlay = row.cards.contains(where: { $0.ability == .commanderHorn }) || row.horn != nil
-
-            if showHornOverlay {
+            if row.showHornOverlay {
                 HornOverlayView()
                     .offset(y: 3)
             }
@@ -206,7 +204,7 @@ struct RowView: View {
                 CardView(card: horn)
                     .matchedGeometryEffect(
                         id: horn.id,
-                        in: vm.ui.namespace(isMe: isMe)
+                        in: vm.ui.namespaces.playerCards
                     )
             }
             totalScoreView
@@ -250,21 +248,15 @@ struct RowView: View {
                 await onTapRow()
             }
         }
-        .onChange(of: row.hornEffects) { _, _ in
-            row.calculateCardsPower()
-        }
-        .onChange(of: row.moraleBoost) { _, _ in
-            row.calculateCardsPower()
-        }
     }
 }
 
 #Preview("Default") {
     RowView(
-        row: .constant(Row(
+        row: Row(
             type: .close,
             cards: Array(Card.all2[0 ... 9])
-        )),
+        ),
         isMe: true
     )
     .environment(GameViewModel.preview)
@@ -273,13 +265,12 @@ struct RowView: View {
 
 #Preview("With overlay") {
     RowView(
-        row: .constant(
-            Row(
-                type: .close,
-                cards: [Card.all2[5]],
-                hasWeather: true
-            )
-        ), isMe: true
+        row: Row(
+            type: .close,
+            cards: [Card.all2[5]],
+            hasWeather: true
+        ),
+        isMe: true
     )
     .environment(GameViewModel.preview)
     .frame(maxHeight: 75)

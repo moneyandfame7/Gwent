@@ -29,7 +29,6 @@ final class GameViewModel {
 
     private(set) var aiStrategy: GameAI!
 
-
     /// Players, based on game progress.
     var firstPlayer: Player?
 
@@ -127,5 +126,9 @@ final class GameViewModel {
 
     func getOpponent(for player: Player) -> Player {
         return player.isBot ? self.player : bot
+    }
+
+    func getPlayer(_ tag: Tag) -> Player {
+        return tag == .bot ? bot : player
     }
 }

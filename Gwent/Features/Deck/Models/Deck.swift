@@ -37,12 +37,10 @@ extension Deck {
             Card.all2[155],
             Card.all2[193],
             Card.all2[37],
-            Card.all2[9],
-            Card.all2[10],
-            Card.all2[38],
-            Card.all2[27],
             Card.all2[28],
-            Card.all2[29],
+            Card.all2[30],
+            Card.all2[31],
+            Card.all2[32],
         ],
         faction: .northern
     )

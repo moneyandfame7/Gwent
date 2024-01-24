@@ -57,8 +57,9 @@ class Player {
         rows = Row.generate(forBot: true)
     }
 
-    func drawCard(randomHandPosition: Bool = false) {
-        let card = deck.cards.last
+    func drawCard(randomHandPosition: Bool = false, randomDeckPosition: Bool = false) {
+        let card = randomDeckPosition ? deck.cards.randomElement() : deck.cards.last
+
         guard let card, let index = deck.cards.firstIndex(where: { $0.id == card.id }) else {
             return
         }
@@ -126,8 +127,15 @@ extension Player {
             if !card.isCreatedByLeader {
                 removeFromContainer(card: card, container)
             }
+
+            rows[rowIndex].addHorn(card)
         }
-        await rows[rowIndex].addHorn(card)
+
+        rows[rowIndex].showHornOverlay = true
+
+        try? await Task.sleep(for: .seconds(2.5))
+
+        rows[rowIndex].showHornOverlay = false
     }
 
     /// Це Dandelion
@@ -136,9 +144,17 @@ extension Player {
         guard let rowIndex = rows.firstIndex(where: { $0.type == rowType }) else {
             return
         }
+//        rows[rowIndex].calculateCardsPower()
 
         SoundManager.shared.playSound(sound: .horn)
-        await rows[rowIndex].addHorn(card)
+
+        rows[rowIndex].hornEffects += 1
+
+        rows[rowIndex].showHornOverlay = true
+
+        try? await Task.sleep(for: .seconds(2.5))
+
+        rows[rowIndex].showHornOverlay = false
     }
 
     func applyWeather(_ type: Card.Weather) {
@@ -181,11 +197,11 @@ extension Player {
 
             rows[rowIndex].cards[cardIndex].editedPower = rows[rowIndex].calculateCardPower(card)
             Task { @MainActor in
-                rows[rowIndex].cards[cardIndex].shouldAnimate = true
+                rows[rowIndex].cards[cardIndex].animateAs = .tightBond(multiplier: bonds.count)
 
                 try? await Task.sleep(for: .seconds(2))
 
-                rows[rowIndex].cards[cardIndex].shouldAnimate = false
+                rows[rowIndex].cards[cardIndex].animateAs = nil
             }
         }
     }
@@ -346,7 +362,8 @@ extension Player {
                 print("Row index hui pizda")
                 fatalError()
             }
-            return rows[rowIndex].addCard(copy)
+
+            rows[rowIndex].addCard(copy)
 
         default:
             fatalError("Unsupported container in Player")
@@ -390,8 +407,7 @@ extension Player {
                 return
             }
 
-            rows[rowIndex].cards.remove(at: at)
-
+            rows[rowIndex].removeCard(at: at)
         default:
             print("‼️ Not realized")
         }
@@ -430,12 +446,8 @@ extension Player {
 
                 return
             }
-            guard let index = rows[rowIndex].cards.firstIndex(where: { $0.id == card.id }) else {
-                print("‼️ Not found card in row \(rowType)")
 
-                return
-            }
-            rows[rowIndex].cards.remove(at: index)
+            rows[rowIndex].removeCard(card)
 
         default:
             fatalError("Unsupported container in Player")

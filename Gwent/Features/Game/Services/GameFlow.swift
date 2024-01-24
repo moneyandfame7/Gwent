@@ -59,6 +59,11 @@ final class GameFlow {
     private func startRound() async {
         game.roundCount += 1
 
+        print("IDS BOT: \(game.bot.hand.map { $0.id })")
+        print("IDS ME: \(game.player.hand.map { $0.id })")
+
+        print("PlayerN: \(game.ui.namespaces.playerCards)")
+        print("BotN: \(game.ui.namespaces.botCards)")
         /// Ось це ЛОГІЧНО неправильно, але вирішити не можу поки що.
 
         game.currentPlayer = (game.roundCount % 2 == 0) ? game.firstPlayer : game.getOpponent(for: game.firstPlayer!)
@@ -75,11 +80,9 @@ final class GameFlow {
         // MARK: #FactionAbility - Monsters
 
         if game.player.deck.faction == .monsters && game.player.rows.contains(where: { $0.cards.count > 0 }) {
-            print("Monsters Ability Triggered PLAYER")
             await game.ui.showNotification(.monsters)
         }
         if game.bot.deck.faction == .monsters && game.bot.rows.contains(where: { $0.cards.count > 0 }) {
-            print("Monsters Ability Trigered BOT")
             await game.ui.showNotification(.monsters)
         }
 
@@ -214,18 +217,18 @@ private extension GameFlow {
             /// Delay between drawing 1 card.
             try? await Task.sleep(for: .seconds(0.1))
             withAnimation(.smooth(duration: 0.3)) {
-                self.game.player.drawCard()
-                self.game.bot.drawCard()
+                self.game.player.drawCard(randomDeckPosition: false)
+                self.game.bot.drawCard(randomDeckPosition: false)
             }
         }
         if game.player.deck.leader.leaderAbility == .drawExtraCard {
             withAnimation(.smooth(duration: 0.3)) {
-                self.game.player.drawCard()
+                self.game.player.drawCard(randomDeckPosition: false)
             }
         }
         if game.bot.deck.leader.leaderAbility == .drawExtraCard {
             withAnimation(.smooth(duration: 0.3)) {
-                self.game.bot.drawCard()
+                self.game.bot.drawCard(randomDeckPosition: false)
             }
         }
     }

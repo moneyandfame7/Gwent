@@ -10,11 +10,11 @@ import SwiftUI
 struct Row {
     let type: Card.Row
 
-    /*private(set)*/ var cards: [Card] = []
+    /* private(set) */ var cards: [Card] = []
 
     var horn: Card?
 
-    private(set) var showHornOverlay = false
+    var showHornOverlay = false
 
     var hasWeather = false {
         didSet {
@@ -22,38 +22,33 @@ struct Row {
         }
     }
 
-    /// Processed in RowView
-    var hornEffects: Int {
-        cards.reduce(0) { $0 + ($1.ability == .commanderHorn ? 1 : 0) } + (horn != nil ? 1 : 0)
+    var hornEffects = 0 {
+        didSet {
+            calculateCardsPower()
+        }
     }
 
-    /// Processed in RowView
-    var moraleBoost: Int {
-        cards.reduce(0) { $0 + ($1.ability == .moraleBoost ? 1 : 0) }
+    var moraleBoost = 0 {
+        didSet {
+            calculateCardsPower()
+        }
     }
 
     var totalPower: Int {
-        /// $0 - prevResult, $1 - item
-        cards.reduce(0) { $0 + ($1.editedPower ?? $1.power ?? 0) }
+        cards.reduce(0) { $0 + ($1.availablePower ?? 0) }
     }
 
-    @MainActor
-    mutating func addHorn(_ card: Card) async {
+    mutating func addHorn(_ card: Card) {
         if horn != nil {
             return
         }
-
-        withAnimation(.smooth(duration: 0.3)) {
-            horn = card
-        }
-
-        showHornOverlay = true
-
-        try? await Task.sleep(for: .seconds(1))
-
-        showHornOverlay = false
-//
+//        withAnimation(.smooth(duration: 0.3)) {
+        horn = card
+//        }
+        hornEffects += 1
     }
+
+    mutating func applyHorn(_ card: Card) async {}
 
     mutating func addCard(_ card: Card, at: Int? = nil) {
         var copy = card
@@ -64,10 +59,25 @@ struct Row {
         cards.insert(copy, at: at ?? randomPositionAtRow)
     }
 
-    mutating func removeCard(_ card: Card) {}
+    mutating func removeCard(_ card: Card) {
+        guard let index = cards.firstIndex(where: { $0.id == card.id }) else {
+            return
+        }
+
+        removeCard(at: index)
+    }
 
     mutating func removeCard(at: Int) {
-        cards.remove(at: at)
+        let removed = cards.remove(at: at)
+
+        switch removed.ability {
+        case .commanderHorn:
+            hornEffects -= 1
+        case .moraleBoost:
+            moraleBoost -= 1
+        default:
+            return
+        }
     }
 
     func calculateCardPower(_ card: Card) -> Int? {
@@ -102,6 +112,10 @@ struct Row {
         for i in cards.indices {
             cards[i].editedPower = calculateCardPower(cards[i])
         }
+    }
+
+    mutating func test() {
+        hasWeather = true
     }
 }
 

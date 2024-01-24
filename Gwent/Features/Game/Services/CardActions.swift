@@ -184,7 +184,7 @@ private extension CardActions {
 
         SoundManager.shared.playSound(sound: .scorch)
 
-        withAnimation(.smooth(duration: 0.7)) {
+        withAnimation(.smooth(duration: 0.3)) {
             currentPlayer.removeFromContainer(card: card, .hand)
             currentPlayer.addToContainer(card: card, .discard)
         }
