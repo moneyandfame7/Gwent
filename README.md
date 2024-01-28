@@ -1,7 +1,7 @@
 
 # Gwent
 
-This is a copy of the game Gwent from The Witcher 3: Wild Hunt. It's built entirely in SwiftUI
+This is a copy of the mini-game "Gwent" from The Witcher 3: Wild Hunt. It's built entirely in SwiftUI
 
 
 ## Screenshots
