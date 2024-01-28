@@ -32,7 +32,7 @@ struct PlayerStatsView: View {
                             .scaledToFit()
                             .frame(height: 30)
                             .shadow(radius: 25)
-                            .grayscale(player.health == 1 ? 0.99 : 0)
+                            .grayscale(player.health < 2 ? 0.99 : 0)
                         Image(.Assets.emerald)
                             .resizable()
                             .scaledToFit()

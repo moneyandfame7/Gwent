@@ -25,22 +25,16 @@ struct GameRootScreen: View {
             if vm.isGameOver {
                 GameEndScreen()
                     .zIndex(1)
-                    .transition(.move(edge: .bottom))
+                    .transition(.opacity)
             }
 
             if vm.settings.isPresented {
                 GameSettingsScreen()
-                    .transition(.move(edge: .bottom))
+                    .transition(.opacity)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .environment(vm)
-        .overlay {
-            Button("GO deck") {
-                appState.navigate(to: .deck)
-            }
-            .buttonStyle(.borderedProminent)
-        }
     }
 }
 

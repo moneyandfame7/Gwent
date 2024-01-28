@@ -7,8 +7,17 @@
 
 import SwiftUI
 
-enum Difficulty {
+enum Difficulty: String, CaseIterable {
     case potato, normal
+
+    var description: String {
+        switch self {
+        case .potato:
+            "Potato"
+        case .normal:
+            "Normal"
+        }
+    }
 }
 
 //

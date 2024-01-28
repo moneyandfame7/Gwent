@@ -150,6 +150,9 @@ final class CardActions {
             } else if card.ability == .moraleBoost {
                 currentPlayer.applyMoraleBoost(card, rowType: rowType)
 
+            } else if card.ability == .scorch {
+                await processDestroyStrongest(rowType: rowType)
+
             } else if card.ability == .medic {
                 /// Delay before using the medic ability ( showing carousel ).
                 try? await Task.sleep(for: .seconds(2))
@@ -192,6 +195,8 @@ private extension CardActions {
         guard let maxPower, maxPower > 0 else {
             return
         }
+
+        HapticManager.shared.trigger(.notification(.error))
 
         print("Max: \(maxPower)")
 
@@ -328,12 +333,16 @@ private extension CardActions {
         guard let currentPlayer = game.currentPlayer else {
             return
         }
+
         /// Move card to top of the discard.
         currentPlayer.removeFromContainer(card: resurrectionCard, .discard)
         currentPlayer.addToContainer(card: resurrectionCard, .discard)
 
-        let topDiscardIndex = currentPlayer.discard.endIndex - 1
         SoundManager.shared.playSound(sound: .medic)
+        HapticManager.shared.trigger(.notification(.success))
+
+        let topDiscardIndex = currentPlayer.discard.endIndex - 1
+
         await withTaskGroup(of: Void.self) { group in
 //            group.addTask {
 //                await SoundManager.shared.playSound(sound: .medic)
@@ -769,7 +778,8 @@ private extension CardActions {
         guard let opponent = game.opponent else {
             return
         }
-
+        SoundManager.shared.playSound(sound: .scorch)
+        
         let row = opponent.getRow(rowType)
 
         let totalPower = row.totalPower
@@ -781,11 +791,13 @@ private extension CardActions {
             .filter { $0.type != .hero }
             .compactMap { $0.availablePower }
             .max()
-
+        
         guard let max else {
             return
         }
-
+        
+        HapticManager.shared.trigger(.notification(.error))
+        
         let scorched = row.cards.filter { $0.availablePower == max }
 
         await withTaskGroup(of: Void.self) { group in

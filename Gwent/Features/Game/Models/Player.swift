@@ -57,6 +57,15 @@ class Player {
         rows = Row.generate(forBot: true)
     }
 
+    func reset() {
+        hand = []
+        while !discard.isEmpty {
+            let removed = discard.removeFirst()
+
+            deck.cards.append(removed)
+        }
+    }
+
     func drawCard(randomHandPosition: Bool = false, randomDeckPosition: Bool = false) {
         let card = randomDeckPosition ? deck.cards.randomElement() : deck.cards.last
 
@@ -305,8 +314,8 @@ extension Player {
                 rows[i].cards.removeAll(where: { $0.id != cardException?.id })
                 discard.append(contentsOf: cards.filter { $0.id != cardException?.id })
 
-//                rows[i].moraleBoost = 0
-//                rows[i].hornEffects = 0
+                rows[i].moraleBoost = 0
+                rows[i].hornEffects = 0
             }
         }
     }

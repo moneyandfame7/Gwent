@@ -43,16 +43,44 @@ final class GameFlow {
         }
     }
 
-    func restartGame() {}
+    func restartGame() {
+        reset()
+
+        startGame()
+    }
 
     func endGame() {
+        while game.roundHistory.count < 3 {
+            game.roundHistory.append(
+                Round(winner: nil, scoreMe: 0, scoreAI: 0)
+            )
+        }
         withAnimation {
             game.isGameOver = true
         }
     }
 
-    func surrender() async {
-        await endGame()
+    func surrender() {
+        // TODO: переробити, тут має бути якось інакше.
+
+        let currentRound = Round(
+            winner: game.leadingPlayer,
+            scoreMe: game.player.totalScore,
+            scoreAI: game.bot.totalScore
+        )
+        if game.roundHistory.isEmpty {
+            game.roundHistory.append(currentRound)
+        } else {
+            game.roundHistory[game.roundHistory.safeLastIndex] = currentRound
+        }
+
+        while game.roundHistory.count < 3 {
+            game.roundHistory.append(
+                Round(winner: game.bot, scoreMe: 0, scoreAI: 0)
+            )
+        }
+
+        endGame()
     }
 
     @MainActor
@@ -72,7 +100,9 @@ final class GameFlow {
 
         if let prevRound = game.roundHistory.last, let prevRoundWinner = prevRound.winner {
             if prevRoundWinner.deck.faction == .northern {
-                prevRoundWinner.drawCard()
+                withAnimation(.card) {
+                    prevRoundWinner.drawCard()
+                }
                 await game.ui.showNotification(.northern)
             }
         }
@@ -316,7 +346,16 @@ private extension GameFlow {
         game.bot.endRound(isWin: isBotWin)
     }
 
-    func reset() {}
+    func reset() {
+        game.roundHistory = []
+        game.roundCount = 0
+        game.weathers = []
+        game.firstPlayer = nil
+        game.currentPlayer = nil
+        game.isGameOver = false
+        game.player.reset()
+        game.bot.reset()
+    }
 
     func initGame() {
         if game.player.leader.leaderAbility == .cancelLeaderAbility {

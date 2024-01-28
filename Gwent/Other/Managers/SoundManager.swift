@@ -13,7 +13,32 @@ class SoundManager: NSObject {
 
     private var completions: [AVAudioPlayer: () -> Void] = [:]
 
-    func playSound(sound: SoundManager.SoundName)  {
+    override private init() {
+        super.init()
+    }
+
+    func prepare() {
+        for sound in SoundManager.SoundName.allCases {
+            preparePlayer(sound: sound)
+        }
+    }
+
+    private func preparePlayer(sound: SoundManager.SoundName) {
+        guard let file = NSDataAsset(name: sound.assetName) else {
+            return
+        }
+
+        do {
+            players[sound] = try AVAudioPlayer(data: file.data)
+
+            players[sound]?.prepareToPlay()
+
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
+
+    func playSound(sound: SoundManager.SoundName) {
         guard let file = NSDataAsset(name: sound.assetName) else {
             print("😡 Sound \(sound.rawValue) not found in assets!")
             return
@@ -29,16 +54,12 @@ class SoundManager: NSObject {
                     newPlayer.play()
                 }
 
-//                try? await Task.sleep(for: .seconds(newPlayer.duration))
                 return
             }
 
             Task(priority: .background) {
                 player.play()
             }
-
-//            try? await Task.sleep(for: .seconds(player.duration))
-
         } catch {
             print("😡 ERROR: \(error.localizedDescription)")
         }
@@ -63,8 +84,9 @@ extension SoundManager {
         case roundLose = "round_lose"
 
         /// Common
-        case deck
+        case deck, selection, toast
         case drawCard = "draw_card"
+        case cardAdded = "card_added"
 
         /// Cards
         case hero, close, ranged, siege, medic, scorch, spy, decoy
@@ -78,10 +100,10 @@ extension SoundManager {
             case .coin, .turnMe, .turnOp, .roundStarted, .roundWin, .roundLose:
                 return "Sounds/notifications/\(rawValue)"
 
-            case .deck, .drawCard:
+            case .deck, .drawCard, .selection, .toast, .cardAdded:
                 return "Sounds/common/\(rawValue)"
 
-                case .hero, .close, .ranged, .siege, .medic, .scorch, .spy, .tightBond, .decoy:
+            case .hero, .close, .ranged, .siege, .medic, .scorch, .spy, .tightBond, .decoy:
                 return "Sounds/cards/\(rawValue)"
             }
         }

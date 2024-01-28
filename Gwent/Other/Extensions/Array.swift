@@ -22,6 +22,10 @@ extension Array {
     func randomIndex() -> Int {
         return indices.randomElement() ?? 0
     }
+
+    var safeLastIndex: Int {
+        isEmpty ? 0 : endIndex - 1
+    }
 }
 
 extension Array where Element: Identifiable {

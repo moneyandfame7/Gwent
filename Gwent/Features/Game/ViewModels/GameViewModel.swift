@@ -21,7 +21,7 @@ final class GameViewModel {
     /// Game Services
     var ui = GameUI()
 
-    let settings = GameSettings()
+    var settings = GameSettings.shared
 
     private var flow: GameFlow!
 
@@ -102,6 +102,10 @@ final class GameViewModel {
 
     func restartGame() {
         flow.restartGame()
+    }
+    
+    func forfeitGame() {
+        flow.surrender()
     }
 
     func endGame() {

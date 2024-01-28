@@ -41,6 +41,7 @@ extension Deck {
             Card.all2[30],
             Card.all2[31],
             Card.all2[32],
+            Card.all2[182],
         ],
         faction: .northern
     )

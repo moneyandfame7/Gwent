@@ -146,6 +146,12 @@ struct GameScreen: View {
 
             vm.startGame()
         }
+        .overlay(alignment: .leading) {
+            CircleButton("gearshape.fill", disabled: vm.ui.isDisabled) {
+                vm.settings.toggleScreen()
+            }
+            .offset(x: 5)
+        }
         .overlay {
             if let notification = vm.ui.notification {
                 NotificationView(variant: notification)

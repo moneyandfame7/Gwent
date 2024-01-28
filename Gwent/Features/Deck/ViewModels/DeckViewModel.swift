@@ -7,66 +7,29 @@
 
 import Observation
 
-enum FactionTab: String, CaseIterable {
-    case northern
-    case nilfgaard
-    case monsters
-    case scoiatael
-
-    var description: String {
-        switch self {
-        case .northern:
-            return "Draw a card from your deck whenever you win a round."
-        case .nilfgaard:
-            return "Wins any round that ends in a draw."
-        case .monsters:
-            return "Keeps a random Unit Card out after each round."
-        case .scoiatael:
-            return "Decides who takes first turn."
-        }
-    }
-
-    var title: String {
-        switch self {
-        case .northern:
-            return "Northern Realms"
-        case .nilfgaard:
-            return "Nilfgaardian Empire"
-        case .monsters:
-            return "Monsters"
-        case .scoiatael:
-            return "Scoiatael"
-        }
-    }
-}
-
-enum FilterTab: String, CaseIterable {
-    case all
-    case close
-    case ranged
-    case siege
-    case hero
-    case weather
-    case special
-}
-
 @Observable
 final class DeckViewModel {
     private(set) var activeTab: FactionTab = .northern
 
+    var toast: String?
+
     private(set) var decksByFaction: [FactionTab: Deck] = [
         .northern: Deck(leader: Card.leader, faction: .northern),
-        .nilfgaard: Deck(leader: Card.leader, faction: .northern),
+        .nilfgaard: Deck(leader: Card.leader, faction: .nilfgaard),
         .monsters: Deck(leader: Card.leader, faction: .monsters),
         .scoiatael: Deck(leader: Card.leader, faction: .scoiatael),
     ]
 
-    private(set)  var collectionsByFaction: [FactionTab: [Card]] = [
-        .northern: Card.all2.filter { ($0.faction == .northern || $0.faction == .neutral) && $0.type != .leader },
-        .nilfgaard: Card.all2.filter { ($0.faction == .nilfgaard || $0.faction == .neutral) && $0.type != .leader },
-        .monsters: Card.all2.filter { ($0.faction == .monsters || $0.faction == .neutral) && $0.type != .leader },
-        .scoiatael: Card.all2.filter { ($0.faction == .scoiatael || $0.faction == .neutral) && $0.type != .leader },
-    ]
+    private(set) var collectionsByFaction: [FactionTab: [Card]] = {
+        var collections: [FactionTab: [Card]] = [:]
+
+        FactionTab.allCases.forEach { tab in
+            collections[tab] = Card.all2
+                .filter { ($0.faction.rawValue == tab.rawValue || $0.faction == .neutral) && $0.type != .leader }
+        }
+
+        return collections
+    }()
 
     var leaderCarousel: Carousel?
 
@@ -76,6 +39,20 @@ final class DeckViewModel {
 
     var currentDeck: Deck {
         decksByFaction[activeTab]!
+    }
+
+    var deckStats: DeckStats {
+        let total = currentDeck.cards.count
+
+        let units = currentDeck.cards.filter { $0.type == .unit || $0.type == .hero }.count
+
+        let specials = currentDeck.cards.filter { $0.type == .special || $0.type == .weather }.count
+
+        let power = currentDeck.cards.reduce(0) { $0 + ($1.power ?? 0) }
+
+        let heroes = currentDeck.cards.filter { $0.type == .hero }.count
+
+        return DeckStats(total: total, units: units, specials: specials, power: power, heroes: heroes)
     }
 
     var currentCollection: [Card] {
@@ -113,13 +90,44 @@ final class DeckViewModel {
         activeTab = nextTab
     }
 
+    func startGame(completion: @escaping () -> Void) {
+        let isDeckValid = validateDeck()
+
+        guard isDeckValid else {
+            // show toast
+            toast = "Units Cards Error"
+            return
+        }
+
+        completion()
+        // navigate to ...
+    }
+
+    private func validateDeck() -> Bool {
+        return deckStats.units >= 22
+    }
+
     func addCard(_ card: Card) {
         guard let index = collectionsByFaction[activeTab]!.firstIndex(where: { $0.id == card.id }) else {
+            return
+        }
+        if (card.type == .weather || card.type == .special) && deckStats.specials >= 10 {
+            toast = "Special Cards Limit"
+
             return
         }
 
         collectionsByFaction[activeTab]!.remove(at: index)
         decksByFaction[activeTab]!.cards.append(card)
+    }
+
+    func removeCard(_ card: Card) {
+        guard let index = decksByFaction[activeTab]!.cards.firstIndex(where: { $0.id == card.id }) else {
+            return
+        }
+
+        decksByFaction[activeTab]!.cards.remove(at: index)
+        collectionsByFaction[activeTab]!.append(card)
     }
 
     func showLeaderPicker() {
@@ -131,17 +139,17 @@ final class DeckViewModel {
             title: "Pick your leader.",
             initID: currentDeck.leader.id,
             cancelButton: "Hide",
-            onSelect: { card in
-                self.changeLeader(card)
+            onSelect: { [unowned self] card in
+                changeLeader(card)
             }
         )
     }
 
-    var deck: Deck = .sample1
-
-    var count = 0
-
     deinit {
         print("⛔️ DeckViewModel Deinit")
     }
+}
+
+extension DeckViewModel {
+    static let preview = DeckViewModel()
 }

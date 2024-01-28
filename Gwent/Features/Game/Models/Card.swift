@@ -21,11 +21,7 @@ struct Card: Identifiable, Hashable {
     var combatRow: Card.Row?
     var weather: Card.Weather?
 
-    var editedPower: Int? {
-        didSet {
-            print("EDITED_SUKA_POWER = \(editedPower), Name: \(name)")
-        }
-    }
+    var editedPower: Int?
 
     var holderIsBot: Bool?
     var shouldAnimate = false
@@ -207,7 +203,7 @@ extension Card {
                 return "medic"
             case .scorch:
                 return "scorch"
-            case let .tightBond(multiplier):
+            case .tightBond:
                 return "tight_bond"
             }
         }

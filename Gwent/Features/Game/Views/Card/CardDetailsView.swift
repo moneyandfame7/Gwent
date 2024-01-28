@@ -18,7 +18,7 @@ struct CardDetailsView: View {
     @Binding var selectedCard: SelectedCard?
 
     private var shouldPlayInstantly: Bool {
-        selectedCard?.details.type == .leader || selectedCard?.details.ability == .scorch
+        selectedCard?.details.type == .leader || selectedCard?.details.ability == .scorch && selectedCard?.details.type == .special
     }
 
     private var isCanPlay: Bool {

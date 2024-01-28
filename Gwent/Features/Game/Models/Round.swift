@@ -7,7 +7,9 @@
 
 import Foundation
 
-struct Round {
+struct Round: Identifiable {
+    let id = UUID()
+    
     let winner: Player?
     let scoreMe: Int
     let scoreAI: Int

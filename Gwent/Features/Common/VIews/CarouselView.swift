@@ -35,6 +35,7 @@ struct CarouselView: View {
             return
         }
 
+        HapticManager.shared.trigger(.cardSelection)
         selectAction(card)
 
         if let count = carousel?.count {
