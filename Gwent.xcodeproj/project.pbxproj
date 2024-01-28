@@ -43,6 +43,8 @@
 		167BE1842B6162F700CE3414 /* DeckStatsItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 167BE1832B6162F700CE3414 /* DeckStatsItem.swift */; };
 		167BE1862B6168DD00CE3414 /* AppFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 167BE1852B6168DD00CE3414 /* AppFont.swift */; };
 		167BE1882B616B9D00CE3414 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 167BE1872B616B9D00CE3414 /* ToastView.swift */; };
+		167F78452B66B00B000C4A88 /* card.png in Resources */ = {isa = PBXBuildFile; fileRef = 167F78442B66B00B000C4A88 /* card.png */; };
+		167F78472B66B013000C4A88 /* game.png in Resources */ = {isa = PBXBuildFile; fileRef = 167F78462B66B013000C4A88 /* game.png */; };
 		1687EBDB2B3C6BD10087555D /* IconButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1687EBDA2B3C6BD10087555D /* IconButton.swift */; };
 		169A2CEB2B35B45900FB1583 /* TotalScoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 169A2CEA2B35B45900FB1583 /* TotalScoreView.swift */; };
 		169A2CED2B35BFEA00FB1583 /* CardDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 169A2CEC2B35BFEA00FB1583 /* CardDetailsView.swift */; };
@@ -129,6 +131,8 @@
 		167BE1832B6162F700CE3414 /* DeckStatsItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeckStatsItem.swift; sourceTree = "<group>"; };
 		167BE1852B6168DD00CE3414 /* AppFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppFont.swift; sourceTree = "<group>"; };
 		167BE1872B616B9D00CE3414 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
+		167F78442B66B00B000C4A88 /* card.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = card.png; sourceTree = "<group>"; };
+		167F78462B66B013000C4A88 /* game.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = game.png; sourceTree = "<group>"; };
 		1687EBDA2B3C6BD10087555D /* IconButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconButton.swift; sourceTree = "<group>"; };
 		169A2CEA2B35B45900FB1583 /* TotalScoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalScoreView.swift; sourceTree = "<group>"; };
 		169A2CEC2B35BFEA00FB1583 /* CardDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDetailsView.swift; sourceTree = "<group>"; };
@@ -225,6 +229,7 @@
 		1645C5492B34A40D00E12323 /* Other */ = {
 			isa = PBXGroup;
 			children = (
+				167F78432B66AFED000C4A88 /* Images */,
 				16BB29922B34D254007431B7 /* Extensions */,
 				1645C54A2B34A43700E12323 /* Managers */,
 				16B6EE802B337B6A00FD2CB2 /* Fonts */,
@@ -251,6 +256,15 @@
 				165911A72B6049E90083E6F4 /* AINormal.swift */,
 			);
 			path = AI;
+			sourceTree = "<group>";
+		};
+		167F78432B66AFED000C4A88 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				167F78462B66B013000C4A88 /* game.png */,
+				167F78442B66B00B000C4A88 /* card.png */,
+			);
+			path = Images;
 			sourceTree = "<group>";
 		};
 		1687EBD92B3C6BC20087555D /* Buttons */ = {
@@ -573,7 +587,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				16BB299A2B34E338007431B7 /* Launch Screen.storyboard in Resources */,
+				167F78472B66B013000C4A88 /* game.png in Resources */,
 				16B6EE772B335E8500FD2CB2 /* Preview Assets.xcassets in Resources */,
+				167F78452B66B00B000C4A88 /* card.png in Resources */,
 				169A2CF12B35C75B00FB1583 /* abilities.json in Resources */,
 				16CC25AA2B557C8E00CE2AC9 /* leader-abilities.json in Resources */,
 				16D840C82B4E954A00F7BFAF /* PTSans-Regular.ttf in Resources */,

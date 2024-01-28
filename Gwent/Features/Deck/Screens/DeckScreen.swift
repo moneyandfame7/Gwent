@@ -103,13 +103,6 @@ struct DeckScreen: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .overlay {
-            VStack {
-                Button("Go to play mock") {
-                    appState.navigate(to: .game(Deck.sample1))
-                }
-                .buttonStyle(.borderedProminent)
-            }
-
             if vm.leaderCarousel != nil {
                 CarouselView(carousel: $vm.leaderCarousel)
             }

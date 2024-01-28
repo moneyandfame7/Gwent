@@ -100,7 +100,6 @@ final class DeckViewModel {
         }
 
         completion()
-        // navigate to ...
     }
 
     private func validateDeck() -> Bool {
