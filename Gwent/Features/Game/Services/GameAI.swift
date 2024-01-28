@@ -88,7 +88,7 @@ final class GameAI {
     /// In GameAI difficulty робити це не рандомно
     func initialRedraw() {
         for _ in 0 ..< 2 {
-            withAnimation(.smooth(duration: 0.3)) {
+            withAnimation(.card) {
                 let randomToRemove = game.bot.hand.randomElement()!
                 game.bot.removeFromContainer(card: randomToRemove, .hand)
                 game.bot.addToContainer(card: randomToRemove, .deck)

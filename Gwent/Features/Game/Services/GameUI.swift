@@ -56,19 +56,19 @@ final class GameUI {
 
             try? await Task.sleep(for: .seconds(0.5))
 
-            withAnimation(.smooth(duration: 0.3)) {
+            withAnimation(.card) {
                 selectedCard?.isReadyToUse = true
             }
 
             try? await Task.sleep(for: .seconds(1))
         } else if card.type == .leader || card.type == .special && card.ability == .scorch {
-            withAnimation(.smooth(duration: 0.3)) {
+            withAnimation(.card) {
                 selectedCard?.isReadyToUse = true
             }
             try? await Task.sleep(for: .seconds(0.7))
 
             Task { @MainActor in
-                try? await Task.sleep(for: .seconds(0.3))
+                try? await Task.sleep(for: .card)
                 selectedCard = nil
             }
         }

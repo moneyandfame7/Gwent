@@ -36,25 +36,25 @@ struct CardAnimationView: View {
         if let ability = card.ability {
 //           sound here????
         }
-        withAnimation(.smooth(duration: 0.3)) {
+        withAnimation(.card) {
             opacity = 1
         }
 
-        try? await Task.sleep(for: .seconds(0.3))
+        try? await Task.sleep(for: .card)
 
-        withAnimation(.smooth(duration: 0.3)) {
+        withAnimation(.card) {
             scale = 1
         }
 
-        try? await Task.sleep(for: .seconds(0.3))
+        try? await Task.sleep(for: .card)
 
-        withAnimation(.smooth(duration: 0.3)) {
+        withAnimation(.card) {
             scale = 0.8
         }
 
         try? await Task.sleep(for: .seconds(1))
 
-        withAnimation(.smooth(duration: 0.3)) {
+        withAnimation(.card) {
             scale = 0.4
 
             opacity = 0

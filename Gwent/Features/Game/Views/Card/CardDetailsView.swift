@@ -53,7 +53,7 @@ struct CardDetailsView: View {
         if shouldPlayInstantly {
             await vm.playCard(selectedCard!.details)
         } else {
-            withAnimation(.smooth(duration: 0.3)) {
+            withAnimation(.card) {
                 selectedCard!.isReadyToUse.toggle()
             }
         }

@@ -86,7 +86,7 @@ class Player {
     /// Removes card from "container" and adds to row(rowType).
 
     func moveCard(_ card: Card, from source: CardContainer = .hand, to rowType: Card.Row) {
-        withAnimation(.smooth(duration: 0.3)) {
+        withAnimation(.card) {
             removeFromContainer(card: card, source)
             addToContainer(card: card, .row(rowType))
         }
@@ -132,7 +132,7 @@ extension Player {
         }
 
         SoundManager.shared.playSound(sound: .horn)
-        withAnimation(.smooth(duration: 0.3)) {
+        withAnimation(.card) {
             if !card.isCreatedByLeader {
                 removeFromContainer(card: card, container)
             }
@@ -300,7 +300,7 @@ extension Player {
             }
         }
 
-        withAnimation(.smooth(duration: 0.3)) {
+        withAnimation(.card) {
             for i in rows.indices {
                 let cards = rows[i].cards
 

@@ -80,7 +80,7 @@ final class CardActions {
             currentPlayer.insertToContainer(target, .hand, at: decoyIndex)
         }
 
-        try? await Task.sleep(for: .seconds(0.3))
+        try? await Task.sleep(for: .card)
 
         await game.endTurn()
     }
@@ -187,7 +187,7 @@ private extension CardActions {
 
         SoundManager.shared.playSound(sound: .scorch)
 
-        withAnimation(.smooth(duration: 0.3)) {
+        withAnimation(.card) {
             currentPlayer.removeFromContainer(card: card, .hand)
             currentPlayer.addToContainer(card: card, .discard)
         }
@@ -244,7 +244,7 @@ private extension CardActions {
         /// Delete target cards
         for (row, cards) in opponentScorch {
             for card in cards {
-                withAnimation(.smooth(duration: 0.3)) {
+                withAnimation(.card) {
                     opponent.removeFromContainer(card: card, .row(row))
                     opponent.addToContainer(card: card, .discard)
                 }
@@ -252,7 +252,7 @@ private extension CardActions {
         }
         for (row, cards) in currentPlayerScorch {
             for card in cards {
-                withAnimation(.smooth(duration: 0.3)) {
+                withAnimation(.card) {
                     currentPlayer.removeFromContainer(card: card, .row(row))
                     currentPlayer.addToContainer(card: card, .discard)
                 }
@@ -268,7 +268,7 @@ private extension CardActions {
             return
         }
         SoundManager.shared.playSound(sound: .spy)
-        withAnimation(.smooth(duration: 0.3)) {
+        withAnimation(.card) {
             currentPlayer.removeFromContainer(card: card, container)
             // можливо можна зробити щось типу holderIs...
             // тут є трабли з анімацією, бо в рядках опонента інший неймспейс стоїть. я хз щшо робити, поки що забʼю
@@ -288,7 +288,7 @@ private extension CardActions {
         for _ in 0 ..< 2 {
             /// Delay between the drawing 1 card.
             try? await Task.sleep(for: .seconds(0.1))
-            withAnimation(.smooth(duration: 0.3)) {
+            withAnimation(.card) {
                 SoundManager.shared.playSound(sound: .drawCard)
 
                 currentPlayer.drawCard(randomHandPosition: true)
@@ -400,7 +400,7 @@ private extension CardActions {
                 .firstIndex(where: { ($0.id == card.id) || ($0.weather == card.weather) })
 
             if let sameWeatherIndex {
-                withAnimation(.smooth(duration: 0.3)) {
+                withAnimation(.card) {
                     moveWeatherToDiscard(at: sameWeatherIndex)
                 }
                 // Можливо варто повернути затримку, треба тестити, якщо це картка повертається до бота, а не до мене.
@@ -809,7 +809,7 @@ private extension CardActions {
         }
 
         for card in scorched {
-            withAnimation(.smooth(duration: 0.3)) {
+            withAnimation(.card) {
                 opponent.swapContainers(card, from: .row(rowType), to: .discard)
             }
         }
@@ -832,8 +832,8 @@ private extension CardActions {
         /// Буде помилка, що не видалено картку з контейнера, бо ми її щойно створили і її немає в ніякому контейнері.
         await currentPlayer.playHorn(horn, rowType: rowType)
 
-        /// Затримка після анімації переміщення картки
-        try? await Task.sleep(for: .seconds(0.3))
+        
+        try? await Task.sleep(for: .card)
     }
 
     func processPickOneWeather(_ weatherType: Card.Weather) async {

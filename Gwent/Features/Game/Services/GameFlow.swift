@@ -36,7 +36,7 @@ final class GameFlow {
 
                 await dealCards()
 
-                withAnimation(.smooth(duration: 0.3)) {
+                withAnimation(.card) {
                     self.initialRedraw()
                 }
             }
@@ -246,18 +246,18 @@ private extension GameFlow {
         for _ in 0 ..< 10 {
             /// Delay between drawing 1 card.
             try? await Task.sleep(for: .seconds(0.1))
-            withAnimation(.smooth(duration: 0.3)) {
+            withAnimation(.card) {
                 self.game.player.drawCard(randomDeckPosition: false)
                 self.game.bot.drawCard(randomDeckPosition: false)
             }
         }
         if game.player.deck.leader.leaderAbility == .drawExtraCard {
-            withAnimation(.smooth(duration: 0.3)) {
+            withAnimation(.card) {
                 self.game.player.drawCard(randomDeckPosition: false)
             }
         }
         if game.bot.deck.leader.leaderAbility == .drawExtraCard {
-            withAnimation(.smooth(duration: 0.3)) {
+            withAnimation(.card) {
                 self.game.bot.drawCard(randomDeckPosition: false)
             }
         }
