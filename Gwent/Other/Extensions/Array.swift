@@ -10,7 +10,7 @@ import Foundation
 extension Array {
     func randomElement(where condition: (Element) -> Bool) -> Element? {
         let filtered = filter { condition($0) }
-        guard !filtered.isEmpty else { return nil }
+        if filtered.isEmpty { return nil }
 
         return filtered.randomElement()!
     }
@@ -20,20 +20,22 @@ extension Array {
     }
 
     func randomIndex() -> Int {
-        return Int.random(in: startIndex ... endIndex)
+        return indices.randomElement() ?? 0
+    }
+
+    var safeLastIndex: Int {
+        isEmpty ? 0 : endIndex - 1
     }
 }
 
 extension Array where Element: Identifiable {
-    public subscript(id: Element.ID) -> Element? {
+    subscript(id: Element.ID) -> Element? {
         first { $0.id == id }
     }
 
     func randomElements(where predicate: ((Element) -> Bool)? = nil, count: Int = 1) -> [Element] {
         /// self.isEmpty
-        if isEmpty {
-            return []
-        }
+        if isEmpty { return [] }
 
         let elements = predicate != nil ? filter(predicate!) : self
 

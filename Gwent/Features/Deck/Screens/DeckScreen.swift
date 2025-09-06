@@ -9,19 +9,15 @@ import SwiftUI
 
 struct DeckScreen: View {
     @Environment(AppState.self) private var appState
-    @State private var vm = DeckViewModel()
-    @State private var isLeaderCarouselPresented = false
 
-    @State private var isAlertVisible = false
-    private var filteredCards: [Card] {
-        Card.all2.filter { $0.faction.rawValue == vm.activeTab.rawValue && $0.type != .leader }
-    }
+    @State private var vm = DeckViewModel()
 
     private let columns = [
         GridItem(.flexible()),
         GridItem(.flexible()),
         GridItem(.flexible()),
     ]
+
     @ViewBuilder
     private var tabsView: some View {
         GeometryReader { geometry in
@@ -65,50 +61,6 @@ struct DeckScreen: View {
         .frame(maxHeight: 50)
     }
 
-    private var statsView: some View {
-        GeometryReader { geometry in
-            HStack(spacing: 0) {
-                DeckStatsItem(
-                    title: "Total",
-                    image: .Images.DeckStats.count,
-                    value: "\(vm.currentDeck.cards.count)"
-                )
-                .frame(width: geometry.size.width / 5)
-
-                DeckStatsItem(
-                    title: "Units",
-                    image: .Images.DeckStats.units,
-                    value: "\(vm.currentDeck.cards.filter { $0.type == .unit }.count)/22",
-                    isValid: vm.currentDeck.cards.filter { $0.type == .unit }.count >= 22
-                )
-                .frame(width: geometry.size.width / 5)
-
-                DeckStatsItem(
-                    title: "Specials",
-                    image: .Images.DeckStats.special,
-                    value: "\(vm.currentDeck.cards.filter { $0.type == .special }.count)/10",
-                    isValid: true
-                )
-                .frame(width: geometry.size.width / 5)
-
-                DeckStatsItem(
-                    title: "Power",
-                    image: .Images.DeckStats.power,
-                    value: "\(vm.currentDeck.cards.reduce(0) { $0 + ($1.power ?? 0) })"
-                )
-                .frame(width: geometry.size.width / 5)
-
-                DeckStatsItem(
-                    title: "Heroes",
-                    image: .Images.DeckStats.hero,
-                    value: "\(vm.currentDeck.cards.filter { $0.type == .hero }.count)"
-                )
-                .frame(width: geometry.size.width / 5)
-            }
-        }
-        .frame(height: 50)
-    }
-
     var body: some View {
         VStack {
             VStack {
@@ -117,16 +69,19 @@ struct DeckScreen: View {
                     .multilineTextAlignment(.center)
                     .foregroundStyle(.brandYellowSecondary)
                 HStack {
-                    Text("Collection")
-                        .font(.headline)
-                        .opacity(0.6)
-                    Spacer()
+//                    Spacer()
                     BrandButton2(title: "Leader") {
                         vm.showLeaderPicker()
                     }
-                    
                     Spacer()
-                    BrandButton("Deck") {
+                    BrandButton2(title: "Start Game") {
+                        vm.startGame {
+                            appState.navigate(to: .game(vm.currentDeck))
+                        }
+                    }
+
+                    Spacer()
+                    BrandButton2(title: "Deck") {
                         vm.isDeckPresented = true
                     }
                 }
@@ -135,96 +90,28 @@ struct DeckScreen: View {
             }
             ScrollView {
                 LazyVGrid(columns: columns, spacing: 20) {
-                    ForEach(vm.currentCollection, id: \.self) { card in
+                    ForEach(vm.currentCollection) { card in
                         CardItemView(card: card) {
-                            addCard(card)
+                            vm.addCard(card)
                         }
                     }
                 }
-                .animation(.smooth, value: vm.activeTab)
-
+//                .animation(.smooth, value: vm.activeTab)
                 .padding(.horizontal)
+                .sensoryFeedback(.impact(weight: .medium), trigger: vm.currentCollection)
             }
-            .frame(maxHeight: .infinity)
-//            statsView
-        }
-        .overlay {
-            VStack {
-                Button("Go to play mock") {
-                    appState.navigate(to: .game(Deck.sample1))
-                }
-                .buttonStyle(.borderedProminent)
-            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .overlay {
             if vm.leaderCarousel != nil {
-                CarouselView(
-                    carousel: $vm.leaderCarousel
-                )
+                CarouselView(carousel: $vm.leaderCarousel)
             }
         }
         .sheet(isPresented: $vm.isDeckPresented) {
-            VStack {
-                HStack {
-                    Image("Images/shields/\(vm.activeTab)")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 35)
-                    Text(vm.activeTab.title)
-                        .font(.title3)
-                        .fontWeight(.medium)
-                        .foregroundStyle(.white)
-                }
-                ScrollView {
-                    LazyVGrid(columns: columns, spacing: 20) {
-                        ForEach(vm.currentDeck.cards) { card in
-                            Image("Cards/\(card.image)")
-                                .resizable()
-                                .scaledToFit()
-
-                            //                                    .padding(.horizontal, 20)
-                        }
-                    }
-                    .padding(.horizontal)
-                }
-                .frame(maxHeight: .infinity)
-                statsView
-            }
-            .padding(.top)
-            .background(.black)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            CurrentDeckView(vm: vm)
         }
         .background(.black)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-
-    private func addCard(_ card: Card) {
-        vm.addCard(card)
-    }
-}
-
-struct DeckStatsItem: View {
-    let title: String
-    let image: ImageResource
-    let value: String
-
-    var isValid: Bool?
-
-    var body: some View {
-        VStack(spacing: 0) {
-            Text(title)
-                .font(.headline)
-                .foregroundStyle(.brandYellowSecondary)
-            HStack(spacing: 0) {
-                Image(image)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 25, height: 25)
-                Text(value)
-                    .foregroundStyle(isValid != nil ? isValid! ? .green : .red : .brandYellowSecondary)
-                    .font(.footnote)
-            }
-        }
+        .toast(text: $vm.toast)
     }
 }
 

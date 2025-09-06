@@ -13,7 +13,7 @@ final class GameFlow {
     init(game: GameViewModel) {
         self.game = game
 
-        print("✅ GameFlow - Deinit -")
+        print("✅ GameFlow - Init -")
     }
 
     deinit {
@@ -21,67 +21,88 @@ final class GameFlow {
     }
 
     func startGame() {
-        defineFirstPlayer { player, notification in
-            self.game.firstPlayer = player
-            self.game.currentPlayer = player
+        defineFirstPlayer { [unowned self] player, notification in
+            game.firstPlayer = player
 
-            Task { @MainActor in
-//                try? await Task.sleep(for: .seconds(0.5))
+            if game.player.leader.leaderAbility == .cancelLeaderAbility {
+                game.bot.isLeaderAvailable = false
+            }
+            if game.bot.leader.leaderAbility == .cancelLeaderAbility {
+                game.player.isLeaderAvailable = false
+            }
 
-                await self.game.ui.showNotification(notification)
+            Task {
+                await game.ui.showNotification(notification)
 
-                SoundManager.shared.playSound(sound: .deck)
+                await dealCards()
 
-                for _ in 0 ..< 10 {
-                    /// Delay between drawing 1 card.
-                    try? await Task.sleep(for: .seconds(0.1))
-                    withAnimation(.smooth(duration: 0.3)) {
-                        self.game.player.drawCard()
-                        self.game.bot.drawCard()
-                    }
-                }
-                if self.game.player.deck.leader.leaderAbility == .drawExtraCard {
-                    withAnimation(.smooth(duration: 0.3)) {
-                        self.game.player.drawCard()
-                    }
-                }
-                if self.game.bot.deck.leader.leaderAbility == .drawExtraCard {
-                    withAnimation(.smooth(duration: 0.3)) {
-                        self.game.player.drawCard()
-                    }
-                }
-
-                withAnimation(.smooth(duration: 0.3)) {
+                withAnimation(.card) {
                     self.initialRedraw()
                 }
             }
         }
     }
 
-    func restartGame() {}
+    func restartGame() {
+        reset()
+
+        startGame()
+    }
 
     func endGame() {
+        while game.roundHistory.count < 3 {
+            game.roundHistory.append(
+                Round(winner: nil, scoreMe: 0, scoreAI: 0)
+            )
+        }
         withAnimation {
             game.isGameOver = true
         }
     }
 
-    func surrender() async {
-        await endGame()
+    func surrender() {
+        // TODO: переробити, тут має бути якось інакше.
+
+        let currentRound = Round(
+            winner: game.leadingPlayer,
+            scoreMe: game.player.totalScore,
+            scoreAI: game.bot.totalScore
+        )
+        if game.roundHistory.isEmpty {
+            game.roundHistory.append(currentRound)
+        } else {
+            game.roundHistory[game.roundHistory.safeLastIndex] = currentRound
+        }
+
+        while game.roundHistory.count < 3 {
+            game.roundHistory.append(
+                Round(winner: game.bot, scoreMe: 0, scoreAI: 0)
+            )
+        }
+
+        endGame()
     }
 
     @MainActor
     private func startRound() async {
         game.roundCount += 1
 
+        print("IDS BOT: \(game.bot.hand.map { $0.id })")
+        print("IDS ME: \(game.player.hand.map { $0.id })")
+
+        print("PlayerN: \(game.ui.namespaces.playerCards)")
+        print("BotN: \(game.ui.namespaces.botCards)")
         /// Ось це ЛОГІЧНО неправильно, але вирішити не можу поки що.
-        game.currentPlayer = (game.roundCount % 2 == 0) ? game.firstPlayer : game.opponent
+
+        game.currentPlayer = (game.roundCount % 2 == 0) ? game.firstPlayer : game.getOpponent(for: game.firstPlayer!)
 
         // MARK: #FactionAbility - Northern Realms
 
         if let prevRound = game.roundHistory.last, let prevRoundWinner = prevRound.winner {
             if prevRoundWinner.deck.faction == .northern {
-                prevRoundWinner.drawCard()
+                withAnimation(.card) {
+                    prevRoundWinner.drawCard()
+                }
                 await game.ui.showNotification(.northern)
             }
         }
@@ -89,11 +110,9 @@ final class GameFlow {
         // MARK: #FactionAbility - Monsters
 
         if game.player.deck.faction == .monsters && game.player.rows.contains(where: { $0.cards.count > 0 }) {
-            print("Monsters Ability Triggered PLAYER")
             await game.ui.showNotification(.monsters)
         }
         if game.bot.deck.faction == .monsters && game.bot.rows.contains(where: { $0.cards.count > 0 }) {
-            print("Monsters Ability Trigered BOT")
             await game.ui.showNotification(.monsters)
         }
 
@@ -133,7 +152,9 @@ final class GameFlow {
         }
     }
 
+    @MainActor
     func passRound() async {
+        game.ui.selectedCard = nil
         game.currentPlayer?.passRound()
 
         await endTurn()
@@ -158,11 +179,13 @@ final class GameFlow {
         ///
     }
 
+    @MainActor
     private func startTurn() async {
         guard let opponent = game.opponent else {
             return
         }
 
+        game.ui.isTurnHighlightDisabled = false
         if !opponent.isPassed {
             game.currentPlayer = opponent
 
@@ -174,6 +197,7 @@ final class GameFlow {
         }
 
         if currentPlayer.isBot {
+            game.ui.isDisabled = true
             await game.aiStrategy.startTurn()
         } else {
             game.ui.isDisabled = false
@@ -184,6 +208,8 @@ final class GameFlow {
         guard let currentPlayer = game.currentPlayer else {
             return
         }
+        game.ui.isTurnHighlightDisabled = true
+
         if !currentPlayer.isPassed && !currentPlayer.canPlay {
             currentPlayer.passRound()
         }
@@ -205,10 +231,36 @@ final class GameFlow {
 // MARK: Helpers
 
 private extension GameFlow {
+    @MainActor
     func flipCoin() async {
         game.firstPlayer = Int.random(in: 0 ... 1) == 0 ? game.player : game.bot
         game.currentPlayer = game.firstPlayer
         await game.ui.showNotification(game.firstPlayer!.isBot ? .coinOp : .coinMe)
+    }
+
+    @MainActor
+    func dealCards() async {
+        SoundManager.shared.playSound(sound: .deck)
+
+        // TODO: move to dealCards
+        for _ in 0 ..< 10 {
+            /// Delay between drawing 1 card.
+            try? await Task.sleep(for: .seconds(0.1))
+            withAnimation(.card) {
+                self.game.player.drawCard(randomDeckPosition: false)
+                self.game.bot.drawCard(randomDeckPosition: false)
+            }
+        }
+        if game.player.deck.leader.leaderAbility == .drawExtraCard {
+            withAnimation(.card) {
+                self.game.player.drawCard(randomDeckPosition: false)
+            }
+        }
+        if game.bot.deck.leader.leaderAbility == .drawExtraCard {
+            withAnimation(.card) {
+                self.game.bot.drawCard(randomDeckPosition: false)
+            }
+        }
     }
 
     func initialRedraw() {
@@ -233,28 +285,19 @@ private extension GameFlow {
                     game.ui.carousel!.cards.insert(random, at: index)
 
                     /// Move selected card to deck.
-                    ///
                     game.player.swapContainers(card, from: .hand, to: .deck)
-//                    game.player.removeFromContainer(at: index, .hand)
-//                    game.player.addToContainer(card: card, .deck)
 
                     /// Move random card to hand.
                     game.player.removeFromContainer(card: random, .deck)
                     game.player.insertToContainer(random, .hand, at: index)
-//
-//                    game.player.removeFromContainer(card: card, .hand)
-//                    game.player.addToContainer(card: card, .deck)
-//
-//                    game.player.removeFromContainer(card: random, .deck)
-//                    game.player.addToContainer(card: random, .hand)
 
                 },
-                completion: {
+                completion: { [unowned self] in
                     Task {
                         /// Delay before showing the ".roundStart" notification
                         try? await Task.sleep(for: .seconds(0.4))
 
-                        await self.startRound()
+                        await startRound()
                     }
                 }
             )
@@ -271,7 +314,7 @@ private extension GameFlow {
         var isMeWin = false
 
         if game.leadingPlayer == nil {
-            if isMeNilf && isBotNilf {
+            if isMeNilf == isBotNilf {
                 await game.ui.showNotification(.roundDraw)
             } else if isMeNilf {
                 await game.ui.showNotification(.nilfgaard)
@@ -303,7 +346,16 @@ private extension GameFlow {
         game.bot.endRound(isWin: isBotWin)
     }
 
-    func reset() {}
+    func reset() {
+        game.roundHistory = []
+        game.roundCount = 0
+        game.weathers = []
+        game.firstPlayer = nil
+        game.currentPlayer = nil
+        game.isGameOver = false
+        game.player.reset()
+        game.bot.reset()
+    }
 
     func initGame() {
         if game.player.leader.leaderAbility == .cancelLeaderAbility {
@@ -322,25 +374,25 @@ private extension GameFlow {
 
         let firstPlayer = Int.random(in: 0 ... 1) == 0 ? game.bot : game.player
 
-        if isBotScoiatael && isPlayerScoiatael || (!isBotScoiatael && !isPlayerScoiatael) {
+        if isBotScoiatael == isPlayerScoiatael {
             completion(firstPlayer, firstPlayer.isBot ? .coinOp : .coinMe)
 
         } else if isBotScoiatael {
             completion(firstPlayer, firstPlayer.isBot ? .scoiatael : .coinMe)
 
         } else if isPlayerScoiatael {
-            game.ui.showAlert(
-                AlertItem(
-                    title: "Would you like to go first",
-                    description: "The Scoia'tael faction perk allows you to decide who will get to go first",
-                    cancelButton: ("Let Opponent Start", {
-                        completion(self.game.bot, .coinOp)
-                    }),
-                    confirmButton: ("Go First", {
-                        completion(self.game.player, .coinMe)
-                    })
-                )
+            let alert = AlertItem(
+                title: "Would you like to go first",
+                description: "The Scoia'tael faction perk allows you to decide who will get to go first",
+                cancelButton: ("Let Opponent Start", { [unowned self] in
+                    completion(game.bot, .coinOp)
+                }),
+                confirmButton: ("Go First", { [unowned self] in
+                    completion(game.player, .coinMe)
+                })
             )
+
+            game.ui.showAlert(alert)
         }
     }
 }

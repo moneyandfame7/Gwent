@@ -7,9 +7,19 @@
 
 import SwiftUI
 
-// enum Difficulty {
-//    case potato, normal
-// }
+enum Difficulty: String, CaseIterable {
+    case potato, normal
+
+    var description: String {
+        switch self {
+        case .potato:
+            "Potato"
+        case .normal:
+            "Normal"
+        }
+    }
+}
+
 //
 // protocol GameAI {
 // func startTurn() async
@@ -18,6 +28,27 @@ import SwiftUI
 // class GameAIPotato: GameAI {}
 //
 // class GameAINormal: GameAI {}
+
+final class AI {
+    /// Bi-directional usage.
+    private unowned var game: GameViewModel!
+
+    private(set) var strategy: AIStrategy!
+
+    init(game: GameViewModel, difficulty: Difficulty) {
+        self.game = game
+        setDifficulty(difficulty)
+    }
+
+    func setDifficulty(_ difficulty: Difficulty) {
+        switch difficulty {
+        case .normal:
+            strategy = AINormal(game: game)
+        case .potato:
+            strategy = AIPotato(game: game)
+        }
+    }
+}
 
 final class GameAI {
     private unowned var game: GameViewModel
@@ -32,6 +63,7 @@ final class GameAI {
         print("‼️ GameAI - Deinit -")
     }
 
+    @MainActor
     func startTurn() async {
         guard let opponent = game.opponent else {
             return
@@ -56,7 +88,7 @@ final class GameAI {
     /// In GameAI difficulty робити це не рандомно
     func initialRedraw() {
         for _ in 0 ..< 2 {
-            withAnimation(.smooth(duration: 0.3)) {
+            withAnimation(.card) {
                 let randomToRemove = game.bot.hand.randomElement()!
                 game.bot.removeFromContainer(card: randomToRemove, .hand)
                 game.bot.addToContainer(card: randomToRemove, .deck)
@@ -72,7 +104,7 @@ final class GameAI {
     func medic(cards: [Card]) {
 //        cards.max(by: {$0.availablePower < $1.availablePower})
     }
-    
+
     /// Обирати рандомну картку: GameAINormal
     /// якщо немає сенсу використовувати - перевебирання або пасувати
     /// якщо це скорч - юзати якщо має сенс ( у плеєра має бути декілька карток з однаковою силою чи шось таке )

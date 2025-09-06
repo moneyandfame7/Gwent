@@ -15,9 +15,12 @@ struct SelectedCard {
     /// Значить що карткою можу зіграти Я, або ця картка анімується, коли її використовує бот.
     var isPlayable: Bool = true
 
-    var holder: Tag = .bot
+    var holder: Tag = .me
 }
 
 extension SelectedCard {
     static let preview: Self = SelectedCard(details: Card.leader)
+    
+    
+    static let bot: Self = SelectedCard(details: Card.leader, holder: .bot)
 }

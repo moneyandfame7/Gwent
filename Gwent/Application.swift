@@ -16,6 +16,10 @@ struct Application: App {
             ContentView()
                 .environment(\.colorScheme, .dark)
                 .environment(appState)
+                .onAppear {
+                    SoundManager.shared.prepare()
+                    HapticManager.shared.prepare()
+                }
         }
     }
 }

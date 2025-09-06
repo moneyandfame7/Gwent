@@ -20,7 +20,9 @@ final class GameUI {
 
     var notification: Notification? {
         didSet {
-            isDisabled = notification != nil
+            if notification != nil {
+                isDisabled = true
+            }
         }
     }
 
@@ -32,9 +34,11 @@ final class GameUI {
 
     var selectedRow: Row?
 
-    var isDisabled = false
+    var isDisabled = true
 
     var isPassButtonDisabled = true
+
+    var isTurnHighlightDisabled = true
 
     func selectCard(_ card: Card, holder: Tag = .me) -> Void {
         if selectedCard?.details.id == card.id {
@@ -44,17 +48,49 @@ final class GameUI {
         }
     }
 
+    /// Якщо це картка бота - анімується її використання, якщо це моя - трошки по іншому.
+    @MainActor
+    func animateCardUsage(_ card: Card, holder: Tag) async {
+        if holder == .bot {
+            selectCard(card, holder: .bot)
+
+            try? await Task.sleep(for: .seconds(0.5))
+
+            withAnimation(.card) {
+                selectedCard?.isReadyToUse = true
+            }
+
+            try? await Task.sleep(for: .seconds(1))
+        } else if card.type == .leader || card.type == .special && card.ability == .scorch {
+            withAnimation(.card) {
+                selectedCard?.isReadyToUse = true
+            }
+            try? await Task.sleep(for: .seconds(0.7))
+
+            Task { @MainActor in
+                try? await Task.sleep(for: .card)
+                selectedCard = nil
+            }
+        }
+
+        selectedCard = nil
+    }
+
     func isCardSelected(_ card: Card) -> Bool {
         return card.id == selectedCard?.details.id
     }
 
     @MainActor
     func showNotification(_ notification: Notification) async -> Void {
+        let duration = notification == .coinMe || notification == .coinOp ? 2 : 1.5
+
+        if self.notification != nil {
+            try? await Task.sleep(for: .seconds(duration))
+        }
+
         withAnimation {
             self.notification = notification
         }
-
-        let duration = notification == .coinMe || notification == .coinOp ? 2 : 1.5
 
         try? await Task.sleep(for: .seconds(duration))
 

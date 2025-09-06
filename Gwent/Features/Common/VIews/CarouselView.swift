@@ -35,6 +35,7 @@ struct CarouselView: View {
             return
         }
 
+        HapticManager.shared.trigger(.cardSelection)
         selectAction(card)
 
         if let count = carousel?.count {
@@ -140,6 +141,6 @@ struct CarouselView: View {
 }
 
 #Preview {
-    CarouselView(carousel: .constant(Carousel.pickLeader))
+    CarouselView(carousel: .constant(Carousel.redraw))
         .environment(\.colorScheme, .dark)
 }

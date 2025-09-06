@@ -39,11 +39,9 @@ struct Rect {
     var radius: CGFloat
 
     // хз неправильно напевно але впадлу перероблювати
-    private let aspectRatio: CGFloat = /*1.94666666667*/ 1.89024390244
+    private let aspectRatio: CGFloat = /* 1.94666666667 */ 1.89024390244
     /// Яку частину картки займає тільки опис ( нижня частина картки )
-    private let partOfDescriptionSize = /*3.875*/ 3.78048780488
-
-
+    private let partOfDescriptionSize = /* 3.875 */ 3.78048780488
 
     private let partOfPower = 3.3
 
@@ -89,7 +87,6 @@ struct Rect {
 
     enum Size {
         case extraSmall, small, medium, large
-        
     }
 }
 
@@ -98,6 +95,10 @@ struct CardView: View {
     var isCompact: Bool
     var rect: Rect
     var isPlayable: Bool
+
+    private var isAnimatable: Bool {
+        isPlayable && card.type == .hero || card.shouldAnimate || card.animateAs != nil
+    }
 
     /// Яку частину картки займає тільки опис ( нижня частина картки )
 
@@ -116,20 +117,16 @@ struct CardView: View {
     }
 
     var body: some View {
-//        HStack {
-//            GeometryReader { geometry in
-
         VStack {
             Image("Cards/\(card.image)")
                 .resizable()
                 .scaledToFit()
                 .frame(height: rect.height)
                 .overlay(alignment: .topLeading) {
-                    if let power = card.power, let editedPower = card.editedPower {
+                    if card.type != .hero, let power = card.power, let editedPower = card.editedPower {
                         CardPowerOverlay(power: power, editedPower: editedPower, rect: rect)
                     }
                 }
-//                .clipShape(CustomShape(height: isCompact ? rect.height : 0))
         }
 
         .frame(
@@ -138,7 +135,7 @@ struct CardView: View {
         )
         .clipShape(.rect(cornerRadius: rect.radius))
         .overlay {
-            if card.shouldAnimate || card.animateAs != nil {
+            if isAnimatable {
                 CardAnimationView(card: card)
                     .clipShape(.rect(cornerRadius: rect.radius))
             }
@@ -162,29 +159,6 @@ private struct CardPowerOverlay: View {
     }
 
     var body: some View {
-        /// Hero:
-        /// todo: прибрати ці множення ?? ( з ними все працює кайфово на всіх розмірах )
-        /// я забув, що в hero ніяк не змінюється power
-//        if type == .hero {
-//            Image(.Assets.powerHero)
-//                .resizable()
-//                .scaledToFit()
-//                .frame(height: rect.powerHeight)
-//                .offset(x: rect.powerOffset, y: rect.powerOffset)
-//                .overlay(alignment: .topLeading) {
-//                    VStack {
-//                        Text("\(15)")
-//                            .foregroundStyle(textColor)
-//                            .font(.system(size: 7))
-//                            .fontWeight(.semibold)
-//                    }
-//                    .frame(width: rect.powerHeight / 2.3)
-//                    //                            .border(.red)
-//                    .offset(x: rect.powerHeight * 0.07, y: rect.powerHeight * 0.12)
-//                    .foregroundStyle(.white)
-//                }
-//            /// Normal:
-//        } else {
         Image(.Assets.powerNormal)
             .resizable()
             .scaledToFit()

@@ -18,7 +18,7 @@ struct CardDetailsView: View {
     @Binding var selectedCard: SelectedCard?
 
     private var shouldPlayInstantly: Bool {
-        selectedCard?.details.type == .leader || selectedCard?.details.ability == .scorch
+        selectedCard?.details.type == .leader || selectedCard?.details.ability == .scorch && selectedCard?.details.type == .special
     }
 
     private var isCanPlay: Bool {
@@ -53,7 +53,7 @@ struct CardDetailsView: View {
         if shouldPlayInstantly {
             await vm.playCard(selectedCard!.details)
         } else {
-            withAnimation(.smooth(duration: 0.3)) {
+            withAnimation(.card) {
                 selectedCard!.isReadyToUse.toggle()
             }
         }
@@ -88,7 +88,7 @@ struct CardDetailsView: View {
                             }
                             .scaleEffect(selectedCard!.isReadyToUse ? 0 : 1)
                         }
-                        if selectedCard!.isPlayable {
+                        if selectedCard!.isPlayable && selectedCard!.holder == .me {
                             IconButton(systemName: "xmark") {
                                 selectedCard = nil
                             }
@@ -120,7 +120,7 @@ struct CardDetailsView: View {
 }
 
 #Preview {
-    CardDetailsView(selectedCard: .constant(SelectedCard.preview))
+    CardDetailsView(selectedCard: .constant(SelectedCard.bot))
         .environment(GameViewModel.preview)
         .environment(\.colorScheme, .dark)
 }

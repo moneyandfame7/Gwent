@@ -5,24 +5,16 @@
 //  Created by Davyd Darusenkov on 22.12.2023.
 //
 
-import Foundation
+import SwiftUI
 
 struct Row {
     let type: Card.Row
-    // TODO: треба зробити це private set, додати функцію addCard, і там вже calculateCard score???
-    var cards: [Card] = []
 
-    var horn: Card? {
-        didSet {
-            for i in cards.indices {
-                let power = cards[i].availablePower
+    /* private(set) */ var cards: [Card] = []
 
-                if let power, cards[i].type != .hero {
-                    cards[i].editedPower = horn != nil ? power * 2 : nil
-                }
-            }
-        }
-    }
+    var horn: Card?
+
+    var showHornOverlay = false
 
     var hasWeather = false {
         didSet {
@@ -30,26 +22,33 @@ struct Row {
         }
     }
 
-    var moraleBoost: Int = 0 {
+    var hornEffects = 0 {
         didSet {
             calculateCardsPower()
         }
     }
 
-    // Card Name : Count of cards
-    var tightBond: [String: Int] = [:] {
+    var moraleBoost = 0 {
         didSet {
-//            let count =
-//            let bonds = cards.filter { $0.name  }
+            calculateCardsPower()
         }
     }
 
     var totalPower: Int {
-        cards.reduce(0) { partialResult, card in
-
-            partialResult + (card.editedPower ?? card.power ?? 0)
-        }
+        cards.reduce(0) { $0 + ($1.availablePower ?? 0) }
     }
+
+    mutating func addHorn(_ card: Card) {
+        if horn != nil {
+            return
+        }
+//        withAnimation(.smooth(duration: 0.3)) {
+        horn = card
+//        }
+        hornEffects += 1
+    }
+
+    mutating func applyHorn(_ card: Card) async {}
 
     mutating func addCard(_ card: Card, at: Int? = nil) {
         var copy = card
@@ -60,10 +59,31 @@ struct Row {
         cards.insert(copy, at: at ?? randomPositionAtRow)
     }
 
-    func calculateCardPower(_ card: Card) -> Int {
+    mutating func removeCard(_ card: Card) {
+        guard let index = cards.firstIndex(where: { $0.id == card.id }) else {
+            return
+        }
+
+        removeCard(at: index)
+    }
+
+    mutating func removeCard(at: Int) {
+        let removed = cards.remove(at: at)
+
+        switch removed.ability {
+        case .commanderHorn:
+            hornEffects -= 1
+        case .moraleBoost:
+            moraleBoost -= 1
+        default:
+            return
+        }
+    }
+
+    func calculateCardPower(_ card: Card) -> Int? {
         var total: Int = card.power ?? 0
-        if card.type == .hero {
-            return total
+        if card.type == .hero || card.ability == .decoy {
+            return nil
         }
 
         if hasWeather {
@@ -79,18 +99,23 @@ struct Row {
         // -1 --> тому що абілка додає до всіх карток ОКРІМ себе
         total += max(0, moraleBoost + (card.ability == .moraleBoost ? -1 : 0))
 
-        // TODO: перерахувати всі можливі ефекти на картці, але поки що буде ось так???
-        // в CardView в мене якщо editedPower <= power, то буде червона, але зроблю, щоб було тільки якщо <
-        //         if total == card.power && hasWeather {
-        //
-        //         }
+        if (hornEffects - (card.ability == .commanderHorn && card.type == .unit ? 1 : 0)) > 0 {
+            print("Ця картка НЕ ДАНДАЛІОН ЙОБАНИЙ: \(card.name)")
+
+            total *= 2
+        }
+
         return total
     }
 
-    private mutating func calculateCardsPower() {
+    mutating func calculateCardsPower() {
         for i in cards.indices {
             cards[i].editedPower = calculateCardPower(cards[i])
         }
+    }
+
+    mutating func test() {
+        hasWeather = true
     }
 }
 

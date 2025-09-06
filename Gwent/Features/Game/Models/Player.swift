@@ -57,8 +57,18 @@ class Player {
         rows = Row.generate(forBot: true)
     }
 
-    func drawCard(randomHandPosition: Bool = false) {
-        let card = deck.cards.last
+    func reset() {
+        hand = []
+        while !discard.isEmpty {
+            let removed = discard.removeFirst()
+
+            deck.cards.append(removed)
+        }
+    }
+
+    func drawCard(randomHandPosition: Bool = false, randomDeckPosition: Bool = false) {
+        let card = randomDeckPosition ? deck.cards.randomElement() : deck.cards.last
+
         guard let card, let index = deck.cards.firstIndex(where: { $0.id == card.id }) else {
             return
         }
@@ -76,7 +86,7 @@ class Player {
     /// Removes card from "container" and adds to row(rowType).
 
     func moveCard(_ card: Card, from source: CardContainer = .hand, to rowType: Card.Row) {
-        withAnimation(.smooth(duration: 0.3)) {
+        withAnimation(.card) {
             removeFromContainer(card: card, source)
             addToContainer(card: card, .row(rowType))
         }
@@ -114,16 +124,46 @@ extension Player {
 // MARK: Abilities
 
 extension Player {
-    func applyHorn(_ card: Card, row: Card.Row, from container: CardContainer = .hand) {
-        guard let rowIndex = rows.firstIndex(where: { $0.type == row }) else {
+    /// Це special card.
+    @MainActor
+    func playHorn(_ card: Card, rowType: Card.Row, from container: CardContainer = .hand) async {
+        guard let rowIndex = rows.firstIndex(where: { $0.type == rowType }) else {
             return
         }
-        withAnimation(.smooth(duration: 0.3)) {
+
+        SoundManager.shared.playSound(sound: .horn)
+        withAnimation(.card) {
             if !card.isCreatedByLeader {
                 removeFromContainer(card: card, container)
             }
-            rows[rowIndex].horn = card
+
+            rows[rowIndex].addHorn(card)
         }
+
+        rows[rowIndex].showHornOverlay = true
+
+        try? await Task.sleep(for: .seconds(2.5))
+
+        rows[rowIndex].showHornOverlay = false
+    }
+
+    /// Це Dandelion
+    @MainActor
+    func applyHorn(_ card: Card, rowType: Card.Row, from container: CardContainer = .hand) async {
+        guard let rowIndex = rows.firstIndex(where: { $0.type == rowType }) else {
+            return
+        }
+//        rows[rowIndex].calculateCardsPower()
+
+        SoundManager.shared.playSound(sound: .horn)
+
+        rows[rowIndex].hornEffects += 1
+
+        rows[rowIndex].showHornOverlay = true
+
+        try? await Task.sleep(for: .seconds(2.5))
+
+        rows[rowIndex].showHornOverlay = false
     }
 
     func applyWeather(_ type: Card.Weather) {
@@ -166,11 +206,11 @@ extension Player {
 
             rows[rowIndex].cards[cardIndex].editedPower = rows[rowIndex].calculateCardPower(card)
             Task { @MainActor in
-                rows[rowIndex].cards[cardIndex].shouldAnimate = true
+                rows[rowIndex].cards[cardIndex].animateAs = .tightBond(multiplier: bonds.count)
 
                 try? await Task.sleep(for: .seconds(2))
 
-                rows[rowIndex].cards[cardIndex].shouldAnimate = false
+                rows[rowIndex].cards[cardIndex].animateAs = nil
             }
         }
     }
@@ -180,7 +220,7 @@ extension Player {
             return
         }
 
-        rows[rowIndex].moraleBoost += 1
+//        rows[rowIndex].moraleBoost += 1
     }
 
     @MainActor
@@ -231,7 +271,7 @@ extension Player {
             /// animate as musterInserted???
         }
 
-        try? await Task.sleep(for: .seconds(0.5))
+//        try? await Task.sleep(for: .seconds(0.5))
     }
 }
 
@@ -260,7 +300,7 @@ extension Player {
             }
         }
 
-        withAnimation(.smooth(duration: 0.3)) {
+        withAnimation(.card) {
             for i in rows.indices {
                 let cards = rows[i].cards
 
@@ -275,6 +315,7 @@ extension Player {
                 discard.append(contentsOf: cards.filter { $0.id != cardException?.id })
 
                 rows[i].moraleBoost = 0
+                rows[i].hornEffects = 0
             }
         }
     }
@@ -288,9 +329,9 @@ extension Player {
         addToContainer(card: card, destination)
     }
 
+    /// Adds card to specific row and calculate edited power of card.
     func insertToContainer(_ card: Card, _ container: CardContainer, at: Int) {
-        var copy = card
-        copy.editedPower = nil
+        let copy = card.withResetedPower()
 
         switch container {
         case .hand:
@@ -314,7 +355,7 @@ extension Player {
     func addToContainer(card: Card, _ container: CardContainer) {
         var copy = card
         copy.editedPower = nil
-        
+
         switch container {
         case .hand:
             hand.append(copy)
@@ -330,7 +371,8 @@ extension Player {
                 print("Row index hui pizda")
                 fatalError()
             }
-            return rows[rowIndex].addCard(copy)
+
+            rows[rowIndex].addCard(copy)
 
         default:
             fatalError("Unsupported container in Player")
@@ -367,6 +409,14 @@ extension Player {
             deck.cards.remove(at: at)
         case .discard:
             discard.remove(at: at)
+        case let .row(rowType):
+            guard let rowIndex = rows.firstIndex(where: { $0.type == rowType }) else {
+                print("‼️ Not found row \(rowType)")
+
+                return
+            }
+
+            rows[rowIndex].removeCard(at: at)
         default:
             print("‼️ Not realized")
         }
@@ -405,12 +455,8 @@ extension Player {
 
                 return
             }
-            guard let index = rows[rowIndex].cards.firstIndex(where: { $0.id == card.id }) else {
-                print("‼️ Not found card in row \(rowType)")
 
-                return
-            }
-            rows[rowIndex].cards.remove(at: index)
+            rows[rowIndex].removeCard(card)
 
         default:
             fatalError("Unsupported container in Player")

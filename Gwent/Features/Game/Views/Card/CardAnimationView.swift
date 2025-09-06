@@ -18,110 +18,107 @@ struct CardAnimationView: View {
         if card.ability == .scorch && card.animateAs == nil {
             return ""
         }
-        if let source = card.animateAs?.rawValue ?? card.ability?.rawValue {
+
+        if let source = card.animateAs?.imageSource ?? card.ability?.rawValue {
             return "Images/card_effects/\(source)"
         }
         return ""
     }
 
     @ViewBuilder
-    private var hero: some View {
+    private var heroView: some View {
         Image(.Images.CardEffects.hero)
             .resizable()
-//            .scaledToFill()
-//        Image(.Images.CardEffects.hero)
-//            .resizable()
-        ////            .scaledToFill()
-//            .offset(y: -20)
-//            .rotationEffect(.degrees(90))
+            .opacity(opacity)
     }
 
     private func animate() async {
         if let ability = card.ability {
 //           sound here????
         }
-        withAnimation(.smooth(duration: 0.3)) {
+        withAnimation(.card) {
             opacity = 1
         }
 
-        try? await Task.sleep(for: .seconds(0.3))
+        try? await Task.sleep(for: .card)
 
-        withAnimation(.smooth(duration: 0.3)) {
+        withAnimation(.card) {
             scale = 1
         }
 
-        try? await Task.sleep(for: .seconds(0.3))
+        try? await Task.sleep(for: .card)
 
-        withAnimation(.smooth(duration: 0.3)) {
+        withAnimation(.card) {
             scale = 0.8
         }
 
         try? await Task.sleep(for: .seconds(1))
 
-        withAnimation(.smooth(duration: 0.3)) {
+        withAnimation(.card) {
             scale = 0.4
 
             opacity = 0
         }
     }
 
-    var body: some View {
-        ZStack {
-            if card.type == .hero {
-                hero
+    @ViewBuilder
+    private func animateAsView(_ animation: Card.Animation) -> some View {
+        switch animation {
+        case .scorch:
+            Image(imageName)
+                .resizable()
+                .scaledToFill()
+                .opacity(opacity)
+        case .medic:
+            ZStack {
+                Image(.Images.CardEffects.medicGreen)
+                    .resizable()
+                    .scaledToFit()
+                    .brightness(-0.4)
                     .opacity(opacity)
-            } else if card.animateAs == .scorch {
                 Image(imageName)
                     .resizable()
-                    .scaledToFill()
+                    .scaledToFit()
                     .opacity(opacity)
+                    .scaleEffect(scale)
+            }
+        case let .tightBond(multiplier):
+            VStack(alignment: .center) {
+                Text("x\(multiplier)")
+                    .foregroundStyle(.brandGreen)
+                    .fontWeight(.bold)
+                    .font(.title2)
+                    .padding(.horizontal, 2)
+                    .textBorder()
+                    .offset(x: -6)
+                    .opacity(opacity)
+                    .scaleEffect(scale)
 
-            } else if card.animateAs == .medic {
-                ZStack {
-                    Image(.Images.CardEffects.medicGreen)
-                        .resizable()
-                        .scaledToFit()
-                        .brightness(-0.4)
-                        .opacity(opacity)
-                    Image(imageName)
-                        .resizable()
-                        .scaledToFit()
-                        .opacity(opacity)
-                        .scaleEffect(scale)
-                }
+                Image(imageName)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 25)
+                    .opacity(opacity)
+                    .scaleEffect(scale)
+            }
+        }
+    }
+
+    var body: some View {
+        ZStack {
+            if let animateAs = card.animateAs {
+                animateAsView(animateAs)
+            } else if card.type == .hero {
+                heroView
             } else if card.ability == .spy {
                 ZStack {
-                    hero
-                        .opacity(opacity)
+                    heroView
                     Image(imageName)
                         .resizable()
                         .scaledToFit()
                         .opacity(opacity)
                         .scaleEffect(scale)
                 }
-            } else if card.ability == .tightBond {
-                VStack(alignment: .center) {
-                    Text("x2")
-                        .foregroundStyle(.brandGreen)
-                        .fontWeight(/*@START_MENU_TOKEN@*/ .bold/*@END_MENU_TOKEN@*/)
-                        .font(.title2)
-                        .padding(.horizontal, 2)
-                        .shadow(radius: 1)
-//                                .background(.black.opacity(0.7))
-
-                        .clipShape(.rect(cornerRadius: 3))
-                        .offset(x: -6)
-                        .opacity(opacity)
-                        .scaleEffect(scale)
-//                                .shadow(color: .white, radius: 1)
-                    Image(imageName)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 25)
-                        .opacity(opacity)
-                        .scaleEffect(scale)
-                }
-
             } else if !imageName.isEmpty {
                 Image(imageName)
                     .resizable()
@@ -139,9 +136,9 @@ struct CardAnimationView: View {
 
 #Preview {
     VStack {
-        CardView(card: Card.all2[156], isPlayable: true)
+        CardView(card: Card.all2[22], isPlayable: true)
             .overlay {
-                CardAnimationView(card: Card.all2[156])
+                CardAnimationView(card: Card.all2[22])
             }
     }
 }

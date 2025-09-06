@@ -25,23 +25,15 @@ final class CardActions {
         // ability - if game.currentPlayer.isAI - game.ai.ability(...) - обирати там де найбільша сила рядку
         let destination = rowType ?? (card.combatRow == .agile ? .close : card.combatRow)
 
-        guard let currentPlayer = game.currentPlayer else {
+        guard let currentPlayer = game.currentPlayer, let opponent = game.opponent else {
             return
         }
 
-        if card.type == .leader || card.type == .special && card.ability == .scorch {
-            withAnimation(.smooth(duration: 0.3)) {
-                game.ui.selectedCard?.isReadyToUse = true
-            }
-            try? await Task.sleep(for: .seconds(0.7))
-
-            Task { @MainActor in
-                try? await Task.sleep(for: .seconds(0.3))
-                game.ui.selectedCard = nil
-            }
-        } else {
-            game.ui.selectedCard = nil
+        if !currentPlayer.isBot && !opponent.isPassed {
+            game.ui.isDisabled = true
         }
+
+        await game.ui.animateCardUsage(card, holder: currentPlayer.tag)
 
         if card.type == .leader {
             return await playLeader(card)
@@ -79,7 +71,7 @@ final class CardActions {
 
         SoundManager.shared.playSound(sound: .decoy)
         withAnimation(.smooth(duration: 0.5)) {
-            /// Replace with decoy
+            /// Add decoy
             currentPlayer.removeFromContainer(at: decoyIndex, .hand)
             currentPlayer.insertToContainer(decoy, .row(rowType), at: targetIndex)
 
@@ -88,7 +80,7 @@ final class CardActions {
             currentPlayer.insertToContainer(target, .hand, at: decoyIndex)
         }
 
-        try? await Task.sleep(for: .seconds(0.3))
+        try? await Task.sleep(for: .card)
 
         await game.endTurn()
     }
@@ -131,16 +123,14 @@ final class CardActions {
         }
     }
 
+    @MainActor
     private func playWithAbility(_ card: Card, rowType: Card.Row, from container: CardContainer) async {
         guard let currentPlayer = game.currentPlayer else {
             return
         }
         print("Ability thread", Thread.current.description)
         if card.ability == .commanderHorn && card.type == .special {
-            currentPlayer.applyHorn(card, row: rowType)
-
-//            try? await Task.sleep(for: .seconds(0.3))
-            SoundManager.shared.playSound(sound: .horn)
+            await currentPlayer.playHorn(card, rowType: rowType)
 
         } else if card.ability == .spy {
             await applySpy(card, rowType: rowType, from: container)
@@ -148,8 +138,10 @@ final class CardActions {
         } else {
             currentPlayer.moveCard(card, from: container, to: rowType)
 
-            if card.ability == .tightBond {
+            if card.ability == .commanderHorn {
+                await currentPlayer.applyHorn(card, rowType: rowType, from: container)
 
+            } else if card.ability == .tightBond {
                 currentPlayer.applyTightBond(card, rowType: rowType)
 
             } else if card.ability == .muster {
@@ -157,6 +149,9 @@ final class CardActions {
 
             } else if card.ability == .moraleBoost {
                 currentPlayer.applyMoraleBoost(card, rowType: rowType)
+
+            } else if card.ability == .scorch {
+                await processDestroyStrongest(rowType: rowType)
 
             } else if card.ability == .medic {
                 /// Delay before using the medic ability ( showing carousel ).
@@ -189,10 +184,10 @@ private extension CardActions {
                 .compactMap { $0.editedPower ?? $0.power }
             }
             .max()
-        
+
         SoundManager.shared.playSound(sound: .scorch)
 
-        withAnimation(.smooth(duration: 0.7)) {
+        withAnimation(.card) {
             currentPlayer.removeFromContainer(card: card, .hand)
             currentPlayer.addToContainer(card: card, .discard)
         }
@@ -200,6 +195,8 @@ private extension CardActions {
         guard let maxPower, maxPower > 0 else {
             return
         }
+
+        HapticManager.shared.trigger(.notification(.error))
 
         print("Max: \(maxPower)")
 
@@ -221,7 +218,6 @@ private extension CardActions {
             currentPlayerScorch[row.type] = shouldScorch
         }
 
-        
         /// Animate scorch for target cards
         await withTaskGroup(of: Void.self) { group in
 //            group.addTask {
@@ -248,7 +244,7 @@ private extension CardActions {
         /// Delete target cards
         for (row, cards) in opponentScorch {
             for card in cards {
-                withAnimation(.smooth(duration: 0.3)) {
+                withAnimation(.card) {
                     opponent.removeFromContainer(card: card, .row(row))
                     opponent.addToContainer(card: card, .discard)
                 }
@@ -256,7 +252,7 @@ private extension CardActions {
         }
         for (row, cards) in currentPlayerScorch {
             for card in cards {
-                withAnimation(.smooth(duration: 0.3)) {
+                withAnimation(.card) {
                     currentPlayer.removeFromContainer(card: card, .row(row))
                     currentPlayer.addToContainer(card: card, .discard)
                 }
@@ -272,7 +268,7 @@ private extension CardActions {
             return
         }
         SoundManager.shared.playSound(sound: .spy)
-        withAnimation(.smooth(duration: 0.3)) {
+        withAnimation(.card) {
             currentPlayer.removeFromContainer(card: card, container)
             // можливо можна зробити щось типу holderIs...
             // тут є трабли з анімацією, бо в рядках опонента інший неймспейс стоїть. я хз щшо робити, поки що забʼю
@@ -292,7 +288,7 @@ private extension CardActions {
         for _ in 0 ..< 2 {
             /// Delay between the drawing 1 card.
             try? await Task.sleep(for: .seconds(0.1))
-            withAnimation(.smooth(duration: 0.3)) {
+            withAnimation(.card) {
                 SoundManager.shared.playSound(sound: .drawCard)
 
                 currentPlayer.drawCard(randomHandPosition: true)
@@ -304,7 +300,7 @@ private extension CardActions {
         guard let currentPlayer = game.currentPlayer else {
             return
         }
-        let units = currentPlayer.discard.filter { $0.type != .special && $0.type != .hero }
+        let units = currentPlayer.discard.filter { $0.type == .unit }
 
         if units.count <= 0 {
             return await game.endTurn()
@@ -332,16 +328,21 @@ private extension CardActions {
         }
     }
 
+    @MainActor
     func processMedic(resurrectionCard: Card) async {
         guard let currentPlayer = game.currentPlayer else {
             return
         }
+
         /// Move card to top of the discard.
         currentPlayer.removeFromContainer(card: resurrectionCard, .discard)
         currentPlayer.addToContainer(card: resurrectionCard, .discard)
 
-        let topDiscardIndex = currentPlayer.discard.endIndex - 1
         SoundManager.shared.playSound(sound: .medic)
+        HapticManager.shared.trigger(.notification(.success))
+
+        let topDiscardIndex = currentPlayer.discard.endIndex - 1
+
         await withTaskGroup(of: Void.self) { group in
 //            group.addTask {
 //                await SoundManager.shared.playSound(sound: .medic)
@@ -367,11 +368,10 @@ private extension CardActions {
 // MARK: Weathers
 
 private extension CardActions {
-//    @MainActor
+    @MainActor
     func playWeather(_ card: Card, from container: CardContainer) async {
         // MARK: - Clear Weather
 
-        print("Thread", Thread.current.description)
         if card.weather == .clearWeather {
             moveToWeathers(card, from: container)
 
@@ -400,10 +400,12 @@ private extension CardActions {
                 .firstIndex(where: { ($0.id == card.id) || ($0.weather == card.weather) })
 
             if let sameWeatherIndex {
-                withAnimation(.smooth(duration: 0.3)) {
+                withAnimation(.card) {
                     moveWeatherToDiscard(at: sameWeatherIndex)
                 }
-                try? await Task.sleep(for: .seconds(0.55))
+                // Можливо варто повернути затримку, треба тестити, якщо це картка повертається до бота, а не до мене.
+                // якщо повертається до мене, то впринципі все ок працює.
+//                try? await Task.sleep(for: .seconds(0.55))
             }
 
             moveToWeathers(card, from: container)
@@ -679,21 +681,21 @@ private extension CardActions {
             cards: hand,
             count: 2,
             title: "Choose a card to discard",
-            onSelect: { card in
-                guard let index = self.game.ui.carousel!.cards.firstIndex(where: { $0.id == card.id }) else {
+            onSelect: { [unowned self] card in
+                guard let index = game.ui.carousel!.cards.firstIndex(where: { $0.id == card.id }) else {
                     return
                 }
 
-                self.game.ui.carousel!.cards.remove(at: index)
+                game.ui.carousel!.cards.remove(at: index)
 
                 currentPlayer.removeFromContainer(card: card, .hand)
                 currentPlayer.addToContainer(card: card, .discard)
             },
-            completion: {
+            completion: { [unowned self] in
                 Task { @MainActor in
                     try? await Task.sleep(for: .seconds(0.5))
 
-                    self.game.ui.showCarousel(carouselForDrawing)
+                    game.ui.showCarousel(carouselForDrawing)
                 }
             }
         )
@@ -724,9 +726,9 @@ private extension CardActions {
         let carousel = Carousel(
             cards: cards,
             title: "Pick a weather to play",
-            onSelect: { card in
+            onSelect: { [unowned self] card in
                 Task {
-                    await self.playWeather(card, from: .deck)
+                    await playWeather(card, from: .deck)
                 }
             },
             completion: completion
@@ -776,7 +778,8 @@ private extension CardActions {
         guard let opponent = game.opponent else {
             return
         }
-
+        SoundManager.shared.playSound(sound: .scorch)
+        
         let row = opponent.getRow(rowType)
 
         let totalPower = row.totalPower
@@ -788,11 +791,13 @@ private extension CardActions {
             .filter { $0.type != .hero }
             .compactMap { $0.availablePower }
             .max()
-
+        
         guard let max else {
             return
         }
-
+        
+        HapticManager.shared.trigger(.notification(.error))
+        
         let scorched = row.cards.filter { $0.availablePower == max }
 
         await withTaskGroup(of: Void.self) { group in
@@ -804,7 +809,7 @@ private extension CardActions {
         }
 
         for card in scorched {
-            withAnimation(.smooth(duration: 0.3)) {
+            withAnimation(.card) {
                 opponent.swapContainers(card, from: .row(rowType), to: .discard)
             }
         }
@@ -825,10 +830,10 @@ private extension CardActions {
         horn.id *= 123
         horn.isCreatedByLeader = true
         /// Буде помилка, що не видалено картку з контейнера, бо ми її щойно створили і її немає в ніякому контейнері.
-        currentPlayer.applyHorn(horn, row: rowType)
+        await currentPlayer.playHorn(horn, rowType: rowType)
 
-        /// Затримка після анімації переміщення картки
-        try? await Task.sleep(for: .seconds(0.3))
+        
+        try? await Task.sleep(for: .card)
     }
 
     func processPickOneWeather(_ weatherType: Card.Weather) async {

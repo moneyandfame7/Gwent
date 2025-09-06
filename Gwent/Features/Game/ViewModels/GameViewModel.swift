@@ -10,17 +10,18 @@ import SwiftUI
 
 // TODO: переробити щоб currentPlayer НІКОЛИ не був nil ???? ( в init викликати startGame )
 // в кінці гри якщо робити restart - то reset стейту і заново викликати startGame
+
 @Observable
 final class GameViewModel {
     static let preview = GameViewModel(deck: .sample1)
 
-    let player: Player
-    let bot: Player
+    var player: Player
+    var bot: Player
 
     /// Game Services
     var ui = GameUI()
 
-    let settings = GameSettings()
+    var settings = GameSettings.shared
 
     private var flow: GameFlow!
 
@@ -28,18 +29,10 @@ final class GameViewModel {
 
     private(set) var aiStrategy: GameAI!
 
-    let eventManager = GameEventManager()
-
     /// Players, based on game progress.
     var firstPlayer: Player?
 
-    var currentPlayer: Player? {
-        didSet {
-            if let currentPlayer {
-                ui.isDisabled = currentPlayer.isBot
-            }
-        }
-    }
+    var currentPlayer: Player?
 
     var leadingPlayer: Player? {
         if player.totalScore > bot.totalScore {
@@ -76,7 +69,8 @@ final class GameViewModel {
 
     var roundCount = 0
 
-    /// Observation ignore ????
+    /// Observation ignore ????]
+    @ObservationIgnored
     var roundHistory: [Round] = []
 
     init(deck: Deck) {
@@ -99,11 +93,6 @@ final class GameViewModel {
     }
 
     func startGame() {
-        eventManager.attach(for: .turnStart) {
-            print("Game handler trigger")
-            try? await Task.sleep(for: .seconds(2))
-            return nil
-        }
         flow.startGame()
     }
 
@@ -113,6 +102,10 @@ final class GameViewModel {
 
     func restartGame() {
         flow.restartGame()
+    }
+    
+    func forfeitGame() {
+        flow.surrender()
     }
 
     func endGame() {
@@ -137,5 +130,9 @@ final class GameViewModel {
 
     func getOpponent(for player: Player) -> Player {
         return player.isBot ? self.player : bot
+    }
+
+    func getPlayer(_ tag: Tag) -> Player {
+        return tag == .bot ? bot : player
     }
 }

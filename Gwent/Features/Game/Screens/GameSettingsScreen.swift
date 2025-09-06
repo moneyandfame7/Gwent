@@ -12,30 +12,73 @@ struct GameSettingsScreen: View {
 
     var body: some View {
         @Bindable var vm = vm
-        VStack {
-            Text("Game Settings Screen")
-                .font(.title)
-            Button("Close") {
-                vm.settings.toggleScreen()
+        VStack(spacing: 30) {
+            Text("Options")
+                .font(.custom(AppFont.Gwent.rawValue, size: 28, relativeTo: .title))
+
+            VStack(spacing: 25) {
+                Toggle(isOn: $vm.settings.isVibrationEnabled) {
+                    Text("Vibrations")
+                        .font(.custom(AppFont.Gwent.rawValue, size: 18, relativeTo: .body))
+                }
+                .tint(.brandYellow)
+
+                Toggle(isOn: $vm.settings.isMusicEnabled) {
+                    Text("Music")
+                        .font(.custom(AppFont.Gwent.rawValue, size: 18, relativeTo: .body))
+                }
+                .tint(.brandYellow)
+
+                Toggle(isOn: $vm.settings.isSoundsEnabled) {
+                    Text("Sounds")
+                        .font(.custom(AppFont.Gwent.rawValue, size: 18, relativeTo: .body))
+                }
+                .tint(.brandYellow)
+
+                HStack {
+                    Text("Difficulty")
+                        .font(.custom(AppFont.Gwent.rawValue, size: 18, relativeTo: .body))
+                    Spacer()
+                    Picker("", selection: $vm.settings.difficulty) {
+                        ForEach(Difficulty.allCases, id: \.self) {
+                            Text($0.description)
+                                .tag($0)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .tint(.brandYellow)
+                    .background(.clear)
+                }
             }
-            Button("Alert") {
-//                vm.ui.showAlert(
-//                    AlertItem(
-//                        title: "Title",
-//                        description: "Description",
-//                        cancelButton: (title: "Hui", action: { print("Ladno") }),
-//                        confirmButton: (title: "Hui2", action: { print(" Ladno") })
-//
-                ////                        confirmButton: ("Confirm", { print("") })
-                ////                        cancelButton: (title: "Cancel", action: { print("Cancel") }),
-                ////                        confirmButton: (title: " Confirm", action: { print("Confirm") })
-//                    )
-//                )
+
+            HStack(spacing: 50) {
+                BrandButton2(title: "Back") {
+                    vm.settings.toggleScreen()
+                }
+                BrandButton2(title: "Customize deck") {
+                    vm.settings.alert = AlertItem(
+                        title: "Really?",
+                        description: "Really really?",
+                        cancelButton: ("No", {}),
+                        confirmButton: ("Yes", {
+                            vm.settings.toggleScreen()
+
+                            vm.forfeitGame()
+                        })
+                    )
+                }
             }
+
+            Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.black.opacity(0.9))
-        .ignoresSafeArea()
+        .padding()
+        .background(.black.opacity(0.9), ignoresSafeAreaEdges: .all)
+        .overlay {
+            if vm.settings.alert != nil {
+                AlertView(alert: $vm.settings.alert)
+            }
+        }
     }
 }
 

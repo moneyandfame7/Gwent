@@ -44,7 +44,7 @@ struct GameScreen: View {
         .overlay(alignment: .top) {
             HStack(spacing: -15) {
                 ForEach(vm.bot.hand) { card in
-                    Image(.Assets.deckBackMonsters)
+                    Image("Images/deck_back/\(vm.bot.deck.faction)")
                         .resizable()
                         .scaledToFit()
                         .frame(height: 70)
@@ -74,12 +74,13 @@ struct GameScreen: View {
             }
             .frame(maxHeight: .infinity)
             /// Additional row
-            HStack {
+            HStack(alignment: .top) {
                 TotalScoreView(
                     player: vm.bot,
                     leadingPlayer: vm.leadingPlayer,
                     currentPlayer: vm.currentPlayer
                 )
+                .padding(.top, 8)
                 let isSelectable = vm.ui.selectedCard?.details.weather != nil
                 ZStack {
                     Image(systemName: "cloud.sun.rain.circle.fill")
@@ -114,6 +115,7 @@ struct GameScreen: View {
                     leadingPlayer: vm.leadingPlayer,
                     currentPlayer: vm.currentPlayer
                 )
+                .padding(.top, 8)
             }
             .zIndex(1)
             .frame(maxWidth: .infinity, maxHeight: 75)
@@ -137,11 +139,18 @@ struct GameScreen: View {
             .frame(height: 200)
             .background(Image(.Assets.texture).resizable())
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .ignoresSafeArea()
         .task {
             try? await Task.sleep(for: .seconds(1))
 
             vm.startGame()
+        }
+        .overlay(alignment: .leading) {
+            CircleButton("gearshape.fill", disabled: vm.ui.isDisabled) {
+                vm.settings.toggleScreen()
+            }
+            .offset(x: 5)
         }
         .overlay {
             if let notification = vm.ui.notification {

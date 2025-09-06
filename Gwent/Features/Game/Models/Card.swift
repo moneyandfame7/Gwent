@@ -22,6 +22,7 @@ struct Card: Identifiable, Hashable {
     var weather: Card.Weather?
 
     var editedPower: Int?
+
     var holderIsBot: Bool?
     var shouldAnimate = false
 
@@ -37,14 +38,23 @@ struct Card: Identifiable, Hashable {
     var availableRow: Card.Row? {
         combatRow == .agile ? .close : combatRow
     }
-    
+
     var isHorn: Bool {
         ability == .commanderHorn && type == .special
     }
-    
-    
 
-    // animation/animateAs: "Scorch" || "Medic" ??? + подумати про tightBond ( можна просто юзати shouldAnimate для тригера анімації )
+    var isDandelion: Bool {
+        ability == .commanderHorn && type == .unit
+    }
+
+    var tightBondMultiplier: Int?
+
+    func withResetedPower() -> Card {
+        var copy = self
+        copy.editedPower = nil
+
+        return copy
+    }
 }
 
 extension Card: Codable {
@@ -183,8 +193,25 @@ extension Card {
         case unit, leader, hero, weather, special
     }
 
-    enum Animation: String {
+    enum Animation: Hashable {
         case scorch, medic
+        case tightBond(multiplier: Int)
+
+        var imageSource: String {
+            switch self {
+            case .medic:
+                return "medic"
+            case .scorch:
+                return "scorch"
+            case .tightBond:
+                return "tight_bond"
+            }
+        }
+    }
+
+    /// Used for AI
+    enum Value: String, CaseIterable {
+        case none, low, `default`, high
     }
 }
 
